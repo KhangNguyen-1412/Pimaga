@@ -1,6 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import TikzRenderer from './TikzRenderer';
+
+// Regex nhận diện khối mã LaTeX TikZ (vẽ hình hình học)
+const TIKZ_REGEX = /(\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}|```(?:tikz|latex)\s*[\s\S]*?\\begin\{tikzpicture\}[\s\S]*?```)/g;
 
 // Regex nhận diện công thức Toán: $$...$$ (display block) và $...$ (inline)
 const MATH_REGEX = /(\$\$[\s\S]*?\$\$|\$(?!\$)[^$\n]+?\$)/g;
@@ -48,20 +52,29 @@ function renderKatex(mathItem, key) {
   }
 }
 
-// Thay thế các placeholder \uE000MATH_i\uE001 bằng phần tử KaTeX đã render
-function resolveMathAndText(text, mathStore, keyPrefix) {
+// Thay thế các placeholder \uE000MATH_i\uE001 và \uE002TIKZ_i\uE003
+function resolveMathAndTikz(text, mathStore, tikzStore, keyPrefix, onZoomImage) {
   if (!text) return null;
-  const parts = text.split(/(\uE000MATH_\d+\uE001)/g);
+  const parts = text.split(/(\uE000MATH_\d+\uE001|\uE002TIKZ_\d+\uE003)/g);
 
   return parts.map((part, idx) => {
-    const key = `${keyPrefix}-m${idx}`;
-    const match = part.match(/^\uE000MATH_(\d+)\uE001$/);
-    if (match) {
-      const mathItem = mathStore[parseInt(match[1], 10)];
+    const key = `${keyPrefix}-p${idx}`;
+    const mathMatch = part.match(/^\uE000MATH_(\d+)\uE001$/);
+    if (mathMatch) {
+      const mathItem = mathStore[parseInt(mathMatch[1], 10)];
       if (mathItem) {
         return renderKatex(mathItem, key);
       }
     }
+
+    const tikzMatch = part.match(/^\uE002TIKZ_(\d+)\uE003$/);
+    if (tikzMatch) {
+      const tikzCode = tikzStore[parseInt(tikzMatch[1], 10)];
+      if (tikzCode) {
+        return <TikzRenderer key={key} code={tikzCode} onZoom={onZoomImage} />;
+      }
+    }
+
     return part;
   });
 }
@@ -145,7 +158,7 @@ function renderInlineMarkdown(text, mathStore, keyPrefix, onZoomImage) {
       return (
         <strong key={key} className="font-bold text-gray-900 dark:text-slate-100">
           <em className="italic">
-            {resolveMathAndText(content, mathStore, `${key}-bi`)}
+            {resolveMathAndTikz(content, mathStore, tikzStore, `${key}-bi`, onZoomImage)}
           </em>
         </strong>
       );
@@ -156,7 +169,7 @@ function renderInlineMarkdown(text, mathStore, keyPrefix, onZoomImage) {
       const content = part.slice(2, -2);
       return (
         <strong key={key} className="font-bold text-gray-900 dark:text-slate-100">
-          {resolveMathAndText(content, mathStore, `${key}-b`)}
+          {resolveMathAndTikz(content, mathStore, tikzStore, `${key}-b`, onZoomImage)}
         </strong>
       );
     }
@@ -166,7 +179,7 @@ function renderInlineMarkdown(text, mathStore, keyPrefix, onZoomImage) {
       const content = part.slice(1, -1);
       return (
         <em key={key} className="italic text-gray-800 dark:text-slate-200">
-          {resolveMathAndText(content, mathStore, `${key}-i`)}
+          {resolveMathAndTikz(content, mathStore, tikzStore, `${key}-i`, onZoomImage)}
         </em>
       );
     }
@@ -189,15 +202,15 @@ function renderInlineMarkdown(text, mathStore, keyPrefix, onZoomImage) {
       const content = part.slice(2, -2);
       return (
         <del key={key} className="line-through text-gray-400 dark:text-slate-500">
-          {resolveMathAndText(content, mathStore, `${key}-d`)}
+          {resolveMathAndTikz(content, mathStore, tikzStore, `${key}-d`, onZoomImage)}
         </del>
       );
     }
 
-    // Text thông thường (có thể chứa placeholder toán)
+    // Text thông thường (có thể chứa placeholder toán hoặc TikZ)
     return (
       <React.Fragment key={key}>
-        {resolveMathAndText(part, mathStore, key)}
+        {resolveMathAndTikz(part, mathStore, tikzStore, key, onZoomImage)}
       </React.Fragment>
     );
   });
@@ -219,9 +232,17 @@ export default function MathRenderer({ content, className = '' }) {
   const renderedElements = useMemo(() => {
     if (!content) return null;
 
-    // 1. Tách và lưu trữ toàn bộ công thức toán để bảo toàn cú pháp trước khi parse Markdown
+    // 1. Tách và lưu trữ toàn bộ các khối mã LaTeX TikZ trước tiên để bảo toàn cú pháp
+    const tikzStore = [];
+    const textWithoutTikz = content.replace(TIKZ_REGEX, (match) => {
+      const idx = tikzStore.length;
+      tikzStore.push(match);
+      return `\uE002TIKZ_${idx}\uE003`;
+    });
+
+    // 2. Tách và lưu trữ toàn bộ công thức toán KaTeX
     const mathStore = [];
-    const textWithPlaceholders = content.replace(MATH_REGEX, (match) => {
+    const textWithPlaceholders = textWithoutTikz.replace(MATH_REGEX, (match) => {
       const idx = mathStore.length;
       const isDisplay = match.startsWith('$$') && match.endsWith('$$');
       mathStore.push({
@@ -232,29 +253,38 @@ export default function MathRenderer({ content, className = '' }) {
       return `\uE000MATH_${idx}\uE001`;
     });
 
-    // 2. Tách theo từng dòng
+    // 3. Tách theo từng dòng
     const lines = textWithPlaceholders.split('\n');
 
     return lines.map((line, lineIdx) => {
+      // Dòng chứa duy nhất 1 khối LaTeX TikZ
+      const tikzLineMatch = line.trim().match(/^\uE002TIKZ_(\d+)\uE003$/);
+      if (tikzLineMatch) {
+        const tikzCode = tikzStore[parseInt(tikzLineMatch[1], 10)];
+        return (
+          <TikzRenderer key={lineIdx} code={tikzCode} onZoom={setZoomModal} />
+        );
+      }
+
       // Tiêu đề Markdown: ###, ##, #
       if (line.startsWith('### ')) {
         return (
           <h3 key={lineIdx} className="text-base font-bold text-gray-900 dark:text-slate-100 mt-3 mb-1">
-            {renderInlineMarkdown(line.slice(4), mathStore, `l${lineIdx}-h3`, setZoomModal)}
+            {renderInlineMarkdown(line.slice(4), mathStore, tikzStore, `l${lineIdx}-h3`, setZoomModal)}
           </h3>
         );
       }
       if (line.startsWith('## ')) {
         return (
           <h2 key={lineIdx} className="text-lg font-bold text-gray-900 dark:text-slate-100 mt-4 mb-2">
-            {renderInlineMarkdown(line.slice(3), mathStore, `l${lineIdx}-h2`, setZoomModal)}
+            {renderInlineMarkdown(line.slice(3), mathStore, tikzStore, `l${lineIdx}-h2`, setZoomModal)}
           </h2>
         );
       }
       if (line.startsWith('# ')) {
         return (
           <h1 key={lineIdx} className="text-xl font-bold text-gray-900 dark:text-slate-100 mt-4 mb-2">
-            {renderInlineMarkdown(line.slice(2), mathStore, `l${lineIdx}-h1`, setZoomModal)}
+            {renderInlineMarkdown(line.slice(2), mathStore, tikzStore, `l${lineIdx}-h1`, setZoomModal)}
           </h1>
         );
       }
@@ -263,17 +293,17 @@ export default function MathRenderer({ content, className = '' }) {
       if (line.startsWith('> ')) {
         return (
           <blockquote key={lineIdx} className="border-l-4 border-amber-500/60 pl-3 py-1 my-2 italic text-gray-700 dark:text-slate-300 bg-gray-50/50 dark:bg-slate-800/30 rounded-r">
-            {renderInlineMarkdown(line.slice(2), mathStore, `l${lineIdx}-bq`, setZoomModal)}
+            {renderInlineMarkdown(line.slice(2), mathStore, tikzStore, `l${lineIdx}-bq`, setZoomModal)}
           </blockquote>
         );
       }
 
-      // Kiểm tra nếu dòng chỉ là 1 khối display math ($$...$$) hoặc 1 hình vẽ đơn lẻ
-      const isSingleBlockElement = /^\s*(\uE000MATH_\d+\uE001|!\[[^\]]*?\]\([^)\s]+\))\s*$/.test(line);
+      // Kiểm tra nếu dòng chỉ là 1 khối display math ($$...$$), khối TikZ, hoặc 1 hình vẽ đơn lẻ
+      const isSingleBlockElement = /^\s*(\uE000MATH_\d+\uE001|\uE002TIKZ_\d+\uE003|!\[[^\]]*?\]\([^)\s]+\))\s*$/.test(line);
 
       return (
         <React.Fragment key={lineIdx}>
-          {renderInlineMarkdown(line, mathStore, `l${lineIdx}`, setZoomModal)}
+          {renderInlineMarkdown(line, mathStore, tikzStore, `l${lineIdx}`, setZoomModal)}
           {lineIdx < lines.length - 1 && !isSingleBlockElement && <br />}
         </React.Fragment>
       );

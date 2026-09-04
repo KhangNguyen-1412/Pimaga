@@ -700,6 +700,15 @@ export default function ProblemModal({
                     if (file) handleProcessImage(file, 'content');
                   }}
                 />
+
+                <button
+                  type="button"
+                  onClick={() => insertMath('content', `\n\n\\begin{tikzpicture}[scale=1.2]\n  \\tkzDefPoint(0,0){B}\n  \\tkzDefPoint(4,0){C}\n  \\tkzDefPoint(1,3){A}\n  \\tkzDrawPolygon[thick](A,B,C)\n  \\tkzDrawPoints(A,B,C)\n  \\tkzLabelPoints(B,C)\n  \\tkzLabelPoints[above](A)\n\\end{tikzpicture}\n\n`)}
+                  className="px-2.5 py-0.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-700 rounded hover:bg-purple-100 dark:hover:bg-purple-900/70 text-purple-800 dark:text-purple-300 font-bold flex items-center gap-1 cursor-pointer transition"
+                  title="Chèn mẫu mã LaTeX TikZ để tự động vẽ hình hình học"
+                >
+                  📐 Vẽ TikZ
+                </button>
               </div>
 
               <textarea
@@ -708,7 +717,7 @@ export default function ProblemModal({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onPaste={(e) => handlePaste(e, 'content')}
-                placeholder="Nhập nội dung đề bài tại đây... (Dùng $ để viết công thức toán, hoặc Ctrl + V để dán hình vẽ)"
+                placeholder="Nhập nội dung đề bài tại đây... (Dùng $ để viết công thức toán, hoặc Ctrl + V để dán hình vẽ, hoặc viết mã TikZ)"
                 className="w-full border border-gray-300 dark:border-slate-700 bg-paper dark:bg-nightInput text-ink dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg p-2.5 font-newsreader text-base focus:outline-none focus:ring-2 focus:ring-cerulean transition h-28 md:h-32 resize-y mb-2 custom-scrollbar"
               />
 
@@ -783,6 +792,15 @@ export default function ProblemModal({
                     if (file) handleProcessImage(file, 'editorial');
                   }}
                 />
+
+                <button
+                  type="button"
+                  onClick={() => insertMath('editorial', `\n\n\\begin{tikzpicture}[scale=1.2]\n  \\tkzDefPoint(0,0){B}\n  \\tkzDefPoint(4,0){C}\n  \\tkzDefPoint(1,3){A}\n  \\tkzDrawPolygon[thick](A,B,C)\n  \\tkzDrawPoints(A,B,C)\n  \\tkzLabelPoints(B,C)\n  \\tkzLabelPoints[above](A)\n\\end{tikzpicture}\n\n`)}
+                  className="px-2.5 py-0.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-700 rounded hover:bg-purple-100 dark:hover:bg-purple-900/70 text-purple-800 dark:text-purple-300 font-bold flex items-center gap-1 cursor-pointer transition"
+                  title="Chèn mẫu mã LaTeX TikZ để tự động vẽ hình hình học"
+                >
+                  📐 Vẽ TikZ
+                </button>
               </div>
 
               <textarea
@@ -791,7 +809,7 @@ export default function ProblemModal({
                 value={editorialSolution}
                 onChange={(e) => setEditorialSolution(e.target.value)}
                 onPaste={(e) => handlePaste(e, 'editorial')}
-                placeholder="Nhập lời giải chính thức từ tòa soạn... (Dùng $ viết toán, Ctrl + V dán hình vẽ)"
+                placeholder="Nhập lời giải chính thức từ tòa soạn... (Dùng $ viết toán, Ctrl + V dán hình vẽ, hoặc mã TikZ)"
                 className="w-full border border-gray-300 dark:border-slate-700 bg-paper dark:bg-nightInput text-ink dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg p-2.5 font-newsreader text-base focus:outline-none focus:ring-2 focus:ring-jasper transition h-28 md:h-32 resize-y mb-2 custom-scrollbar"
               />
 

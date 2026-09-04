@@ -252,8 +252,18 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
                 onChange={handleFileChange}
               />
 
+              {/* Nút Chèn Mã LaTeX TikZ */}
+              <button
+                type="button"
+                onClick={() => insertMath(`\n\n\\begin{tikzpicture}[scale=1.2]\n  \\tkzDefPoint(0,0){B}\n  \\tkzDefPoint(4,0){C}\n  \\tkzDefPoint(1,3){A}\n  \\tkzDrawPolygon[thick](A,B,C)\n  \\tkzDrawPoints(A,B,C)\n  \\tkzLabelPoints(B,C)\n  \\tkzLabelPoints[above](A)\n\\end{tikzpicture}\n\n`)}
+                className="px-2.5 py-0.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-700 rounded hover:bg-purple-100 dark:hover:bg-purple-900/70 text-purple-800 dark:text-purple-300 font-bold flex items-center gap-1 cursor-pointer transition"
+                title="Chèn mẫu mã LaTeX TikZ để tự động vẽ hình hình học"
+              >
+                📐 Vẽ TikZ
+              </button>
+
               <span className="text-[11px] text-gray-400 dark:text-slate-500 font-sans italic ml-auto self-center hidden sm:inline">
-                Chụp ảnh rồi bấm Ctrl+V để dán
+                Hỗ trợ dán ảnh (Ctrl+V) hoặc mã TikZ
               </span>
             </div>
 

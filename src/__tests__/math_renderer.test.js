@@ -48,4 +48,14 @@ describe('MathRenderer parser', () => {
     expect(parts).toContain('![Tam giác ABC nội tiếp](https://firebasestorage.googleapis.com/v0/b/pimaga/o/diagram.png)');
     expect(parts).toContain('[Tạp chí Pi](https://pimaga.vn)');
   });
+
+  it('correctly matches LaTeX TikZ blocks', () => {
+    const TIKZ_REGEX = /(\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}|```(?:tikz|latex)\s*[\s\S]*?\\begin\{tikzpicture\}[\s\S]*?```)/g;
+    const text = 'Đề bài có hình:\n\\begin{tikzpicture}\n\\draw (0,0) -- (1,1);\n\\end{tikzpicture}\nTiếp theo...';
+    const matches = text.match(TIKZ_REGEX);
+
+    expect(matches).not.toBeNull();
+    expect(matches.length).toBe(1);
+    expect(matches[0]).toContain('\\begin{tikzpicture}');
+  });
 });

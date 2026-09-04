@@ -493,6 +493,30 @@ export default function ProblemDetailPage({
                         className="hidden"
                         onChange={handleFileChange}
                       />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const snippet = `\n\n\\begin{tikzpicture}[scale=1.2]\n  \\tkzDefPoint(0,0){B}\n  \\tkzDefPoint(4,0){C}\n  \\tkzDefPoint(1,3){A}\n  \\tkzDrawPolygon[thick](A,B,C)\n  \\tkzDrawPoints(A,B,C)\n  \\tkzLabelPoints(B,C)\n  \\tkzLabelPoints[above](A)\n\\end{tikzpicture}\n\n`;
+                          const el = inlineTextareaRef.current;
+                          if (!el) {
+                            setSolutionDraft((prev) => prev + snippet);
+                            return;
+                          }
+                          const start = el.selectionStart ?? solutionDraft.length;
+                          const end = el.selectionEnd ?? solutionDraft.length;
+                          const next = solutionDraft.substring(0, start) + snippet + solutionDraft.substring(end);
+                          setSolutionDraft(next);
+                          setTimeout(() => {
+                            el.focus();
+                            el.setSelectionRange(start + snippet.length, start + snippet.length);
+                          }, 50);
+                        }}
+                        className="px-2.5 py-0.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-700 rounded hover:bg-purple-100 dark:hover:bg-purple-900/70 text-purple-800 dark:text-purple-300 font-bold text-xs flex items-center gap-1 cursor-pointer transition"
+                        title="Chèn mẫu mã LaTeX TikZ để tự động vẽ hình hình học"
+                      >
+                        📐 Vẽ TikZ
+                      </button>
                     </div>
                   </div>
                   <textarea
