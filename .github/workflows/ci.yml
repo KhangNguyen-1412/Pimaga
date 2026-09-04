@@ -1,0 +1,30 @@
+name: CI Workflow
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. Kiểm tra source code (Checkout)
+      uses: actions/checkout@v4
+
+    - name: 2. Cài đặt Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: 3. Cài đặt dependencies
+      run: npm install
+
+    - name: 4. Chạy kiểm thử tự động (Unit Test)
+      run: npm test
+
+    - name: 5. Đóng gói sản phẩm (Build Production)
+      run: npm run build

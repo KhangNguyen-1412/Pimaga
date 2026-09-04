@@ -6,6 +6,7 @@ import path from 'node:path';
 function spaFallbackPlugin() {
   return {
     name: 'spa-fallback-generator',
+    apply: 'build',
     closeBundle() {
       const distDir = path.resolve(__dirname, 'dist');
       const indexPath = path.join(distDir, 'index.html');

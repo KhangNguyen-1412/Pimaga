@@ -119,6 +119,25 @@ export default function ProblemModal({
     );
   }, [provSearch]);
 
+  const metadataBoxRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (metadataBoxRef.current && !metadataBoxRef.current.contains(e.target)) {
+        setIsIssueDropdownOpen(false);
+        setIsCategoryDropdownOpen(false);
+        setIsDiffDropdownOpen(false);
+        setIsProvDropdownOpen(false);
+      }
+    };
+    if (isIssueDropdownOpen || isCategoryDropdownOpen || isDiffDropdownOpen || isProvDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isIssueDropdownOpen, isCategoryDropdownOpen, isDiffDropdownOpen, isProvDropdownOpen]);
+
   const selectedIssue = issues.find((i) => i.id === issueId);
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const selectedDiff = DIFFICULTY_LEVELS.find((d) => d.level === difficulty) || DIFFICULTY_LEVELS[1];
@@ -198,10 +217,10 @@ export default function ProblemModal({
           )}
 
           {/* Metadata Box */}
-          <div className="bg-white p-3.5 md:p-4 rounded-xl border border-gray-200 shadow-sm shrink-0 relative z-30">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-start">
+          <div ref={metadataBoxRef} className="bg-white p-3.5 md:p-4 rounded-xl border border-gray-200 shadow-sm shrink-0 relative z-30">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-start relative ${isIssueDropdownOpen || isCategoryDropdownOpen || isDiffDropdownOpen ? 'z-40' : 'z-20'}`}>
               {/* 1. Số Phát Hành */}
-              <div className="lg:col-span-3 relative z-30">
+              <div className={`lg:col-span-3 relative ${isIssueDropdownOpen ? 'z-50' : 'z-10'}`}>
                 <div className="flex items-center justify-between mb-1.5 h-5">
                   <label className="text-xs font-bold text-cerulean font-playfair uppercase tracking-wider flex items-center gap-1">
                     <svg className="w-3.5 h-3.5 text-cerulean" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,7 +299,7 @@ export default function ProblemModal({
               </div>
 
               {/* 2. Chuyên Mục */}
-              <div className="lg:col-span-3 relative z-20">
+              <div className={`lg:col-span-3 relative ${isCategoryDropdownOpen ? 'z-50' : 'z-10'}`}>
                 <div className="flex items-center justify-between mb-1.5 h-5">
                   <label className="text-xs font-bold text-jasper font-playfair uppercase tracking-wider flex items-center gap-1">
                     <svg className="w-3.5 h-3.5 text-jasper" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -383,7 +402,7 @@ export default function ProblemModal({
               </div>
 
               {/* 4. Mức Độ Khó */}
-              <div className="lg:col-span-3 relative z-10">
+              <div className={`lg:col-span-3 relative ${isDiffDropdownOpen ? 'z-50' : 'z-10'}`}>
                 <div className="flex items-center justify-between mb-1.5 h-5">
                   <label className="text-xs font-bold text-ink font-playfair uppercase tracking-wider flex items-center gap-1">
                     <svg className="w-3.5 h-3.5 text-cerulean" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -462,7 +481,7 @@ export default function ProblemModal({
 
             {/* Row 2: Tác Giả & Tỉnh Thành */}
             <div className="border-t border-gray-100 my-3"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 items-start relative ${isProvDropdownOpen ? 'z-30' : 'z-10'}`}>
               {/* Tác giả */}
               <div>
                 <div className="flex items-center justify-between mb-1.5 h-5">
@@ -486,7 +505,7 @@ export default function ProblemModal({
               </div>
 
               {/* Tỉnh thành 34 sau sáp nhập */}
-              <div className="relative z-10">
+              <div className={`relative ${isProvDropdownOpen ? 'z-50' : 'z-10'}`}>
                 <div className="flex items-center justify-between mb-1.5 h-5">
                   <label className="text-xs font-bold text-jasper font-playfair uppercase tracking-wider flex items-center gap-1">
                     <svg className="w-3.5 h-3.5 text-jasper" fill="none" stroke="currentColor" viewBox="0 0 24 24">
