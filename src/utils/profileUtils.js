@@ -9,7 +9,7 @@ export const ACADEMIC_RANKS = [
     minSolved: 0,
     maxSolved: 4,
     badgeColor: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-    icon: '🌱',
+    iconType: 'seedling',
     desc: 'Khởi đầu hành trình khám phá các bài toán trên Tạp chí Pi.',
   },
   {
@@ -18,7 +18,7 @@ export const ACADEMIC_RANKS = [
     minSolved: 5,
     maxSolved: 14,
     badgeColor: 'bg-blue-50 text-cerulean dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-900',
-    icon: '📘',
+    iconType: 'book',
     desc: 'Đã giải thành công nhiều bài toán và nắm vững phương pháp tư duy.',
   },
   {
@@ -27,7 +27,7 @@ export const ACADEMIC_RANKS = [
     minSolved: 15,
     maxSolved: 29,
     badgeColor: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-900',
-    icon: '⭐',
+    iconType: 'star',
     desc: 'Chinh phục được nhiều bài toán hóc búa, tư duy sắc bén.',
   },
   {
@@ -36,7 +36,7 @@ export const ACADEMIC_RANKS = [
     minSolved: 30,
     maxSolved: Infinity,
     badgeColor: 'bg-rose-50 text-jasper dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-900',
-    icon: '👑',
+    iconType: 'trophy',
     desc: 'Bậc thầy giải đề Pi với kho bài giải đồ sộ và xuất sắc.',
   },
 ];

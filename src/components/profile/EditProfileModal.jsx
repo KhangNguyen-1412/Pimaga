@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ROLE_OPTIONS, MATH_TOPIC_OPTIONS } from '../../utils/profileUtils';
 import { useAuth } from '../../context/AuthContext';
+import SelectDropdown from '../common/SelectDropdown';
 
 export default function EditProfileModal({ isOpen, onClose, userProfile = {}, onSave }) {
   const { currentUser } = useAuth();
@@ -162,17 +163,13 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
               <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
                 Vai trò / Cương vị
               </label>
-              <select
+              <SelectDropdown
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-xs"
-              >
-                {ROLE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+                onChange={setRole}
+                options={ROLE_OPTIONS}
+                placeholder="Chọn vai trò..."
+                className="w-full"
+              />
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">

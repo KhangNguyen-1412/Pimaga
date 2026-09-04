@@ -4,6 +4,7 @@ import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
 import EditProfileModal from './EditProfileModal';
 import MathRenderer from '../common/MathRenderer';
+import SelectDropdown from '../common/SelectDropdown';
 import {
   getAcademicRank,
   calculateDifficultyStats,
@@ -12,6 +13,37 @@ import {
   generateSolutionsMarkdown,
   downloadFile,
 } from '../../utils/profileUtils';
+
+// SVG Icon thể hiện cấp bậc học thuật đồng bộ hệ thống
+function RankBadgeIcon({ type, className = 'w-3.5 h-3.5' }) {
+  switch (type) {
+    case 'seedling':
+      return (
+        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19V9m0 0c-2-3-6-3-6 0 0 4 6 7 6 7m0-7c2-3 6-3 6 0 0 4-6 7-6 7M5 19h14" />
+        </svg>
+      );
+    case 'book':
+      return (
+        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      );
+    case 'star':
+      return (
+        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+        </svg>
+      );
+    case 'trophy':
+    default:
+      return (
+        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
+      );
+  }
+}
 
 export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList }) {
   const { currentUser, isRealUser } = useAuth();
@@ -46,6 +78,14 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
   // Fast maps
   const issueMap = useMemo(() => new Map(issues.map((i) => [i.id, i.name])), [issues]);
   const categoryMap = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
+
+  // Category options for SelectDropdown
+  const categoryOptions = useMemo(() => {
+    return categories.map((c) => ({
+      value: c.id,
+      label: c.name,
+    }));
+  }, [categories]);
 
   // Solved problems list with solution text
   const solvedItems = useMemo(() => {
@@ -209,10 +249,10 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
               )}
               {/* Rank Icon Mini Badge */}
               <span
-                className="absolute -bottom-1 -right-1 text-lg bg-white dark:bg-slate-900 rounded-full p-0.5 shadow-sm border border-gray-200 dark:border-slate-700"
+                className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-1.5 shadow-sm border border-gray-200 dark:border-slate-700 text-cerulean dark:text-blue-400 flex items-center justify-center"
                 title={rank.title}
               >
-                {rank.icon}
+                <RankBadgeIcon type={rank.iconType} className="w-3.5 h-3.5" />
               </span>
             </div>
 
@@ -225,7 +265,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
             {/* Academic Rank Badge */}
             <div className={`mt-2.5 px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-2xs font-sans ${rank.badgeColor}`}>
-              <span>{rank.icon}</span>
+              <RankBadgeIcon type={rank.iconType} className="w-3.5 h-3.5 shrink-0" />
               <span>{rank.title}</span>
             </div>
           </div>
@@ -353,7 +393,9 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
               }`}
             >
-              <span>📝</span>
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
               <span>Lời Giải Của Tôi ({solvedItems.length})</span>
             </button>
 
@@ -366,7 +408,9 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
               }`}
             >
-              <span>⭐</span>
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
               <span>Đã Lưu ({bookmarks.length})</span>
             </button>
 
@@ -379,7 +423,9 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
               }`}
             >
-              <span>📊</span>
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
               <span>Thống Kê & Năng Lực</span>
             </button>
 
@@ -392,7 +438,10 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
               }`}
             >
-              <span>⚙️</span>
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
               <span>Cài Đặt & Xuất File</span>
             </button>
           </div>
@@ -408,25 +457,22 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                     value={solSearch}
                     onChange={(e) => setSolSearch(e.target.value)}
                     placeholder="Tìm theo mã bài, nội dung đề hoặc bài làm..."
-                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean placeholder-gray-400 dark:placeholder-slate-500"
                   />
                   <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
 
-                <select
+                {/* Dropdown chuyên mục chuẩn hóa */}
+                <SelectDropdown
                   value={solCatFilter}
-                  onChange={(e) => setSolCatFilter(e.target.value)}
-                  className="px-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-cerulean"
-                >
-                  <option value="">Tất cả chuyên mục</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSolCatFilter}
+                  options={categoryOptions}
+                  allOptionLabel="Tất cả chuyên mục"
+                  placeholder="Lọc chuyên mục..."
+                  className="w-48 sm:w-56 shrink-0"
+                />
 
                 <div className="text-xs text-gray-500 dark:text-slate-400 ml-auto font-medium">
                   {filteredSolvedItems.length} / {solvedItems.length} bài đã giải
@@ -436,7 +482,11 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
               {/* Solutions List */}
               {filteredSolvedItems.length === 0 ? (
                 <div className="p-10 text-center bg-white dark:bg-nightCard border border-dashed border-gray-300 dark:border-slate-800 rounded-2xl">
-                  <span className="text-3xl block mb-2">📚</span>
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 flex items-center justify-center text-cerulean dark:text-blue-400 mx-auto mb-3 shadow-2xs">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
                   <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair mb-1">
                     {solvedItems.length === 0 ? 'Bạn chưa nộp lời giải cho bài toán nào' : 'Không tìm thấy bài giải phù hợp'}
                   </h4>
@@ -449,7 +499,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                     <button
                       type="button"
                       onClick={onBackToList}
-                      className="px-4 py-2 bg-cerulean text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition font-sans cursor-pointer"
+                      className="px-4 py-2 bg-cerulean text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition font-sans cursor-pointer shadow-2xs"
                     >
                       Khám phá đề toán ngay
                     </button>
@@ -519,25 +569,22 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                     value={bmSearch}
                     onChange={(e) => setBmSearch(e.target.value)}
                     placeholder="Tìm kiếm bài toán đã lưu..."
-                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean"
+                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean placeholder-gray-400 dark:placeholder-slate-500"
                   />
                   <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
 
-                <select
+                {/* Dropdown chuyên mục chuẩn hóa */}
+                <SelectDropdown
                   value={bmCatFilter}
-                  onChange={(e) => setBmCatFilter(e.target.value)}
-                  className="px-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-cerulean"
-                >
-                  <option value="">Tất cả chuyên mục</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setBmCatFilter}
+                  options={categoryOptions}
+                  allOptionLabel="Tất cả chuyên mục"
+                  placeholder="Lọc chuyên mục..."
+                  className="w-48 sm:w-56 shrink-0"
+                />
 
                 <div className="text-xs text-gray-500 dark:text-slate-400 ml-auto font-medium">
                   {filteredBookmarks.length} / {bookmarkedProblems.length} bài đã lưu
@@ -546,20 +593,24 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
               {filteredBookmarks.length === 0 ? (
                 <div className="p-10 text-center bg-white dark:bg-nightCard border border-dashed border-gray-300 dark:border-slate-800 rounded-2xl">
-                  <span className="text-3xl block mb-2">⭐</span>
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400 mx-auto mb-3 shadow-2xs">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </div>
                   <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair mb-1">
                     {bookmarkedProblems.length === 0 ? 'Bạn chưa lưu bài toán nào' : 'Không tìm thấy bài đã lưu phù hợp'}
                   </h4>
                   <p className="text-xs text-gray-500 dark:text-slate-400 font-sans max-w-md mx-auto mb-4">
                     {bookmarkedProblems.length === 0
-                      ? 'Khi xem các bài toán trên Tạp chí Pi, bạn có thể bấm nút Bookmark (ngôi sao) để lưu lại ôn tập sau này!'
+                      ? 'Khi xem các bài toán trên Tạp chí Pi, bạn có thể bấm nút "Lưu bài" để lưu lại ôn tập sau này!'
                       : 'Thử kiểm tra lại từ khóa tìm kiếm hoặc chuyên mục đã chọn.'}
                   </p>
                   {bookmarkedProblems.length === 0 && (
                     <button
                       type="button"
                       onClick={onBackToList}
-                      className="px-4 py-2 bg-cerulean text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition font-sans cursor-pointer"
+                      className="px-4 py-2 bg-cerulean text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition font-sans cursor-pointer shadow-2xs"
                     >
                       Duyệt danh sách bài toán
                     </button>
@@ -586,8 +637,11 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                               {categoryName} • {issueName}
                             </span>
                             {isSolved ? (
-                              <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800 font-sans">
-                                ✓ Đã giải
+                              <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800 font-sans flex items-center gap-1">
+                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Đã giải</span>
                               </span>
                             ) : (
                               <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-[10px] font-bold rounded-full border border-amber-200 dark:border-amber-800 font-sans">
@@ -600,18 +654,18 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                             <button
                               type="button"
                               onClick={() => toggleBookmark(problem.id)}
-                              className="px-2 py-1 rounded-md text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-semibold transition cursor-pointer flex items-center gap-1"
+                              className="px-2.5 py-1 rounded-md text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-semibold transition cursor-pointer flex items-center gap-1 border border-transparent hover:border-amber-200"
                               title="Bỏ lưu bài toán"
                             >
-                              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                               </svg>
                               <span>Bỏ lưu</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => onOpenDetail(problem)}
-                              className="px-3 py-1 bg-cerulean text-white rounded-md font-semibold hover:bg-blue-800 transition cursor-pointer"
+                              className="px-3 py-1 bg-cerulean text-white rounded-md font-semibold hover:bg-blue-800 transition cursor-pointer shadow-2xs"
                             >
                               Vào giải bài
                             </button>
@@ -692,8 +746,10 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
               {/* Breakdown by Difficulty */}
               <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3">
-                <h4 className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-1.5">
-                  <span>🎯</span>
+                <h4 className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
                   <span>Phân Bố Độ Khó Các Bài Đã Giải</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
@@ -718,8 +774,12 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
               {/* Breakdown by Category */}
               <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3">
-                <h4 className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-1.5">
-                  <span>📐</span>
+                <h4 className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16h16L4 4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 13h4L8 9v4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 7h2.5M4 10h3.5M4 16h2.5" />
+                  </svg>
                   <span>Thế Mạnh Theo Chuyên Mục Toán</span>
                 </h4>
                 <div className="space-y-2.5 pt-1">
@@ -825,7 +885,9 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   <div className="p-4 bg-gray-50/70 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 space-y-2.5 flex flex-col justify-between">
                     <div>
                       <span className="font-bold text-xs text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1">
-                        <span>📄</span>
+                        <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                         <span>Mã nguồn LaTeX (.tex)</span>
                       </span>
                       <p className="text-[11px] text-gray-600 dark:text-slate-400">
@@ -848,7 +910,9 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   <div className="p-4 bg-gray-50/70 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 space-y-2.5 flex flex-col justify-between">
                     <div>
                       <span className="font-bold text-xs text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1">
-                        <span>📝</span>
+                        <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
                         <span>Tài liệu Markdown (.md)</span>
                       </span>
                       <p className="text-[11px] text-gray-600 dark:text-slate-400">
