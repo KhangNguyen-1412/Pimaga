@@ -3,6 +3,7 @@ import MathRenderer from '../common/MathRenderer';
 import { DIFFICULTY_LEVELS } from '../../constants/difficulty';
 import { useToast } from '../../context/ToastContext';
 import { useData } from '../../context/DataContext';
+import { uploadDiagramImage, insertImageMarkdown, extractImageFromClipboard } from '../../utils/imageUpload';
 
 export default function ProblemDetailPage({
   problem,
@@ -29,7 +30,46 @@ export default function ProblemDetailPage({
   const [solutionDraft, setSolutionDraft] = useState('');
   const [isSubmittingSolution, setIsSubmittingSolution] = useState(false);
   const [solutionError, setSolutionError] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const inlineTextareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const handleProcessImage = async (file) => {
+    if (!file) return;
+    setIsUploadingImage(true);
+    showToast('Đang xử lý và tải hình vẽ lên...', 'info');
+    try {
+      const res = await uploadDiagramImage(file);
+      insertImageMarkdown(
+        inlineTextareaRef.current,
+        solutionDraft,
+        setSolutionDraft,
+        res.url,
+        file.name || 'Hình vẽ lời giải'
+      );
+      showToast('Đã chèn hình vẽ thành công!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Lỗi khi tải ảnh lên', 'error');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handlePaste = (e) => {
+    const imageFile = extractImageFromClipboard(e);
+    if (imageFile) {
+      e.preventDefault();
+      handleProcessImage(imageFile);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleProcessImage(file);
+    }
+  };
 
   // Sync draft when userSolution or problem changes
   useEffect(() => {
@@ -432,16 +472,37 @@ export default function ProblemDetailPage({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Left: Input */}
                 <div className="flex flex-col">
-                  <label className="text-xs font-bold text-cerulean dark:text-blue-400 font-playfair uppercase tracking-wider mb-1.5">
-                    Nội dung bài giải ($ hoặc $$):
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-cerulean dark:text-blue-400 font-playfair uppercase tracking-wider">
+                      Nội dung bài giải ($ hoặc $$):
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                        className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 font-bold text-xs flex items-center gap-1 cursor-pointer disabled:opacity-50 transition"
+                        title="Tải ảnh lên hoặc chụp màn hình rồi bấm Ctrl + V vào ô bên dưới để dán hình"
+                      >
+                        📷 {isUploadingImage ? 'Đang tải...' : 'Chèn hình'}
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </div>
+                  </div>
                   <textarea
                     ref={inlineTextareaRef}
                     value={solutionDraft}
                     onChange={(e) => setSolutionDraft(e.target.value)}
+                    onPaste={handlePaste}
                     rows={8}
                     className="w-full flex-1 min-h-[180px] md:min-h-[220px] max-h-[360px] overflow-y-auto border border-cerulean/40 dark:border-blue-500/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 dark:bg-nightInput rounded-lg p-3 font-newsreader text-base text-ink dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 outline-none transition resize-y leading-relaxed custom-scrollbar"
-                    placeholder="Nhập các bước lập luận, biến đổi toán học vào đây. Dùng $...$ cho công thức nằm trong dòng, $$...$$ cho công thức đứng riêng dòng..."
+                    placeholder="Nhập các bước lập luận, biến đổi toán học vào đây. Dùng $...$ cho công thức nằm trong dòng, $$...$$ cho công thức đứng riêng dòng, hoặc Ctrl + V để dán hình vẽ..."
                   />
                 </div>
 

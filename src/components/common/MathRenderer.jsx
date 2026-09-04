@@ -6,12 +6,14 @@ import 'katex/dist/katex.min.css';
 const MATH_REGEX = /(\$\$[\s\S]*?\$\$|\$(?!\$)[^$\n]+?\$)/g;
 
 // Regex nhận diện các định dạng Markdown inline:
-// 1. ***Đậm và Nghiêng***
-// 2. **In đậm**
-// 3. *In nghiêng* (có kiểm tra không chứa khoảng trắng ở 2 đầu)
-// 4. `Mã code inline`
-// 5. ~~Gạch ngang chữ~~
-const INLINE_MARKDOWN_REGEX = /(\*\*\*[^*\n]+?\*\*\*|\*\*[^*\n]+?\*\*|(?<!\*)\*(?!\s)[^*\n]+?(?<!\s)\*(?!\*)|`[^`\n]+?`|~~[^~\n]+?~~)/g;
+// 1. Hình ảnh: ![alt](url)
+// 2. Liên kết: [text](url)
+// 3. ***Đậm và Nghiêng***
+// 4. **In đậm**
+// 5. *In nghiêng* (có kiểm tra không chứa khoảng trắng ở 2 đầu)
+// 6. `Mã code inline`
+// 7. ~~Gạch ngang chữ~~
+const INLINE_MARKDOWN_REGEX = /(!\[[^\]]*?\]\([^)\s]+\)|(?<!!)\[[^\]]+?\]\((?:https?:\/\/[^\s)]+|\/[^\s)]+|data:image\/[^\s)]+)\)|\*\*\*[^*\n]+?\*\*\*|\*\*[^*\n]+?\*\*|(?<!\*)\*(?!\s)[^*\n]+?(?<!\s)\*(?!\*)|`[^`\n]+?`|~~[^~\n]+?~~)/g;
 
 function renderKatex(mathItem, key) {
   try {
@@ -73,6 +75,48 @@ function renderInlineMarkdown(text, mathStore, keyPrefix) {
   return parts.map((part, idx) => {
     const key = `${keyPrefix}-t${idx}`;
     if (!part) return null;
+
+    // ![alt](url) - Hình ảnh / Sơ đồ hình học
+    const imageMatch = part.match(/^!\[(.*?)\]\((.*?)\)$/);
+    if (imageMatch) {
+      const alt = imageMatch[1] || 'Hình vẽ minh họa';
+      const src = imageMatch[2];
+      return (
+        <figure key={key} className="my-3 block text-center">
+          <img
+            src={src}
+            alt={alt}
+            className="max-w-full max-h-[420px] mx-auto rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 object-contain bg-white dark:bg-slate-900 p-1.5 transition hover:shadow-md cursor-zoom-in"
+            loading="lazy"
+            onClick={() => window.open(src, '_blank')}
+            title="Nhấn để xem hình ảnh kích thước gốc"
+          />
+          {alt && (
+            <figcaption className="text-xs text-gray-500 dark:text-slate-400 mt-1.5 italic font-sans">
+              📷 {alt}
+            </figcaption>
+          )}
+        </figure>
+      );
+    }
+
+    // [text](url) - Liên kết tham khảo
+    const linkMatch = part.match(/^\[(.*?)\]\((.*?)\)$/);
+    if (linkMatch && !part.startsWith('!')) {
+      const label = linkMatch[1];
+      const href = linkMatch[2];
+      return (
+        <a
+          key={key}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-cerulean dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 font-medium transition"
+        >
+          {label}
+        </a>
+      );
+    }
 
     // ***Đậm & Nghiêng***
     if (part.startsWith('***') && part.endsWith('***') && part.length >= 6) {
@@ -191,13 +235,13 @@ export default function MathRenderer({ content, className = '' }) {
         );
       }
 
-      // Kiểm tra nếu dòng chỉ là 1 khối display math ($$...$$)
-      const isSingleBlockMath = /^\s*\uE000MATH_\d+\uE001\s*$/.test(line);
+      // Kiểm tra nếu dòng chỉ là 1 khối display math ($$...$$) hoặc 1 hình vẽ đơn lẻ
+      const isSingleBlockElement = /^\s*(\uE000MATH_\d+\uE001|!\[[^\]]*?\]\([^)\s]+\))\s*$/.test(line);
 
       return (
         <React.Fragment key={lineIdx}>
           {renderInlineMarkdown(line, mathStore, `l${lineIdx}`)}
-          {lineIdx < lines.length - 1 && !isSingleBlockMath && <br />}
+          {lineIdx < lines.length - 1 && !isSingleBlockElement && <br />}
         </React.Fragment>
       );
     });

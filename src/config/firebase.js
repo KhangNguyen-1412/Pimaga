@@ -46,8 +46,11 @@ try {
   firestoreDb = getFirestore(app);
 }
 
+import { getStorage } from "firebase/storage";
+
 export const db = firestoreDb;
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Persistence error:", err));
 
 export const googleProvider = new GoogleAuthProvider();

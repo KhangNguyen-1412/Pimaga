@@ -39,4 +39,13 @@ describe('MathRenderer parser', () => {
     const tokens = boldWithMathLine.split(INLINE_TOKEN_REGEX);
     expect(tokens).toContain('**Đẳng thức \uE000MATH_9\uE001 luôn đúng**');
   });
+
+  it('correctly matches images and links in markdown', () => {
+    const INLINE_MARKDOWN_REGEX = /(!\[[^\]]*?\]\([^)\s]+\)|(?<!!)\[[^\]]+?\]\(https?:\/\/[^\s)]+\)|\*\*\*[^*\n]+?\*\*\*|\*\*[^*\n]+?\*\*|(?<!\*)\*(?!\s)[^*\n]+?(?<!\s)\*(?!\*)|`[^`\n]+?`|~~[^~\n]+?~~)/g;
+    const text = 'Xem hình: ![Tam giác ABC nội tiếp](https://firebasestorage.googleapis.com/v0/b/pimaga/o/diagram.png) và [Tạp chí Pi](https://pimaga.vn)';
+    const parts = text.split(INLINE_MARKDOWN_REGEX);
+
+    expect(parts).toContain('![Tam giác ABC nội tiếp](https://firebasestorage.googleapis.com/v0/b/pimaga/o/diagram.png)');
+    expect(parts).toContain('[Tạp chí Pi](https://pimaga.vn)');
+  });
 });

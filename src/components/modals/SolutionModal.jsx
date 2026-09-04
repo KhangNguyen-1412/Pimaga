@@ -1,14 +1,50 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MathRenderer from '../common/MathRenderer';
 import { useData } from '../../context/DataContext';
+import { useToast } from '../../context/ToastContext';
+import { uploadDiagramImage, insertImageMarkdown, extractImageFromClipboard } from '../../utils/imageUpload';
 
 export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexCheatsheet }) {
   const { userSolutionsMap, saveUserSolution } = useData();
+  const { showToast } = useToast();
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isProblemCollapsed, setIsProblemCollapsed] = useState(false);
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const handleProcessImage = async (file) => {
+    if (!file) return;
+    setIsUploadingImage(true);
+    showToast('Đang xử lý và tải hình vẽ lên...', 'info');
+    try {
+      const res = await uploadDiagramImage(file);
+      insertImageMarkdown(textareaRef.current, content, setContent, res.url, file.name || 'Hình vẽ lời giải');
+      showToast('Đã chèn hình vẽ thành công!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Lỗi khi tải ảnh lên', 'error');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handlePaste = (e) => {
+    const imageFile = extractImageFromClipboard(e);
+    if (imageFile) {
+      e.preventDefault();
+      handleProcessImage(imageFile);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleProcessImage(file);
+    }
+  };
 
   useEffect(() => {
     if (isOpen && problem) {
@@ -181,7 +217,7 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
             </div>
 
             {/* Quick Toolbar */}
-            <div className="flex flex-wrap gap-1 mb-2 p-1 bg-blue-50/50 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-800 rounded text-xs font-mono shrink-0">
+            <div className="flex flex-wrap items-center gap-1 mb-2 p-1 bg-blue-50/50 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-800 rounded text-xs font-mono shrink-0">
               <button type="button" onClick={() => insertMath('$\\frac{a}{b}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">a/b</button>
               <button type="button" onClick={() => insertMath('$x^2$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x²</button>
               <button type="button" onClick={() => insertMath('$x_1$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x₁</button>
@@ -197,14 +233,37 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
               <button type="button" onClick={() => insertMath('$\\pi$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">π</button>
               <button type="button" onClick={() => insertMath('$$\\dots$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">$$...$$</button>
               <button type="button" onClick={() => insertMath('$$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">Hệ PT</button>
+
+              {/* Nút Chèn Hình Vẽ */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImage}
+                className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50 transition"
+                title="Tải ảnh lên hoặc chụp màn hình rồi bấm Ctrl + V vào ô bên dưới để dán hình"
+              >
+                📷 {isUploadingImage ? 'Đang tải...' : 'Chèn hình'}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+
+              <span className="text-[11px] text-gray-400 dark:text-slate-500 font-sans italic ml-auto self-center hidden sm:inline">
+                Chụp ảnh rồi bấm Ctrl+V để dán
+              </span>
             </div>
 
             <textarea
               ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onPaste={handlePaste}
               className="w-full flex-1 min-h-[160px] md:min-h-[200px] max-h-[380px] overflow-y-auto border border-cerulean/40 dark:border-blue-500/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 dark:bg-nightInput text-ink dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg p-3 font-newsreader text-base resize-y outline-none transition custom-scrollbar"
-              placeholder="Ghi chép cách giải của bạn vào đây. Sử dụng $công thức$ hoặc $$công thức$$ để KaTeX hiển thị đẹp..."
+              placeholder="Ghi chép cách giải của bạn vào đây. Sử dụng $công thức$ hoặc $$công thức$$ để KaTeX hiển thị đẹp. Có thể bấm Ctrl+V để dán hình vẽ..."
             />
           </div>
 

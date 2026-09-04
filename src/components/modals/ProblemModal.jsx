@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import MathRenderer from '../common/MathRenderer';
 import { useData } from '../../context/DataContext';
+import { useToast } from '../../context/ToastContext';
+import { uploadDiagramImage, insertImageMarkdown, extractImageFromClipboard } from '../../utils/imageUpload';
 import { DIFFICULTY_LEVELS } from '../../constants/difficulty';
 import { PROVINCES_34 } from '../../constants/provinces';
 
@@ -13,6 +15,7 @@ export default function ProblemModal({
   onOpenLatexCheatsheet,
 }) {
   const { issues, categories, problems, filterIssue, filterCategory, saveProblem } = useData();
+  const { showToast } = useToast();
 
   const [id, setId] = useState('');
   const [code, setCode] = useState('');
@@ -25,6 +28,7 @@ export default function ProblemModal({
   const [editorialSolution, setEditorialSolution] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingTarget, setUploadingTarget] = useState(null); // 'content' | 'editorial' | null
 
   // Dropdown visibility states
   const [isIssueDropdownOpen, setIsIssueDropdownOpen] = useState(false);
@@ -40,6 +44,40 @@ export default function ProblemModal({
   // Refs for textareas to insert math at cursor
   const contentRef = useRef(null);
   const editorialRef = useRef(null);
+  const contentFileInputRef = useRef(null);
+  const editorialFileInputRef = useRef(null);
+
+  const handleProcessImage = async (file, targetField) => {
+    if (!file) return;
+    setUploadingTarget(targetField);
+    showToast('Đang xử lý và tải hình vẽ lên...', 'info');
+    try {
+      const res = await uploadDiagramImage(file);
+      const isContent = targetField === 'content';
+      insertImageMarkdown(
+        isContent ? contentRef.current : editorialRef.current,
+        isContent ? content : editorialSolution,
+        isContent ? setContent : setEditorialSolution,
+        res.url,
+        file.name || (isContent ? 'Hình vẽ đề bài' : 'Hình vẽ lời giải')
+      );
+      showToast('Đã chèn hình vẽ thành công!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Lỗi khi tải ảnh lên', 'error');
+    } finally {
+      setUploadingTarget(null);
+      if (contentFileInputRef.current) contentFileInputRef.current.value = '';
+      if (editorialFileInputRef.current) editorialFileInputRef.current.value = '';
+    }
+  };
+
+  const handlePaste = (e, targetField) => {
+    const imageFile = extractImageFromClipboard(e);
+    if (imageFile) {
+      e.preventDefault();
+      handleProcessImage(imageFile, targetField);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -626,7 +664,7 @@ export default function ProblemModal({
               </div>
 
               {/* Toolbar */}
-              <div className="flex flex-wrap gap-1 mb-2 p-1 bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-800 rounded text-xs font-mono shrink-0">
+              <div className="flex flex-wrap items-center gap-1 mb-2 p-1 bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-800 rounded text-xs font-mono shrink-0">
                 <button type="button" onClick={() => insertMath('content', '$\\frac{a}{b}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">a/b</button>
                 <button type="button" onClick={() => insertMath('content', '$x^2$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x²</button>
                 <button type="button" onClick={() => insertMath('content', '$x_1$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x₁</button>
@@ -642,6 +680,26 @@ export default function ProblemModal({
                 <button type="button" onClick={() => insertMath('content', '$\\pi$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">π</button>
                 <button type="button" onClick={() => insertMath('content', '$$\\dots$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">$$...$$</button>
                 <button type="button" onClick={() => insertMath('content', '$$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">Hệ PT</button>
+
+                <button
+                  type="button"
+                  onClick={() => contentFileInputRef.current?.click()}
+                  disabled={uploadingTarget === 'content'}
+                  className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50 transition"
+                  title="Tải ảnh lên hoặc chụp màn hình rồi bấm Ctrl + V vào ô đề bài để dán hình"
+                >
+                  📷 {uploadingTarget === 'content' ? 'Đang tải...' : 'Chèn hình'}
+                </button>
+                <input
+                  ref={contentFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleProcessImage(file, 'content');
+                  }}
+                />
               </div>
 
               <textarea
@@ -649,7 +707,8 @@ export default function ProblemModal({
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Nhập nội dung đề bài tại đây... (Dùng $ để viết công thức toán)"
+                onPaste={(e) => handlePaste(e, 'content')}
+                placeholder="Nhập nội dung đề bài tại đây... (Dùng $ để viết công thức toán, hoặc Ctrl + V để dán hình vẽ)"
                 className="w-full border border-gray-300 dark:border-slate-700 bg-paper dark:bg-nightInput text-ink dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg p-2.5 font-newsreader text-base focus:outline-none focus:ring-2 focus:ring-cerulean transition h-28 md:h-32 resize-y mb-2 custom-scrollbar"
               />
 
@@ -688,7 +747,7 @@ export default function ProblemModal({
               </div>
 
               {/* Toolbar */}
-              <div className="flex flex-wrap gap-1 mb-2 p-1 bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-800 rounded text-xs font-mono shrink-0">
+              <div className="flex flex-wrap items-center gap-1 mb-2 p-1 bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-800 rounded text-xs font-mono shrink-0">
                 <button type="button" onClick={() => insertMath('editorial', '$\\frac{a}{b}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-jasper dark:hover:text-rose-400 text-gray-800 dark:text-slate-200 font-bold">a/b</button>
                 <button type="button" onClick={() => insertMath('editorial', '$x^2$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-jasper dark:hover:text-rose-400 text-gray-800 dark:text-slate-200 font-bold">x²</button>
                 <button type="button" onClick={() => insertMath('editorial', '$x_1$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-jasper dark:hover:text-rose-400 text-gray-800 dark:text-slate-200 font-bold">x₁</button>
@@ -704,6 +763,26 @@ export default function ProblemModal({
                 <button type="button" onClick={() => insertMath('editorial', '$\\pi$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-jasper dark:hover:text-rose-400 text-gray-800 dark:text-slate-200 font-bold">π</button>
                 <button type="button" onClick={() => insertMath('editorial', '$$\\dots$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-jasper dark:hover:text-rose-400 text-gray-800 dark:text-slate-200 font-bold">$$...$$</button>
                 <button type="button" onClick={() => insertMath('editorial', '$$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-jasper dark:hover:text-rose-400 text-gray-800 dark:text-slate-200 font-bold">Hệ PT</button>
+
+                <button
+                  type="button"
+                  onClick={() => editorialFileInputRef.current?.click()}
+                  disabled={uploadingTarget === 'editorial'}
+                  className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50 transition"
+                  title="Tải ảnh lên hoặc chụp màn hình rồi bấm Ctrl + V vào ô lời giải để dán hình"
+                >
+                  📷 {uploadingTarget === 'editorial' ? 'Đang tải...' : 'Chèn hình'}
+                </button>
+                <input
+                  ref={editorialFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleProcessImage(file, 'editorial');
+                  }}
+                />
               </div>
 
               <textarea
@@ -711,7 +790,8 @@ export default function ProblemModal({
                 rows={4}
                 value={editorialSolution}
                 onChange={(e) => setEditorialSolution(e.target.value)}
-                placeholder="Nhập lời giải chính thức từ tòa soạn... (Có thể bổ sung sau)"
+                onPaste={(e) => handlePaste(e, 'editorial')}
+                placeholder="Nhập lời giải chính thức từ tòa soạn... (Dùng $ viết toán, Ctrl + V dán hình vẽ)"
                 className="w-full border border-gray-300 dark:border-slate-700 bg-paper dark:bg-nightInput text-ink dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 rounded-lg p-2.5 font-newsreader text-base focus:outline-none focus:ring-2 focus:ring-jasper transition h-28 md:h-32 resize-y mb-2 custom-scrollbar"
               />
 
