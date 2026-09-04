@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .btn-primary {
+    @apply bg-cerulean text-white px-5 py-2 rounded-md hover:bg-blue-800 transition shadow-sm font-newsreader font-bold tracking-wide;
+  }
+  .btn-danger {
+    @apply bg-jasper text-white px-5 py-2 rounded-md hover:bg-red-800 transition shadow-sm font-newsreader font-bold tracking-wide;
+  }
+  .btn-secondary {
+    @apply bg-transparent border border-cerulean text-cerulean px-5 py-2 rounded-md hover:bg-blue-50 transition font-newsreader font-bold tracking-wide;
+  }
+  .input-field {
+    @apply w-full border border-gray-300 bg-white rounded-md px-4 py-2 mt-1 mb-4 font-newsreader text-lg focus:outline-none focus:ring-2 focus:ring-cerulean transition;
+  }
+  .label-text {
+    @apply block text-sm font-bold text-gray-600 font-newsreader uppercase tracking-wider mb-1;
+  }
+}
+
+/* Prevent horizontal scroll without breaking position: sticky */
+html, body {
+  overflow-x: clip;
+}
+
+#main-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FDFBF7; 
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
+
+/* Prominent Custom Scrollbar for Problem List */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f2efe9;
+  scrollbar-gutter: stable;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f2efe9;
+  border-radius: 8px;
+  border-left: 1px solid #e5e0d8;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 8px;
+  border: 2px solid #f2efe9;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2a52be;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #1e3a8a;
+}
+
+/* High-Performance Rendering for Large Collections */
+.problem-article {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 380px;
+}
+
+/* Dropdown Animation */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-dropdownFade {
+  animation: dropdownFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Toast Slide Up Animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slideUp {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
