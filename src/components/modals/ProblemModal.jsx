@@ -685,10 +685,20 @@ export default function ProblemModal({
                   type="button"
                   onClick={() => contentFileInputRef.current?.click()}
                   disabled={uploadingTarget === 'content'}
-                  className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50 transition"
+                  className="px-2.5 py-0.5 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded hover:bg-blue-100/80 dark:hover:bg-blue-900/60 hover:border-cerulean dark:hover:border-blue-400 text-cerulean dark:text-blue-400 font-sans text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition shadow-2xs"
                   title="Tải ảnh lên hoặc chụp màn hình rồi bấm Ctrl + V vào ô đề bài để dán hình"
                 >
-                  📷 {uploadingTarget === 'content' ? 'Đang tải...' : 'Chèn hình'}
+                  {uploadingTarget === 'content' ? (
+                    <svg className="w-3.5 h-3.5 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  )}
+                  <span>{uploadingTarget === 'content' ? 'Đang tải...' : 'Chèn hình'}</span>
                 </button>
                 <input
                   ref={contentFileInputRef}
@@ -704,10 +714,15 @@ export default function ProblemModal({
                 <button
                   type="button"
                   onClick={() => insertMath('content', `\n\n\\begin{tikzpicture}[scale=1.2]\n  \\tkzDefPoint(0,0){B}\n  \\tkzDefPoint(4,0){C}\n  \\tkzDefPoint(1,3){A}\n  \\tkzDrawPolygon[thick](A,B,C)\n  \\tkzDrawPoints(A,B,C)\n  \\tkzLabelPoints(B,C)\n  \\tkzLabelPoints[above](A)\n\\end{tikzpicture}\n\n`)}
-                  className="px-2.5 py-0.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-700 rounded hover:bg-purple-100 dark:hover:bg-purple-900/70 text-purple-800 dark:text-purple-300 font-bold flex items-center gap-1 cursor-pointer transition"
+                  className="px-2.5 py-0.5 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded hover:bg-blue-100/80 dark:hover:bg-blue-900/60 hover:border-cerulean dark:hover:border-blue-400 text-cerulean dark:text-blue-400 font-sans text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-2xs"
                   title="Chèn mẫu mã LaTeX TikZ để tự động vẽ hình hình học"
                 >
-                  📐 Vẽ TikZ
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16h16L4 4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 13h4L8 9v4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 7h2.5M4 10h3.5M4 16h2.5" />
+                  </svg>
+                  <span>Vẽ TikZ</span>
                 </button>
               </div>
 
@@ -777,10 +792,20 @@ export default function ProblemModal({
                   type="button"
                   onClick={() => editorialFileInputRef.current?.click()}
                   disabled={uploadingTarget === 'editorial'}
-                  className="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/70 text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50 transition"
+                  className="px-2.5 py-0.5 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded hover:bg-blue-100/80 dark:hover:bg-blue-900/60 hover:border-cerulean dark:hover:border-blue-400 text-cerulean dark:text-blue-400 font-sans text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition shadow-2xs"
                   title="Tải ảnh lên hoặc chụp màn hình rồi bấm Ctrl + V vào ô lời giải để dán hình"
                 >
-                  📷 {uploadingTarget === 'editorial' ? 'Đang tải...' : 'Chèn hình'}
+                  {uploadingTarget === 'editorial' ? (
+                    <svg className="w-3.5 h-3.5 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  )}
+                  <span>{uploadingTarget === 'editorial' ? 'Đang tải...' : 'Chèn hình'}</span>
                 </button>
                 <input
                   ref={editorialFileInputRef}
@@ -796,10 +821,15 @@ export default function ProblemModal({
                 <button
                   type="button"
                   onClick={() => insertMath('editorial', `\n\n\\begin{tikzpicture}[scale=1.2]\n  \\tkzDefPoint(0,0){B}\n  \\tkzDefPoint(4,0){C}\n  \\tkzDefPoint(1,3){A}\n  \\tkzDrawPolygon[thick](A,B,C)\n  \\tkzDrawPoints(A,B,C)\n  \\tkzLabelPoints(B,C)\n  \\tkzLabelPoints[above](A)\n\\end{tikzpicture}\n\n`)}
-                  className="px-2.5 py-0.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-700 rounded hover:bg-purple-100 dark:hover:bg-purple-900/70 text-purple-800 dark:text-purple-300 font-bold flex items-center gap-1 cursor-pointer transition"
+                  className="px-2.5 py-0.5 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded hover:bg-blue-100/80 dark:hover:bg-blue-900/60 hover:border-cerulean dark:hover:border-blue-400 text-cerulean dark:text-blue-400 font-sans text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-2xs"
                   title="Chèn mẫu mã LaTeX TikZ để tự động vẽ hình hình học"
                 >
-                  📐 Vẽ TikZ
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16h16L4 4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 13h4L8 9v4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 7h2.5M4 10h3.5M4 16h2.5" />
+                  </svg>
+                  <span>Vẽ TikZ</span>
                 </button>
               </div>
 
