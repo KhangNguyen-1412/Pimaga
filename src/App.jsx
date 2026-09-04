@@ -11,14 +11,17 @@ import ProblemModal from './components/modals/ProblemModal';
 import SolutionModal from './components/modals/SolutionModal';
 import LatexCheatsheetModal from './components/modals/LatexCheatsheetModal';
 import ProblemDetailPage from './components/detail/ProblemDetailPage';
+import LoginGate from './components/auth/LoginGate';
 import ConfirmModal from './components/modals/ConfirmModal';
 import GeminiKeyModal from './components/modals/GeminiKeyModal';
 import { useData } from './context/DataContext';
+import { useAuth } from './context/AuthContext';
 import { slugify, findIssueBySlug, findCategoryBySlug } from './utils/slugify';
 
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isRealUser, loadingAuth } = useAuth();
 
   const {
     issues,
@@ -389,6 +392,19 @@ export default function App() {
     });
   };
 
+  if (loadingAuth) {
+    return (
+      <div className="bg-paper text-ink font-newsreader min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-paper border-2 border-cerulean/30 flex items-center justify-center p-3 animate-pulse shadow-md">
+            <img src="/assets/pimaga-logo.svg" alt="Pi" className="w-full h-full object-contain" />
+          </div>
+          <p className="text-gray-500 font-newsreader italic text-base">Đang tải Tạp Chí Pi...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-paper text-ink font-newsreader min-h-screen relative">
       {/* Dynamic SEO Meta Tags */}
@@ -402,7 +418,9 @@ export default function App() {
       <Header />
 
       <div id="app" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 relative">
-        {isDetailPage ? (
+        {!isRealUser ? (
+          <LoginGate />
+        ) : isDetailPage ? (
           <ProblemDetailPage
             problem={activeDetailProblem}
             issueName={activeDetailProblem ? issueMap.get(activeDetailProblem.issueId) || 'Không rõ Số' : ''}

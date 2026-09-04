@@ -16,7 +16,7 @@ import { useToast } from './ToastContext';
 const DataContext = createContext(null);
 
 export function DataProvider({ children }) {
-  const { currentUserId } = useAuth();
+  const { currentUserId, isRealUser } = useAuth();
   const { showToast } = useToast();
 
   // Instant 0ms cache hydration
@@ -77,9 +77,9 @@ export function DataProvider({ children }) {
     };
   }, []);
 
-  // 2. Subscribe to User Solutions when currentUserId changes
+  // 2. Subscribe to User Solutions when currentUserId changes and user is authenticated
   useEffect(() => {
-    if (!currentUserId) {
+    if (!isRealUser || !currentUserId) {
       setUserSolutionsMap({});
       return;
     }
@@ -101,11 +101,11 @@ export function DataProvider({ children }) {
         cache.set(`solutions_${currentUserId}`, map);
         cache.set('solutions', map);
       },
-      (err) => console.error("Solutions listener error:", err)
+      (err) => console.warn("Solutions listener note:", err?.message || err)
     );
 
     return () => unsubSolutions();
-  }, [currentUserId]);
+  }, [currentUserId, isRealUser]);
 
   // Problem count maps for fast badges
   const problemCounts = useMemo(() => {

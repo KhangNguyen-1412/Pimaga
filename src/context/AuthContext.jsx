@@ -23,19 +23,17 @@ export function AuthProvider({ children }) {
     );
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
+      if (user && !user.isAnonymous) {
         setCurrentUser(user);
-        if (!user.isAnonymous) {
-          localStorage.setItem('pimaga_logged_in_provider', 'google');
-        }
+        localStorage.setItem('pimaga_logged_in_provider', 'google');
       } else {
-        // Fallback: signInAnonymously if not logged in
-        try {
-          await signInAnonymously(auth);
-        } catch (e) {
-          console.warn("Anonymous sign-in fallback:", e);
+        if (user && user.isAnonymous) {
+          try {
+            await signOut(auth);
+          } catch (_) {}
         }
         setCurrentUser(null);
+        localStorage.removeItem('pimaga_logged_in_provider');
       }
       setLoadingAuth(false);
     });
@@ -49,6 +47,7 @@ export function AuthProvider({ children }) {
       const result = await signInWithPopup(auth, googleProvider);
       if (result && result.user) {
         localStorage.setItem('pimaga_logged_in_provider', 'google');
+        setCurrentUser(result.user);
       }
       showToast("Đăng nhập Google thành công!", "success");
     } catch (error) {
@@ -64,14 +63,14 @@ export function AuthProvider({ children }) {
     try {
       localStorage.removeItem('pimaga_logged_in_provider');
       await signOut(auth);
+      setCurrentUser(null);
       showToast("Đã đăng xuất!", "success");
-      await signInAnonymously(auth);
     } catch (error) {
       showToast("Lỗi đăng xuất: " + error.message, "error");
     }
   };
 
-  const isRealUser = currentUser && !currentUser.isAnonymous;
+  const isRealUser = !!currentUser && !currentUser.isAnonymous;
 
   return (
     <AuthContext.Provider
