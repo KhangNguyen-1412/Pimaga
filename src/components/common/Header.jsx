@@ -164,10 +164,10 @@ export default function Header() {
                   </div>
                 )}
                 <div className="flex flex-col items-start leading-tight">
-                  <span className="text-xs font-bold text-ink dark:text-slate-100 max-w-[85px] sm:max-w-[110px] truncate group-hover:text-cerulean dark:group-hover:text-blue-400 font-sans transition">
+                  <span className="text-sm font-bold text-ink dark:text-slate-100 max-w-[85px] sm:max-w-[110px] truncate group-hover:text-cerulean dark:group-hover:text-blue-400 font-newsreader transition">
                     {currentUser.displayName || currentUser.email || 'Người dùng PI'}
                   </span>
-                  <span className="text-[10px] text-cerulean dark:text-blue-400 font-semibold font-sans flex items-center gap-0.5">
+                  <span className="text-xs text-cerulean dark:text-blue-400 font-bold font-newsreader flex items-center gap-0.5">
                     <span>Hồ sơ</span>
                     <svg className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -178,7 +178,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={logout}
-                className="text-[11px] text-jasper dark:text-red-400 hover:underline font-bold cursor-pointer px-1 py-1 font-sans shrink-0"
+                className="text-xs text-jasper dark:text-rose-400 hover:underline font-bold cursor-pointer px-1 py-1 font-newsreader shrink-0"
                 title="Đăng xuất khỏi tài khoản"
               >
                 Đăng xuất

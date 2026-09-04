@@ -106,10 +106,10 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
               </svg>
             </div>
             <div>
-              <h3 className="font-playfair text-lg font-bold text-gray-900 dark:text-slate-100">
+              <h3 className="font-playfair text-xl font-bold text-gray-900 dark:text-slate-100">
                 Chỉnh Sửa Hồ Sơ Học Thuật
               </h3>
-              <p className="text-xs text-gray-500 dark:text-slate-400 font-sans">
+              <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
                 Cập nhật thông tin cá nhân và định hướng toán học của bạn
               </p>
             </div>
@@ -127,12 +127,12 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto max-h-[75vh] space-y-4 text-sm font-sans custom-scrollbar">
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto max-h-[75vh] space-y-4 text-sm font-newsreader custom-scrollbar">
           {/* Tên & Trường học */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
-                Tên hiển thị <span className="text-jasper">*</span>
+              <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
+                Tên hiển thị <span className="text-jasper font-bold">*</span>
               </label>
               <input
                 type="text"
@@ -140,11 +140,11 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="VD: Euler, Trần Toán..."
-                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-xs"
+                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-sm font-newsreader"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
                 Trường học / Đơn vị công tác
               </label>
               <input
@@ -152,7 +152,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                 value={school}
                 onChange={(e) => setSchool(e.target.value)}
                 placeholder="VD: THPT Chuyên KHTN, ĐH Sư Phạm..."
-                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-xs"
+                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-sm font-newsreader"
               />
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
           {/* Vai trò & Lớp/Năm */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
                 Vai trò / Cương vị
               </label>
               <SelectDropdown
@@ -172,7 +172,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
                 Khối lớp / Niên khóa
               </label>
               <input
@@ -180,28 +180,33 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                 value={grade}
                 onChange={(e) => setGrade(e.target.value)}
                 placeholder="VD: Lớp 11 Toán 1, K65, Khóa 2024..."
-                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-xs"
+                className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-sm font-newsreader"
               />
             </div>
           </div>
 
           {/* Phân môn toán yêu thích */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1.5">
               Phân môn toán yêu thích / Thế mạnh (Nhấn để chọn)
             </label>
             <div className="flex flex-wrap gap-1.5 mb-2">
-              {MATH_TOPIC_OPTIONS.map((topic) => {
+              {MATH_TOPIC_OPTIONS.map((topic, idx) => {
                 const isSelected = interests.includes(topic);
+                const isEven = idx % 2 === 0;
+                const activeStyle = isEven
+                  ? 'bg-blue-50 dark:bg-blue-950/60 border-cerulean text-cerulean dark:text-blue-300 shadow-2xs font-bold'
+                  : 'bg-red-50 dark:bg-rose-950/60 border-jasper text-jasper dark:text-rose-300 shadow-2xs font-bold';
+
                 return (
                   <button
                     key={topic}
                     type="button"
                     onClick={() => toggleInterest(topic)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer border ${
+                    className={`px-3 py-1 rounded-md text-xs font-newsreader transition cursor-pointer border ${
                       isSelected
-                        ? 'bg-blue-50 dark:bg-blue-950/60 border-cerulean text-cerulean dark:text-blue-400 shadow-2xs font-semibold'
-                        : 'bg-white dark:bg-nightInput border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-600'
+                        ? activeStyle
+                        : 'bg-white dark:bg-nightInput border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 hover:border-cerulean/50 font-medium'
                     }`}
                   >
                     {isSelected ? '✓ ' : '+ '}
@@ -218,7 +223,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                 value={customInterest}
                 onChange={(e) => setCustomInterest(e.target.value)}
                 placeholder="Thêm phân môn khác (nhấn Enter)..."
-                className="flex-1 px-3 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean"
+                className="flex-1 px-3 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean font-newsreader"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -229,7 +234,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
               <button
                 type="button"
                 onClick={handleAddCustomInterest}
-                className="px-3 py-1.5 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition cursor-pointer"
+                className="px-3.5 py-1.5 bg-jasper/10 hover:bg-jasper hover:text-white text-jasper dark:text-rose-400 border border-jasper/30 text-xs font-bold font-newsreader rounded-lg transition cursor-pointer"
               >
                 Thêm tag
               </button>
@@ -238,7 +243,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
 
           {/* Bio / Châm ngôn toán học */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
               Châm ngôn / Giới thiệu bản thân
             </label>
             <textarea
@@ -246,18 +251,18 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="VD: Toán học là chìa khóa mở cánh cửa tri thức..."
-              className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-xs font-newsreader resize-y"
+              className="w-full px-3 py-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cerulean transition text-sm font-newsreader italic resize-y"
             />
           </div>
 
           {/* Liên kết cá nhân */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-2">
+            <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-2">
               Liên kết cá nhân (Tùy chọn)
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <div>
-                <span className="text-[11px] text-gray-500 dark:text-slate-400 flex items-center gap-1 mb-1">
+                <span className="text-xs text-gray-600 dark:text-slate-400 flex items-center gap-1 mb-1 font-newsreader">
                   Facebook URL
                 </span>
                 <input
@@ -265,11 +270,11 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                   value={facebook}
                   onChange={(e) => setFacebook(e.target.value)}
                   placeholder="https://facebook.com/..."
-                  className="w-full px-2.5 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-md text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-md text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean font-newsreader"
                 />
               </div>
               <div>
-                <span className="text-[11px] text-gray-500 dark:text-slate-400 flex items-center gap-1 mb-1">
+                <span className="text-xs text-gray-600 dark:text-slate-400 flex items-center gap-1 mb-1 font-newsreader">
                   GitHub Profile
                 </span>
                 <input
@@ -277,11 +282,11 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                   value={github}
                   onChange={(e) => setGithub(e.target.value)}
                   placeholder="https://github.com/..."
-                  className="w-full px-2.5 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-md text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-md text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean font-newsreader"
                 />
               </div>
               <div>
-                <span className="text-[11px] text-gray-500 dark:text-slate-400 flex items-center gap-1 mb-1">
+                <span className="text-xs text-gray-600 dark:text-slate-400 flex items-center gap-1 mb-1 font-newsreader">
                   Website / Blog
                 </span>
                 <input
@@ -289,7 +294,7 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
                   value={blog}
                   onChange={(e) => setBlog(e.target.value)}
                   placeholder="https://myblog.com/..."
-                  className="w-full px-2.5 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-md text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean"
+                  className="w-full px-2.5 py-1.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-md text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean font-newsreader"
                 />
               </div>
             </div>
@@ -300,14 +305,14 @@ export default function EditProfileModal({ isOpen, onClose, userProfile = {}, on
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-xs font-semibold transition cursor-pointer"
+              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-newsreader font-semibold transition cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 rounded-lg bg-cerulean hover:bg-blue-800 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-5 py-2 rounded-lg bg-cerulean hover:bg-blue-800 text-white text-sm font-newsreader font-bold transition shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               {isSaving ? (
                 <>

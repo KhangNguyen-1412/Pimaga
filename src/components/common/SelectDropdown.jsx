@@ -61,11 +61,20 @@ export default function SelectDropdown({
   }, [normalizedOptions, searchTerm]);
 
   const isCerulean = accentColor === 'cerulean';
-  const dotColor = isCerulean ? 'bg-cerulean dark:bg-blue-400' : 'bg-jasper dark:text-rose-400';
+  const dotColor = isCerulean ? 'bg-cerulean dark:bg-blue-400' : 'bg-jasper dark:bg-rose-400';
   const textColor = isCerulean ? 'text-cerulean dark:text-blue-400' : 'text-jasper dark:text-rose-400';
+  const borderColorHover = isCerulean
+    ? 'hover:border-cerulean dark:hover:border-blue-500'
+    : 'hover:border-jasper dark:hover:border-rose-500';
+  const focusRing = isCerulean
+    ? 'focus:ring-2 focus:ring-cerulean/20 focus:border-cerulean'
+    : 'focus:ring-2 focus:ring-jasper/20 focus:border-jasper';
+  const badgeClass = isCerulean
+    ? 'bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-300 border-blue-200 dark:border-blue-900'
+    : 'bg-red-50 dark:bg-rose-950/60 text-jasper dark:text-rose-300 border-red-200 dark:border-rose-900';
   const activeItemClass = isCerulean
     ? 'bg-blue-50 dark:bg-blue-950/70 text-cerulean dark:text-blue-300 font-bold border-l-4 border-cerulean'
-    : 'bg-red-50 dark:bg-red-950/70 text-jasper dark:text-rose-300 font-bold border-l-4 border-jasper';
+    : 'bg-red-50 dark:bg-rose-950/70 text-jasper dark:text-rose-300 font-bold border-l-4 border-jasper';
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>
@@ -73,22 +82,22 @@ export default function SelectDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 hover:border-cerulean dark:hover:border-blue-500 rounded-lg px-3 py-1.5 text-xs font-sans text-gray-800 dark:text-slate-200 shadow-2xs hover:shadow-xs transition cursor-pointer text-left"
+        className={`w-full flex items-center justify-between gap-2 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 ${borderColorHover} rounded-lg px-3 py-1.5 text-sm font-newsreader text-gray-800 dark:text-slate-200 shadow-2xs hover:shadow-xs transition cursor-pointer text-left`}
       >
         <div className="flex items-center gap-2 min-w-0 overflow-hidden">
           {icon ? (
-            <span className="shrink-0 text-cerulean dark:text-blue-400">{icon}</span>
+            <span className={`shrink-0 ${textColor}`}>{icon}</span>
           ) : (
-            <span className={`w-2 h-2 rounded-full ${dotColor} shrink-0`}></span>
+            <span className={`w-2.5 h-2.5 rounded-full ${dotColor} shrink-0`}></span>
           )}
-          <span className="truncate font-medium">
+          <span className="truncate font-semibold">
             {selectedItem ? selectedItem.label : allOptionLabel || placeholder}
           </span>
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0 ml-1">
           {selectedItem?.count !== undefined && (
-            <span className="px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-300 text-[10px] font-mono border border-blue-200 dark:border-blue-900">
+            <span className={`px-1.5 py-0.2 rounded-full ${badgeClass} text-[10px] font-mono border`}>
               {selectedItem.count}
             </span>
           )}
@@ -115,13 +124,13 @@ export default function SelectDropdown({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={placeholderSearch}
-                className="w-full text-xs font-sans px-2.5 py-1 bg-white dark:bg-nightInput border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-cerulean placeholder-gray-400 dark:placeholder-slate-500"
+                className={`w-full text-xs font-newsreader px-2.5 py-1 bg-white dark:bg-nightInput border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-slate-100 rounded-md focus:outline-none ${focusRing} placeholder-gray-400 dark:placeholder-slate-500`}
                 autoFocus
               />
             </div>
           )}
 
-          <ul className="max-h-56 overflow-y-auto divide-y divide-gray-100/70 dark:divide-slate-800/80 p-1 font-sans text-xs custom-scrollbar">
+          <ul className="max-h-56 overflow-y-auto divide-y divide-gray-100/70 dark:divide-slate-800/80 p-1 font-newsreader text-sm custom-scrollbar">
             {allOptionLabel && (
               <li>
                 <button

@@ -188,11 +188,11 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
   if (!isRealUser) {
     return (
-      <div className="p-8 text-center bg-white dark:bg-nightCard rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm max-w-lg mx-auto my-12">
-        <h2 className="text-xl font-bold font-playfair text-gray-900 dark:text-slate-100 mb-2">
+      <div className="p-8 text-center bg-white dark:bg-nightCard rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm max-w-lg mx-auto my-12 font-newsreader">
+        <h2 className="text-2xl font-bold font-playfair text-gray-900 dark:text-slate-100 mb-2">
           Vui lòng đăng nhập
         </h2>
-        <p className="text-sm text-gray-600 dark:text-slate-400 font-sans mb-4">
+        <p className="text-sm text-gray-600 dark:text-slate-400 font-newsreader mb-4">
           Bạn cần đăng nhập tài khoản Google để truy cập trang hồ sơ cá nhân, xem bài giải và thống kê của mình.
         </p>
       </div>
@@ -210,13 +210,13 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
   const socialLinks = userProfile.socialLinks || {};
 
   return (
-    <div className="space-y-6 animate-fadeIn pb-12">
+    <div className="space-y-6 animate-fadeIn pb-12 font-newsreader text-ink dark:text-slate-100">
       {/* Top Breadcrumb navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <button
           type="button"
           onClick={onBackToList}
-          className="text-xs font-semibold text-cerulean dark:text-blue-400 hover:underline flex items-center gap-1.5 font-sans cursor-pointer py-1"
+          className="text-sm font-bold text-cerulean dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline flex items-center gap-1.5 font-newsreader cursor-pointer py-1 transition"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -224,29 +224,36 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
           <span>Quay lại Kho Đề Toán</span>
         </button>
 
-        <span className="text-xs text-gray-500 dark:text-slate-400 font-sans">
-          Hồ sơ học thuật cá nhân
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-jasper dark:text-rose-400 bg-red-50 dark:bg-rose-950/40 border border-red-200/70 dark:border-rose-900/60 px-2.5 py-0.5 rounded-full uppercase tracking-wider font-newsreader shadow-2xs">
+            Toán Học &amp; Tuổi Trẻ
+          </span>
+          <span className="text-xs text-gray-500 dark:text-slate-400 font-newsreader italic hidden sm:inline">
+            Hồ sơ học thuật cá nhân
+          </span>
+        </div>
       </div>
 
       {/* Main 2-Column Bento Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Academic Profile Card (4 cols) */}
+        {/* Left Column: Academic Profile Card (4 cols) with Cerulean & Jasper Signature Branding */}
         <div className="lg:col-span-4 bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-5">
           {/* Avatar & Core Identity */}
           <div className="flex flex-col items-center text-center">
             <div className="relative mb-3">
+              {/* Avatar with solid Cerulean border */}
               {currentUser?.photoURL ? (
                 <img
                   src={currentUser.photoURL}
                   alt={displayName}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-cerulean dark:border-blue-400 shadow-md p-0.5 bg-white dark:bg-slate-900"
+                  className="w-20 h-20 rounded-full object-cover border-2 border-cerulean dark:border-blue-400 shadow-sm p-0.5 bg-white dark:bg-slate-900"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-cerulean/10 dark:bg-blue-950/60 border-2 border-cerulean text-cerulean dark:text-blue-400 flex items-center justify-center font-bold text-2xl font-playfair shadow-md">
+                <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/60 border-2 border-cerulean text-cerulean dark:text-blue-400 flex items-center justify-center font-bold text-2xl font-playfair shadow-sm">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
               )}
+
               {/* Rank Icon Mini Badge */}
               <span
                 className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-1.5 shadow-sm border border-gray-200 dark:border-slate-700 text-cerulean dark:text-blue-400 flex items-center justify-center"
@@ -256,38 +263,58 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
               </span>
             </div>
 
-            <h2 className="font-playfair text-xl font-bold text-gray-900 dark:text-slate-100 mb-0.5">
+            <h2 className="font-playfair text-2xl font-bold text-gray-900 dark:text-slate-100 mb-0.5">
               {displayName}
             </h2>
-            <p className="text-xs text-gray-500 dark:text-slate-400 font-sans truncate max-w-full">
+            <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader truncate max-w-full">
               {currentUser?.email}
             </p>
 
             {/* Academic Rank Badge */}
-            <div className={`mt-2.5 px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-2xs font-sans ${rank.badgeColor}`}>
+            <div className={`mt-2.5 px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-2xs font-newsreader ${rank.badgeColor}`}>
               <RankBadgeIcon type={rank.iconType} className="w-3.5 h-3.5 shrink-0" />
               <span>{rank.title}</span>
             </div>
+
+            {/* Dual Quick Stats Pill (Cerulean + Jasper) */}
+            <div className="w-full grid grid-cols-2 gap-2 mt-3 pt-2 border-t border-gray-100 dark:border-slate-800">
+              <div className="p-2.5 bg-blue-50/70 dark:bg-blue-950/40 border border-cerulean/30 dark:border-blue-900/60 rounded-xl text-center">
+                <span className="block font-playfair font-black text-xl text-cerulean dark:text-blue-400 leading-tight">
+                  {solvedItems.length}
+                </span>
+                <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400 font-newsreader">
+                  Bài đã giải
+                </span>
+              </div>
+              <div className="p-2.5 bg-red-50/70 dark:bg-rose-950/40 border border-jasper/30 dark:border-rose-900/60 rounded-xl text-center">
+                <span className="block font-playfair font-black text-xl text-jasper dark:text-rose-400 leading-tight">
+                  {bookmarks.length}
+                </span>
+                <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400 font-newsreader">
+                  Bài đã lưu
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Academic Info: School & Role */}
-          <div className="p-3.5 bg-gray-50/70 dark:bg-slate-900/50 rounded-xl border border-gray-200/80 dark:border-slate-800/80 space-y-2 text-xs font-sans">
+          {/* Academic Info: School (Cerulean) & Role (Jasper) */}
+          <div className="p-3.5 bg-gray-50/70 dark:bg-slate-900/50 rounded-xl border border-gray-200/80 dark:border-slate-800/80 space-y-2 text-xs md:text-sm font-newsreader">
             <div className="flex items-start gap-2 text-gray-700 dark:text-slate-300">
               <svg className="w-4 h-4 text-cerulean dark:text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
               <div className="flex-1 truncate">
-                <span className="font-semibold block text-gray-900 dark:text-slate-100">Đơn vị:</span>
+                <span className="font-bold block text-gray-900 dark:text-slate-100">Đơn vị:</span>
                 <span className="text-gray-600 dark:text-slate-400">{school}</span>
               </div>
             </div>
 
             <div className="flex items-start gap-2 text-gray-700 dark:text-slate-300">
-              <svg className="w-4 h-4 text-cerulean dark:text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-jasper dark:text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               <div className="flex-1 truncate">
-                <span className="font-semibold block text-gray-900 dark:text-slate-100">Vai trò:</span>
+                <span className="font-bold block text-gray-900 dark:text-slate-100">Vai trò:</span>
                 <span className="text-gray-600 dark:text-slate-400">
                   {role} {grade ? `• ${grade}` : ''}
                 </span>
@@ -295,30 +322,39 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
             </div>
           </div>
 
-          {/* Math Interests */}
+          {/* Math Interests: Alternating Cerulean & Jasper Tags */}
           <div>
-            <span className="text-xs font-bold text-gray-800 dark:text-slate-200 block mb-2 font-sans flex items-center gap-1.5">
+            <span className="text-xs font-bold text-gray-800 dark:text-slate-200 block mb-2 font-playfair uppercase tracking-wider flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
               </svg>
               Lĩnh vực toán yêu thích
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {interests.map((topic, i) => (
-                <span
-                  key={i}
-                  className="px-2 py-0.5 bg-blue-50/70 dark:bg-blue-950/40 text-cerulean dark:text-blue-300 border border-blue-200/80 dark:border-blue-900/60 rounded-md text-[11px] font-sans font-medium"
-                >
-                  {topic}
-                </span>
-              ))}
+              {interests.map((topic, i) => {
+                const isEven = i % 2 === 0;
+                return (
+                  <span
+                    key={i}
+                    className={`px-2.5 py-0.5 rounded-md text-xs font-newsreader font-semibold border ${
+                      isEven
+                        ? 'bg-blue-50/70 dark:bg-blue-950/40 text-cerulean dark:text-blue-300 border-cerulean/30 dark:border-blue-900/60'
+                        : 'bg-red-50/70 dark:bg-rose-950/40 text-jasper dark:text-rose-300 border-jasper/30 dark:border-rose-900/60'
+                    }`}
+                  >
+                    {topic}
+                  </span>
+                );
+              })}
             </div>
           </div>
 
-          {/* Academic Quote / Bio */}
-          <div className="border-l-2 border-cerulean dark:border-blue-400 pl-3 py-0.5">
-            <p className="text-xs text-gray-600 dark:text-slate-400 font-newsreader italic leading-relaxed">
-              "{bio}"
+          {/* Academic Quote / Bio with clean flat styling */}
+          <div className="border-l-3 border-cerulean dark:border-blue-400 pl-3 py-2 bg-blue-50/30 dark:bg-blue-950/20 rounded-r-lg">
+            <p className="text-xs md:text-sm text-gray-700 dark:text-slate-300 font-newsreader italic leading-relaxed">
+              <span className="text-jasper dark:text-rose-400 font-serif font-black mr-0.5 text-base">“</span>
+              {bio}
+              <span className="text-cerulean dark:text-blue-400 font-serif font-black ml-0.5 text-base">”</span>
             </p>
           </div>
 
@@ -330,7 +366,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   href={socialLinks.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg bg-gray-100 dark:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 transition"
                   title="Facebook"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -343,7 +379,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   href={socialLinks.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg bg-gray-100 dark:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition"
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:text-ink dark:hover:text-white transition"
                   title="GitHub"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -356,7 +392,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   href={socialLinks.blog}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg bg-gray-100 dark:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 transition"
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 transition"
                   title="Website / Blog"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,13 +403,13 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
             </div>
           )}
 
-          {/* Edit Profile Button */}
+          {/* Edit Profile Button with solid Cerulean styling */}
           <button
             type="button"
             onClick={() => setIsEditModalOpen(true)}
-            className="w-full py-2 px-3 rounded-xl border border-cerulean/30 dark:border-blue-500/30 hover:border-cerulean bg-blue-50/60 dark:bg-blue-950/40 hover:bg-blue-100/70 text-cerulean dark:text-blue-400 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer font-sans shadow-2xs"
+            className="w-full py-2.5 px-3 rounded-xl border border-cerulean dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 hover:bg-cerulean hover:text-white dark:hover:bg-blue-600 dark:hover:text-white text-cerulean dark:text-blue-300 text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer font-newsreader shadow-2xs"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
             <span>Chỉnh Sửa Hồ Sơ</span>
@@ -383,83 +419,85 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
         {/* Right Column: 4 Dynamic Tabs (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
           {/* Tabs Header Navigation */}
-          <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl shadow-xs overflow-x-auto custom-scrollbar font-sans text-xs">
-            <button
-              type="button"
-              onClick={() => setActiveTab('solutions')}
-              className={`px-3.5 py-2 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === 'solutions'
-                  ? 'bg-cerulean text-white shadow-sm'
-                  : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span>Lời Giải Của Tôi ({solvedItems.length})</span>
-            </button>
+          <div className="bg-paperDark dark:bg-nightCard border border-gray-200/80 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden">
+            <div className="flex items-center gap-1.5 p-1.5 overflow-x-auto custom-scrollbar font-newsreader text-sm">
+              <button
+                type="button"
+                onClick={() => setActiveTab('solutions')}
+                className={`px-4 py-2.5 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
+                  activeTab === 'solutions'
+                    ? 'bg-cerulean text-white shadow-sm'
+                    : 'text-gray-600 dark:text-slate-400 hover:bg-paper dark:hover:bg-nightInput hover:text-ink dark:hover:text-slate-100 font-semibold'
+                }`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Lời Giải Của Tôi ({solvedItems.length})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('bookmarks')}
-              className={`px-3.5 py-2 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === 'bookmarks'
-                  ? 'bg-cerulean text-white shadow-sm'
-                  : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
-              <span>Đã Lưu ({bookmarks.length})</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('bookmarks')}
+                className={`px-4 py-2.5 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
+                  activeTab === 'bookmarks'
+                    ? 'bg-jasper text-white shadow-sm'
+                    : 'text-gray-600 dark:text-slate-400 hover:bg-paper dark:hover:bg-nightInput hover:text-ink dark:hover:text-slate-100 font-semibold'
+                }`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+                <span>Đã Lưu ({bookmarks.length})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('stats')}
-              className={`px-3.5 py-2 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === 'stats'
-                  ? 'bg-cerulean text-white shadow-sm'
-                  : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <span>Thống Kê & Năng Lực</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('stats')}
+                className={`px-4 py-2.5 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
+                  activeTab === 'stats'
+                    ? 'bg-cerulean text-white shadow-sm'
+                    : 'text-gray-600 dark:text-slate-400 hover:bg-paper dark:hover:bg-nightInput hover:text-ink dark:hover:text-slate-100 font-semibold'
+                }`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span>Thống Kê &amp; Năng Lực</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('settings')}
-              className={`px-3.5 py-2 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === 'settings'
-                  ? 'bg-cerulean text-white shadow-sm'
-                  : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>Cài Đặt & Xuất File</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('settings')}
+                className={`px-4 py-2.5 rounded-lg font-bold flex items-center gap-2 transition whitespace-nowrap cursor-pointer ${
+                  activeTab === 'settings'
+                    ? 'bg-jasper text-white shadow-sm'
+                    : 'text-gray-600 dark:text-slate-400 hover:bg-paper dark:hover:bg-nightInput hover:text-ink dark:hover:text-slate-100 font-semibold'
+                }`}
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Cài Đặt &amp; Xuất File</span>
+              </button>
+            </div>
           </div>
 
           {/* TAB 1: LỜI GIẢI CỦA TÔI */}
           {activeTab === 'solutions' && (
             <div className="space-y-4">
               {/* Search & Filter bar */}
-              <div className="bg-white dark:bg-nightCard p-3 rounded-xl border border-gray-200 dark:border-slate-800 shadow-2xs flex flex-wrap gap-2.5 items-center font-sans">
+              <div className="bg-white dark:bg-nightCard p-3 rounded-xl border border-gray-200 dark:border-slate-800 shadow-2xs flex flex-wrap gap-2.5 items-center font-newsreader">
                 <div className="relative flex-1 min-w-[200px]">
                   <input
                     type="text"
                     value={solSearch}
                     onChange={(e) => setSolSearch(e.target.value)}
                     placeholder="Tìm theo mã bài, nội dung đề hoặc bài làm..."
-                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean placeholder-gray-400 dark:placeholder-slate-500"
+                    className="w-full pl-8 pr-3 py-2 bg-paper dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean placeholder-gray-400 dark:placeholder-slate-500 font-newsreader"
                   />
-                  <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -471,26 +509,27 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   options={categoryOptions}
                   allOptionLabel="Tất cả chuyên mục"
                   placeholder="Lọc chuyên mục..."
+                  accentColor="cerulean"
                   className="w-48 sm:w-56 shrink-0"
                 />
 
-                <div className="text-xs text-gray-500 dark:text-slate-400 ml-auto font-medium">
+                <div className="text-xs text-gray-500 dark:text-slate-400 ml-auto font-medium font-newsreader">
                   {filteredSolvedItems.length} / {solvedItems.length} bài đã giải
                 </div>
               </div>
 
               {/* Solutions List */}
               {filteredSolvedItems.length === 0 ? (
-                <div className="p-10 text-center bg-white dark:bg-nightCard border border-dashed border-gray-300 dark:border-slate-800 rounded-2xl">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 flex items-center justify-center text-cerulean dark:text-blue-400 mx-auto mb-3 shadow-2xs">
+                <div className="p-10 text-center bg-white dark:bg-nightCard border border-dashed border-gray-300 dark:border-slate-800 rounded-2xl font-newsreader">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-cerulean/30 dark:border-blue-900 flex items-center justify-center text-cerulean dark:text-blue-400 mx-auto mb-3 shadow-2xs">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
-                  <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair mb-1">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-slate-100 font-playfair mb-1">
                     {solvedItems.length === 0 ? 'Bạn chưa nộp lời giải cho bài toán nào' : 'Không tìm thấy bài giải phù hợp'}
                   </h4>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 font-sans max-w-md mx-auto mb-4">
+                  <p className="text-sm text-gray-500 dark:text-slate-400 font-newsreader max-w-md mx-auto mb-4">
                     {solvedItems.length === 0
                       ? 'Hãy thử sức với các bài toán trên Tạp chí Pi và gửi lời giải của bạn để lưu lại vào đây!'
                       : 'Thử thay đổi từ khóa tìm kiếm hoặc bỏ chọn bộ lọc chuyên mục.'}
@@ -499,43 +538,47 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                     <button
                       type="button"
                       onClick={onBackToList}
-                      className="px-4 py-2 bg-cerulean text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition font-sans cursor-pointer shadow-2xs"
+                      className="px-5 py-2 bg-cerulean text-white rounded-lg text-sm font-bold hover:bg-blue-800 transition font-newsreader cursor-pointer shadow-2xs"
                     >
                       Khám phá đề toán ngay
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="max-h-[65vh] overflow-y-auto pr-1.5 space-y-3 font-newsreader custom-scrollbar">
                   {filteredSolvedItems.map(({ problem, solution, issueName, categoryName }) => (
                     <div
                       key={problem.id}
                       className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs hover:shadow-md transition space-y-3"
                     >
-                      {/* Card Header */}
+                      {/* Card Header with Cerulean Code & Jasper Category */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 bg-cerulean/10 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 font-mono font-bold text-xs rounded border border-cerulean/20">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-2.5 py-0.5 bg-cerulean text-white font-mono font-black text-xs rounded border border-blue-900 shadow-2xs">
                             {problem.code || 'BÀI TOÁN'}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-slate-400 font-sans">
-                            {categoryName} • {issueName}
+                          <span className="text-xs font-bold text-jasper dark:text-rose-400 uppercase tracking-wider">
+                            {categoryName}
+                          </span>
+                          <span className="text-gray-300 dark:text-slate-600 select-none">•</span>
+                          <span className="text-xs font-bold text-cerulean dark:text-blue-400 uppercase tracking-wider">
+                            {issueName}
                           </span>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-1.5 font-sans text-xs">
+                        <div className="flex items-center gap-2 font-newsreader text-xs md:text-sm">
                           <button
                             type="button"
                             onClick={() => onOpenDetail(problem)}
-                            className="px-2.5 py-1 rounded-md border border-gray-200 dark:border-slate-700 hover:border-cerulean hover:text-cerulean text-gray-700 dark:text-slate-300 font-semibold transition cursor-pointer"
+                            className="px-3 py-1 rounded-md border border-cerulean dark:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-cerulean dark:text-blue-400 font-bold transition cursor-pointer"
                           >
                             Xem đề
                           </button>
                           <button
                             type="button"
                             onClick={() => onOpenSolution(problem)}
-                            className="px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-cerulean dark:text-blue-400 font-semibold hover:bg-blue-100 transition cursor-pointer"
+                            className="px-3 py-1 rounded-md bg-cerulean text-white font-bold hover:bg-blue-800 transition cursor-pointer shadow-2xs"
                           >
                             Sửa lời giải
                           </button>
@@ -543,8 +586,8 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                       </div>
 
                       {/* Solution preview */}
-                      <div className="p-3 bg-gray-50/70 dark:bg-slate-900/60 rounded-lg border border-gray-100 dark:border-slate-800/80 text-sm font-newsreader">
-                        <div className="text-[11px] uppercase tracking-wider font-bold text-gray-500 dark:text-slate-400 mb-1 flex items-center gap-1 font-sans">
+                      <div className="p-3 bg-gray-50/70 dark:bg-slate-900/60 rounded-lg border border-gray-100 dark:border-slate-800/80 text-sm md:text-base font-newsreader">
+                        <div className="text-xs uppercase tracking-wider font-bold text-cerulean dark:text-blue-400 mb-1 flex items-center gap-1 font-newsreader">
                           <span>Lời giải của bạn:</span>
                         </div>
                         <div className="line-clamp-3 text-gray-800 dark:text-slate-200">
@@ -562,46 +605,47 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
           {activeTab === 'bookmarks' && (
             <div className="space-y-4">
               {/* Search & Filter */}
-              <div className="bg-white dark:bg-nightCard p-3 rounded-xl border border-gray-200 dark:border-slate-800 shadow-2xs flex flex-wrap gap-2.5 items-center font-sans">
+              <div className="bg-white dark:bg-nightCard p-3 rounded-xl border border-gray-200 dark:border-slate-800 shadow-2xs flex flex-wrap gap-2.5 items-center font-newsreader">
                 <div className="relative flex-1 min-w-[200px]">
                   <input
                     type="text"
                     value={bmSearch}
                     onChange={(e) => setBmSearch(e.target.value)}
                     placeholder="Tìm kiếm bài toán đã lưu..."
-                    className="w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-nightInput border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-cerulean placeholder-gray-400 dark:placeholder-slate-500"
+                    className="w-full pl-8 pr-3 py-2 bg-paper dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-jasper placeholder-gray-400 dark:placeholder-slate-500 font-newsreader"
                   />
-                  <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
 
-                {/* Dropdown chuyên mục chuẩn hóa */}
+                {/* Dropdown chuyên mục chuẩn hóa với accent Jasper */}
                 <SelectDropdown
                   value={bmCatFilter}
                   onChange={setBmCatFilter}
                   options={categoryOptions}
                   allOptionLabel="Tất cả chuyên mục"
                   placeholder="Lọc chuyên mục..."
+                  accentColor="jasper"
                   className="w-48 sm:w-56 shrink-0"
                 />
 
-                <div className="text-xs text-gray-500 dark:text-slate-400 ml-auto font-medium">
+                <div className="text-xs text-gray-500 dark:text-slate-400 ml-auto font-medium font-newsreader">
                   {filteredBookmarks.length} / {bookmarkedProblems.length} bài đã lưu
                 </div>
               </div>
 
               {filteredBookmarks.length === 0 ? (
-                <div className="p-10 text-center bg-white dark:bg-nightCard border border-dashed border-gray-300 dark:border-slate-800 rounded-2xl">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400 mx-auto mb-3 shadow-2xs">
+                <div className="p-10 text-center bg-white dark:bg-nightCard border border-dashed border-gray-300 dark:border-slate-800 rounded-2xl font-newsreader">
+                  <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-rose-950/60 border border-jasper/30 dark:border-rose-900 flex items-center justify-center text-jasper dark:text-rose-400 mx-auto mb-3 shadow-2xs">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
                   </div>
-                  <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair mb-1">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-slate-100 font-playfair mb-1">
                     {bookmarkedProblems.length === 0 ? 'Bạn chưa lưu bài toán nào' : 'Không tìm thấy bài đã lưu phù hợp'}
                   </h4>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 font-sans max-w-md mx-auto mb-4">
+                  <p className="text-sm text-gray-500 dark:text-slate-400 font-newsreader max-w-md mx-auto mb-4">
                     {bookmarkedProblems.length === 0
                       ? 'Khi xem các bài toán trên Tạp chí Pi, bạn có thể bấm nút "Lưu bài" để lưu lại ôn tập sau này!'
                       : 'Thử kiểm tra lại từ khóa tìm kiếm hoặc chuyên mục đã chọn.'}
@@ -610,14 +654,14 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                     <button
                       type="button"
                       onClick={onBackToList}
-                      className="px-4 py-2 bg-cerulean text-white rounded-lg text-xs font-bold hover:bg-blue-800 transition font-sans cursor-pointer shadow-2xs"
+                      className="px-5 py-2 bg-jasper text-white rounded-lg text-sm font-bold hover:bg-red-800 transition font-newsreader cursor-pointer shadow-2xs"
                     >
                       Duyệt danh sách bài toán
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="max-h-[65vh] overflow-y-auto pr-1.5 space-y-3 font-newsreader custom-scrollbar">
                   {filteredBookmarks.map((problem) => {
                     const isSolved = Boolean(userSolutionsMap[problem.id]);
                     const issueName = issueMap.get(problem.issueId) || 'Không rõ Số';
@@ -629,35 +673,39 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                         className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs hover:shadow-md transition space-y-3"
                       >
                         <div className="flex items-center justify-between gap-2 flex-wrap">
-                          <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-cerulean/10 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 font-mono font-bold text-xs rounded border border-cerulean/20">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2.5 py-0.5 bg-cerulean text-white font-mono font-black text-xs rounded border border-blue-900 shadow-2xs">
                               {problem.code || 'BÀI TOÁN'}
                             </span>
-                            <span className="text-xs text-gray-500 dark:text-slate-400 font-sans">
-                              {categoryName} • {issueName}
+                            <span className="text-xs font-bold text-jasper dark:text-rose-400 uppercase tracking-wider">
+                              {categoryName}
+                            </span>
+                            <span className="text-gray-300 dark:text-slate-600 select-none">•</span>
+                            <span className="text-xs font-bold text-cerulean dark:text-blue-400 uppercase tracking-wider">
+                              {issueName}
                             </span>
                             {isSolved ? (
-                              <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800 font-sans flex items-center gap-1">
-                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <span className="px-2.5 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-300 text-xs font-bold rounded-full border border-cerulean/30 font-newsreader flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span>Đã giải</span>
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-[10px] font-bold rounded-full border border-amber-200 dark:border-amber-800 font-sans">
+                              <span className="px-2.5 py-0.5 bg-red-50 dark:bg-rose-950/60 text-jasper dark:text-rose-300 text-xs font-bold rounded-full border border-jasper/30 font-newsreader">
                                 Chưa giải
                               </span>
                             )}
                           </div>
 
-                          <div className="flex items-center gap-1.5 font-sans text-xs">
+                          <div className="flex items-center gap-2 font-newsreader text-xs md:text-sm">
                             <button
                               type="button"
                               onClick={() => toggleBookmark(problem.id)}
-                              className="px-2.5 py-1 rounded-md text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-semibold transition cursor-pointer flex items-center gap-1 border border-transparent hover:border-amber-200"
+                              className="px-3 py-1 rounded-md text-jasper dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-950/40 font-bold transition cursor-pointer flex items-center gap-1 border border-transparent hover:border-jasper/30"
                               title="Bỏ lưu bài toán"
                             >
-                              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                               </svg>
                               <span>Bỏ lưu</span>
@@ -665,7 +713,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                             <button
                               type="button"
                               onClick={() => onOpenDetail(problem)}
-                              className="px-3 py-1 bg-cerulean text-white rounded-md font-semibold hover:bg-blue-800 transition cursor-pointer shadow-2xs"
+                              className="px-3.5 py-1 bg-cerulean text-white rounded-md font-bold hover:bg-blue-800 transition cursor-pointer shadow-2xs"
                             >
                               Vào giải bài
                             </button>
@@ -673,7 +721,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                         </div>
 
                         {/* Problem Snippet */}
-                        <div className="line-clamp-2 text-sm text-gray-700 dark:text-slate-300 font-newsreader">
+                        <div className="line-clamp-2 text-sm md:text-base text-gray-800 dark:text-slate-200 font-newsreader">
                           <MathRenderer content={problem.content} />
                         </div>
                       </div>
@@ -686,119 +734,129 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
           {/* TAB 3: THỐNG KÊ & NĂNG LỰC */}
           {activeTab === 'stats' && (
-            <div className="space-y-5 font-sans">
-              {/* Top 4 Stat Cards */}
+            <div className="space-y-5 font-newsreader">
+              {/* Top 4 Stat Cards: Sử dụng 2 màu chủ đạo Cerulean & Jasper */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs text-center">
-                  <span className="text-2xl font-black text-cerulean dark:text-blue-400 block font-mono">
+                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 border-t-4 border-t-cerulean rounded-xl p-4 shadow-2xs text-center">
+                  <span className="text-3xl font-black text-cerulean dark:text-blue-400 block font-playfair">
                     {solvedItems.length}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                  <span className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-bold font-newsreader">
                     Bài toán đã giải
                   </span>
                 </div>
 
-                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs text-center">
-                  <span className="text-2xl font-black text-amber-500 block font-mono">
+                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 border-t-4 border-t-jasper rounded-xl p-4 shadow-2xs text-center">
+                  <span className="text-3xl font-black text-jasper dark:text-rose-400 block font-playfair">
                     {bookmarks.length}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                  <span className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-bold font-newsreader">
                     Bài toán đã lưu
                   </span>
                 </div>
 
-                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs text-center">
-                  <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 block font-mono">
+                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 border-t-4 border-t-cerulean rounded-xl p-4 shadow-2xs text-center">
+                  <span className="text-3xl font-black text-cerulean dark:text-blue-400 block font-playfair">
                     {problems.length > 0 ? Math.round((solvedItems.length / problems.length) * 100) : 0}%
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                  <span className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-bold font-newsreader">
                     Tỉ lệ hoàn thành kho đề
                   </span>
                 </div>
 
-                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs text-center">
-                  <span className="text-2xl font-black text-rose-500 block font-mono">
+                <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 border-t-4 border-t-jasper rounded-xl p-4 shadow-2xs text-center">
+                  <span className="text-3xl font-black text-jasper dark:text-rose-400 block font-playfair">
                     {rank.tier}/4
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-slate-400 font-medium truncate block" title={rank.title}>
+                  <span className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-bold truncate block font-newsreader" title={rank.title}>
                     {rank.title}
                   </span>
                 </div>
               </div>
 
               {/* Next Rank Progression Bar */}
-              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold">
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-2 font-newsreader">
+                <div className="flex items-center justify-between text-xs md:text-sm font-semibold">
                   <span className="text-gray-700 dark:text-slate-300">
-                    Tiến trình lên cấp bậc: <strong className="text-cerulean dark:text-blue-400">{rank.nextRank?.title || 'Tối đa'}</strong>
+                    Tiến trình lên cấp bậc: <strong className="text-cerulean dark:text-blue-400 font-bold">{rank.nextRank?.title || 'Tối đa'}</strong>
                   </span>
-                  <span className="text-gray-500 dark:text-slate-400 font-mono">
+                  <span className="text-gray-500 dark:text-slate-400 font-medium">
                     {rank.nextRank ? `Cần thêm ${rank.neededForNext} bài nữa` : 'Đã đạt danh hiệu cao nhất!'}
                   </span>
                 </div>
                 <div className="w-full h-3 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700">
                   <div
-                    className="h-full bg-linear-to-r from-cerulean to-blue-500 rounded-full transition-all duration-500"
+                    className="h-full bg-cerulean dark:bg-blue-400 rounded-full transition-all duration-500"
                     style={{ width: `${rank.progressPercent}%` }}
                   />
                 </div>
               </div>
 
               {/* Breakdown by Difficulty */}
-              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3">
-                <h4 className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-2">
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3 font-newsreader">
+                <h4 className="font-bold text-base text-gray-900 dark:text-slate-100 flex items-center gap-2 font-playfair">
                   <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                   <span>Phân Bố Độ Khó Các Bài Đã Giải</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                  {Object.entries(difficultyStats).map(([key, stat]) => (
-                    <div key={key} className="p-3 bg-gray-50/70 dark:bg-slate-900/50 rounded-lg border border-gray-200/80 dark:border-slate-800/80">
-                      <div className="flex justify-between text-xs font-semibold mb-1">
-                        <span className="text-gray-700 dark:text-slate-300">{stat.name}</span>
-                        <span className="text-cerulean dark:text-blue-400 font-mono font-bold">
-                          {stat.count}/{stat.total} ({stat.percent}%)
-                        </span>
+                  {Object.entries(difficultyStats).map(([key, stat]) => {
+                    const isHard = key === 'hard';
+                    const colorText = isHard ? 'text-jasper dark:text-rose-400' : 'text-cerulean dark:text-blue-400';
+                    const barBg = isHard ? 'bg-jasper dark:bg-rose-500' : 'bg-cerulean dark:bg-blue-400';
+
+                    return (
+                      <div key={key} className="p-3.5 bg-gray-50/70 dark:bg-slate-900/50 rounded-lg border border-gray-200/80 dark:border-slate-800/80 space-y-2">
+                        <div className="flex justify-between text-xs md:text-sm font-semibold">
+                          <span className="text-gray-700 dark:text-slate-300 font-medium">{stat.name}</span>
+                          <span className={`${colorText} font-bold`}>
+                            {stat.count}/{stat.total} ({stat.percent}%)
+                          </span>
+                        </div>
+                        <div className="w-full h-2.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${barBg} rounded-full transition-all duration-300`}
+                            style={{ width: `${stat.percent}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-cerulean dark:bg-blue-400 rounded-full"
-                          style={{ width: `${stat.percent}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Breakdown by Category */}
-              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3">
-                <h4 className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3 font-newsreader">
+                <h4 className="font-bold text-base text-gray-900 dark:text-slate-100 flex items-center gap-2 font-playfair">
+                  <svg className="w-4 h-4 text-jasper dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v16h16L4 4z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 13h4L8 9v4z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 7h2.5M4 10h3.5M4 16h2.5" />
                   </svg>
                   <span>Thế Mạnh Theo Chuyên Mục Toán</span>
                 </h4>
-                <div className="space-y-2.5 pt-1">
-                  {categoryStats.map((cat) => (
-                    <div key={cat.id} className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span className="font-semibold text-gray-800 dark:text-slate-200">{cat.name}</span>
-                        <span className="text-gray-500 dark:text-slate-400 font-mono font-medium">
-                          {cat.solved}/{cat.total} bài ({cat.percent}%)
-                        </span>
+                <div className="space-y-3 pt-1">
+                  {categoryStats.map((cat, idx) => {
+                    const isEven = idx % 2 === 0;
+                    const barColor = isEven ? 'bg-cerulean dark:bg-blue-400' : 'bg-jasper dark:bg-rose-500';
+                    return (
+                      <div key={cat.id} className="space-y-1">
+                        <div className="flex justify-between text-xs md:text-sm">
+                          <span className="font-semibold text-gray-800 dark:text-slate-200">{cat.name}</span>
+                          <span className="text-gray-500 dark:text-slate-400 font-medium">
+                            {cat.solved}/{cat.total} bài ({cat.percent}%)
+                          </span>
+                        </div>
+                        <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700">
+                          <div
+                            className={`h-full ${barColor} rounded-full transition-all duration-300`}
+                            style={{ width: `${cat.percent}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden border border-gray-200 dark:border-slate-700">
-                        <div
-                          className="h-full bg-cerulean dark:bg-blue-400 rounded-full transition-all duration-300"
-                          style={{ width: `${cat.percent}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -806,28 +864,28 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
 
           {/* TAB 4: CÀI ĐẶT & XUẤT FILE */}
           {activeTab === 'settings' && (
-            <div className="space-y-5 font-sans">
+            <div className="space-y-5 font-newsreader">
               {/* Gemini AI API Key Setting */}
-              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-3 font-newsreader">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-cerulean/30 dark:border-blue-900 flex items-center justify-center text-cerulean dark:text-blue-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-gray-900 dark:text-slate-100">
+                    <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair">
                       Cấu hình Google Gemini AI API Key
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400">
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
                       Dùng để hỗ trợ phân tích đề, gợi ý giải toán và tra cứu thông minh
                     </p>
                   </div>
                 </div>
 
-                <form onSubmit={handleSaveGeminiKey} className="space-y-3 pt-2">
+                <form onSubmit={handleSaveGeminiKey} className="space-y-3 pt-2 font-newsreader">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs md:text-sm font-bold text-gray-700 dark:text-slate-300 mb-1">
                       Gemini API Key của bạn (Lưu an toàn tại trình duyệt)
                     </label>
                     <div className="relative">
@@ -836,12 +894,12 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                         value={geminiKey}
                         onChange={(e) => setGeminiKey(e.target.value)}
                         placeholder="AIzaSy..."
-                        className="w-full pl-3 pr-10 py-2 bg-gray-50 dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-xs text-gray-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-cerulean"
+                        className="w-full pl-3 pr-12 py-2 bg-paper dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-gray-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-cerulean"
                       />
                       <button
                         type="button"
                         onClick={() => setShowKey(!showKey)}
-                        className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-xs cursor-pointer"
+                        className="absolute right-3 top-2.5 text-gray-500 hover:text-cerulean text-xs font-bold cursor-pointer"
                       >
                         {showKey ? 'Ẩn' : 'Hiện'}
                       </button>
@@ -849,12 +907,12 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-gray-500 dark:text-slate-400">
-                      Trạng thái: {geminiKey ? <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Đã thiết lập</span> : <span className="text-amber-600 dark:text-amber-400">Chưa cấu hình</span>}
+                    <span className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
+                      Trạng thái: {geminiKey ? <span className="text-cerulean dark:text-blue-400 font-bold">✓ Đã thiết lập</span> : <span className="text-jasper dark:text-rose-400 font-bold">Chưa cấu hình</span>}
                     </span>
                     <button
                       type="submit"
-                      className="px-4 py-1.5 bg-cerulean hover:bg-blue-800 text-white rounded-lg text-xs font-bold transition shadow-2xs cursor-pointer"
+                      className="px-5 py-2 bg-cerulean hover:bg-blue-800 text-white rounded-lg text-sm font-bold transition shadow-2xs cursor-pointer font-newsreader"
                     >
                       Lưu Khóa API
                     </button>
@@ -863,68 +921,68 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
               </div>
 
               {/* Data Export Box */}
-              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 flex items-center justify-center text-cerulean dark:text-blue-400">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4 font-newsreader">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-rose-950/60 border border-jasper/30 dark:border-rose-900 flex items-center justify-center text-jasper dark:text-rose-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-gray-900 dark:text-slate-100">
+                    <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair">
                       Xuất Tài Liệu & Kho Bài Giải Cá Nhân
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400">
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
                       Tải về toàn bộ bài giải của bạn để in ấn, nộp báo cáo hoặc lưu trữ ngoại tuyến
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  {/* Export LaTeX */}
-                  <div className="p-4 bg-gray-50/70 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 space-y-2.5 flex flex-col justify-between">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                  {/* Export LaTeX - Cerulean Accent */}
+                  <div className="p-4 bg-paper dark:bg-nightInput rounded-xl border border-gray-200 dark:border-slate-800 space-y-3 flex flex-col justify-between">
                     <div>
-                      <span className="font-bold text-xs text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1">
+                      <span className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1.5 font-playfair">
                         <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span>Mã nguồn LaTeX (.tex)</span>
                       </span>
-                      <p className="text-[11px] text-gray-600 dark:text-slate-400">
+                      <p className="text-xs text-gray-600 dark:text-slate-400 leading-relaxed font-newsreader">
                         Sinh file .tex đầy đủ preamble tiếng Việt, gói amsmath và tikz, sẵn sàng biên dịch trực tiếp bằng TeXLive hoặc Overleaf.
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={handleExportLatex}
-                      className="w-full py-2 bg-cerulean hover:bg-blue-800 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="w-full py-2.5 bg-cerulean hover:bg-blue-800 text-white rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs font-newsreader"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                       <span>Tải Tập Bài Giải (.tex)</span>
                     </button>
                   </div>
 
-                  {/* Export Markdown */}
-                  <div className="p-4 bg-gray-50/70 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 space-y-2.5 flex flex-col justify-between">
+                  {/* Export Markdown - Jasper Accent */}
+                  <div className="p-4 bg-paper dark:bg-nightInput rounded-xl border border-gray-200 dark:border-slate-800 space-y-3 flex flex-col justify-between">
                     <div>
-                      <span className="font-bold text-xs text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1">
-                        <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1.5 font-playfair">
+                        <svg className="w-4 h-4 text-jasper dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         <span>Tài liệu Markdown (.md)</span>
                       </span>
-                      <p className="text-[11px] text-gray-600 dark:text-slate-400">
+                      <p className="text-xs text-gray-600 dark:text-slate-400 leading-relaxed font-newsreader">
                         Định dạng văn bản Markdown chuẩn quốc tế với công thức KaTeX, tương thích với Obsidian, Notion và GitHub.
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={handleExportMarkdown}
-                      className="w-full py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 hover:border-cerulean hover:text-cerulean text-gray-800 dark:text-slate-200 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="w-full py-2.5 bg-jasper hover:bg-red-800 text-white rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs font-newsreader"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                       <span>Tải Bản Markdown (.md)</span>
