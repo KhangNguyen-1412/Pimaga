@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import MathRenderer from '../common/MathRenderer';
 import { DIFFICULTY_LEVELS } from '../../constants/difficulty';
 import { useToast } from '../../context/ToastContext';
+import { useData } from '../../context/DataContext';
 
 export default function ProblemDetailPage({
   problem,
@@ -9,6 +10,7 @@ export default function ProblemDetailPage({
   catName = 'Không rõ Chuyên mục',
   userSolution,
   onOpenSolution,
+  onOpenLatexCheatsheet,
   onEditProblem,
   onDeleteProblem,
   onBackToList,
@@ -17,9 +19,95 @@ export default function ProblemDetailPage({
   onSelectProblem,
 }) {
   const { showToast } = useToast();
+  const { saveUserSolution } = useData();
   const [copied, setCopied] = useState(false);
   // Default to false for spoiler protection unless user already solved it
   const [showEditorialSolution, setShowEditorialSolution] = useState(!!userSolution);
+
+  // Inline solution editing state (Trực tiếp trên trang, không che đề bài)
+  const [isEditingSolution, setIsEditingSolution] = useState(false);
+  const [solutionDraft, setSolutionDraft] = useState('');
+  const [isSubmittingSolution, setIsSubmittingSolution] = useState(false);
+  const [solutionError, setSolutionError] = useState('');
+  const inlineTextareaRef = useRef(null);
+
+  // Sync draft when userSolution or problem changes
+  useEffect(() => {
+    if (userSolution) {
+      setSolutionDraft(userSolution);
+      setShowEditorialSolution(true);
+    } else {
+      setSolutionDraft('');
+    }
+    setIsEditingSolution(false);
+    setSolutionError('');
+  }, [problem?.id, userSolution]);
+
+  // Handle Ctrl+Enter to save inline
+  useEffect(() => {
+    if (!isEditingSolution) return;
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSaveInlineSolution();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isEditingSolution, solutionDraft, problem]);
+
+  const handleStartEditing = () => {
+    setSolutionDraft(userSolution || '');
+    setSolutionError('');
+    setIsEditingSolution(true);
+    setTimeout(() => {
+      if (inlineTextareaRef.current) {
+        inlineTextareaRef.current.focus();
+      }
+    }, 80);
+  };
+
+  const handleCancelEditing = () => {
+    setSolutionDraft(userSolution || '');
+    setSolutionError('');
+    setIsEditingSolution(false);
+  };
+
+  const insertMathToDraft = (snippet) => {
+    const el = inlineTextareaRef.current;
+    if (!el) {
+      setSolutionDraft((prev) => prev + snippet);
+      return;
+    }
+    const start = el.selectionStart ?? el.value.length;
+    const end = el.selectionEnd ?? el.value.length;
+    const text = el.value;
+    const nextText = text.substring(0, start) + snippet + text.substring(end);
+    setSolutionDraft(nextText);
+    setTimeout(() => {
+      el.focus();
+      el.setSelectionRange(start + snippet.length, start + snippet.length);
+    }, 50);
+  };
+
+  const handleSaveInlineSolution = async () => {
+    setSolutionError('');
+    if (!solutionDraft.trim()) {
+      setSolutionError('Vui lòng nhập nội dung bài làm trước khi lưu!');
+      return;
+    }
+
+    try {
+      setIsSubmittingSolution(true);
+      await saveUserSolution(problem.id, solutionDraft);
+      setIsEditingSolution(false);
+      setShowEditorialSolution(true);
+    } catch (err) {
+      setSolutionError(err.message || 'Lỗi khi lưu bài làm');
+    } finally {
+      setIsSubmittingSolution(false);
+    }
+  };
 
   if (!problem) {
     return (
@@ -250,66 +338,236 @@ export default function ProblemDetailPage({
 
       {/* Solving & Solutions Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Section 1: User's Solution (BÀI LÀM CỦA BẠN - Focus Area) */}
-        <div className="bg-white rounded-2xl border-2 border-cerulean/60 shadow-md p-6 sm:p-8 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-6">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-blue-100 text-cerulean flex items-center justify-center shrink-0">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
+        {/* Section 1: User's Solution (BÀI LÀM CỦA BẠN - Focus Area / Inline Workspace) */}
+        <div
+          className={`bg-white rounded-2xl border-2 border-cerulean/60 shadow-md p-5 sm:p-7 flex flex-col justify-between transition-all ${
+            isEditingSolution ? 'lg:col-span-2 ring-4 ring-cerulean/10' : ''
+          }`}
+        >
+          {isEditingSolution ? (
+            /* --- INLINE EDITING MODE (Đề bài ở ngay phía trên, không bị che) --- */
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 text-cerulean flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="font-playfair text-2xl font-bold text-cerulean">Soạn Lời Giải Trực Tiếp</h2>
+                    <p className="text-xs text-gray-500 font-newsreader">
+                      Đề bài hiển thị đầy đủ ngay phía trên — không bị che khuất
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="font-playfair text-2xl font-bold text-cerulean">Bài Làm Của Bạn</h2>
-                  <p className="text-xs text-gray-500 font-newsreader">
-                    {userSolution ? 'Đã lưu lời giải cá nhân' : 'Chưa có lời giải'}
-                  </p>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onOpenSolution(problem)}
+                    className="text-xs text-gray-600 hover:text-cerulean px-3 py-1.5 rounded-lg border border-gray-200 hover:border-cerulean transition font-newsreader flex items-center gap-1.5 cursor-pointer"
+                    title="Mở trong cửa sổ popup lớn"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                    <span>Mở Cửa Sổ Lớn</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelEditing}
+                    className="text-xs text-gray-500 hover:text-ink px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition font-newsreader cursor-pointer"
+                  >
+                    Đóng
+                  </button>
                 </div>
               </div>
 
-              {/* Action button in header */}
-              <button
-                type="button"
-                onClick={() => onOpenSolution(problem)}
-                className="btn-primary text-xs md:text-sm px-4 py-2 rounded-lg flex items-center gap-1.5 cursor-pointer"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                <span>{userSolution ? 'Sửa Bài Làm' : 'Làm Bài Này'}</span>
-              </button>
-            </div>
-
-            {/* Solution Content or Empty State */}
-            {userSolution ? (
-              <div className="bg-blue-50/40 border border-cerulean/20 p-5 rounded-xl font-newsreader text-lg text-ink leading-relaxed">
-                <MathRenderer content={userSolution} />
-              </div>
-            ) : (
-              <div className="bg-paper p-8 rounded-xl border border-dashed border-gray-300 text-center flex flex-col items-center justify-center my-4">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-3">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              {/* Error message */}
+              {solutionError && (
+                <div className="p-3 rounded-xl border flex items-start gap-2.5 bg-red-50/95 border-red-200 text-jasper text-sm font-newsreader">
+                  <svg className="w-5 h-5 text-jasper shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
+                  <span className="flex-1">{solutionError}</span>
                 </div>
-                <h4 className="font-playfair text-xl font-bold text-ink mb-1.5">Bạn chưa giải bài toán này</h4>
-                <p className="font-newsreader text-gray-500 text-base max-w-md mb-5">
-                  Hãy thử sức tư duy, đặt bút giải và lưu lại bài làm của bạn để rèn luyện kỹ năng và đối chiếu với lời giải Tòa soạn!
+              )}
+
+              {/* Quick Math Toolbar */}
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-blue-50/50 border border-blue-100 rounded-lg">
+                <div className="flex flex-wrap gap-1 text-xs font-mono">
+                  <button type="button" onClick={() => insertMathToDraft('$\\frac{a}{b}$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">a/b</button>
+                  <button type="button" onClick={() => insertMathToDraft('$x^2$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">x²</button>
+                  <button type="button" onClick={() => insertMathToDraft('$x_1$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">x₁</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\sqrt{x}$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">√x</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\triangle ABC$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">△ABC</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\widehat{A}$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">∠A</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\vec{u}$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">v⃗</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\le$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">≤</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\ge$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">≥</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\neq$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">≠</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\perp$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">⊥</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\parallel$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">∥</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\pi$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">π</button>
+                  <button type="button" onClick={() => insertMathToDraft('$$\\dots$$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">$$...$$</button>
+                  <button type="button" onClick={() => insertMathToDraft('$$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$$')} className="px-2 py-0.5 bg-white border border-gray-300 rounded hover:bg-blue-100 hover:text-cerulean font-bold">Hệ PT</button>
+                </div>
+
+                {onOpenLatexCheatsheet && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenLatexCheatsheet((snippet) => insertMathToDraft(snippet))}
+                    className="px-2.5 py-1 bg-cerulean text-white hover:bg-blue-900 rounded font-bold text-xs flex items-center gap-1.5 transition shadow-2xs font-newsreader cursor-pointer"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span>Tra Cứu LaTeX</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Editor + Live Preview Columns */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left: Input */}
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold text-cerulean font-playfair uppercase tracking-wider mb-1.5">
+                    Nội dung bài giải ($ hoặc $$):
+                  </label>
+                  <textarea
+                    ref={inlineTextareaRef}
+                    value={solutionDraft}
+                    onChange={(e) => setSolutionDraft(e.target.value)}
+                    rows={8}
+                    className="w-full flex-1 min-h-[180px] md:min-h-[220px] border border-cerulean/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 rounded-lg p-3 font-newsreader text-base outline-none transition resize-y leading-relaxed"
+                    placeholder="Nhập các bước lập luận, biến đổi toán học vào đây. Dùng $...$ cho công thức nằm trong dòng, $$...$$ cho công thức đứng riêng dòng..."
+                  />
+                </div>
+
+                {/* Right: Live Preview */}
+                <div className="flex flex-col">
+                  <label className="text-xs font-bold text-cerulean font-playfair uppercase tracking-wider mb-1.5">
+                    Xem trước trực tiếp (KaTeX Preview):
+                  </label>
+                  <div className="flex-1 min-h-[180px] md:min-h-[220px] max-h-[340px] overflow-y-auto p-3.5 bg-paper border border-gray-200 rounded-lg text-ink font-newsreader text-base leading-relaxed shadow-inner">
+                    {solutionDraft.trim() ? (
+                      <MathRenderer content={solutionDraft} />
+                    ) : (
+                      <p className="text-gray-400 italic text-sm">
+                        Kết quả hiển thị công thức sẽ xuất hiện trực tiếp tại đây khi bạn nhập bài giải...
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-1">
+                <p className="text-xs text-gray-500 font-newsreader">
+                  Mẹo: Nhấn <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded font-mono text-xs text-gray-700 shadow-2xs">Ctrl + Enter</kbd> để lưu nhanh bài làm
                 </p>
-                <button
-                  type="button"
-                  onClick={() => onOpenSolution(problem)}
-                  className="btn-primary px-6 py-2.5 rounded-lg flex items-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span className="text-base">Bắt Đầu Làm Bài</span>
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCancelEditing}
+                    className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition font-newsreader font-bold text-sm cursor-pointer"
+                  >
+                    Hủy Bỏ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveInlineSolution}
+                    disabled={isSubmittingSolution}
+                    className="bg-cerulean text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition font-playfair font-bold text-sm shadow flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{isSubmittingSolution ? 'Đang lưu...' : 'Lưu Bài Làm'}</span>
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            /* --- VIEW MODE --- */
+            <div>
+              <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 text-cerulean flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="font-playfair text-2xl font-bold text-cerulean">Bài Làm Của Bạn</h2>
+                    <p className="text-xs text-gray-500 font-newsreader">
+                      {userSolution ? 'Đã lưu lời giải cá nhân' : 'Chưa có lời giải'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action button in header */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleStartEditing}
+                    className="btn-primary text-xs md:text-sm px-4 py-2 rounded-lg flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    <span>{userSolution ? 'Sửa Bài Làm' : 'Làm Bài Này'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Solution Content or Empty State */}
+              {userSolution ? (
+                <div>
+                  <div className="bg-blue-50/40 border border-cerulean/20 p-5 rounded-xl font-newsreader text-lg text-ink leading-relaxed">
+                    <MathRenderer content={userSolution} />
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleStartEditing}
+                      className="text-xs font-bold text-cerulean hover:underline flex items-center gap-1 font-newsreader cursor-pointer"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      <span>Tiếp tục chỉnh sửa bài làm</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-paper p-8 rounded-xl border border-dashed border-gray-300 text-center flex flex-col items-center justify-center my-4">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-3">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <h4 className="font-playfair text-xl font-bold text-ink mb-1.5">Bạn chưa giải bài toán này</h4>
+                  <p className="font-newsreader text-gray-500 text-base max-w-md mb-5">
+                    Hãy thử sức tư duy, đặt bút giải và lưu lại bài làm của bạn để rèn luyện kỹ năng và đối chiếu với lời giải Tòa soạn!
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleStartEditing}
+                      className="btn-primary px-6 py-2.5 rounded-lg flex items-center gap-2 cursor-pointer shadow-md hover:shadow-lg transition"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span className="text-base">Bắt Đầu Làm Bài</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Section 2: Editorial Solution (LỜI GIẢI TÒA SOẠN - Anti-spoiler protected) */}

@@ -427,6 +427,7 @@ export default function App() {
             catName={activeDetailProblem ? categoryMap.get(activeDetailProblem.categoryId) || 'Không rõ Chuyên mục' : ''}
             userSolution={activeDetailProblem ? userSolutionsMap[activeDetailProblem.id] : ''}
             onOpenSolution={handleOpenSolution}
+            onOpenLatexCheatsheet={handleOpenLatexCheatsheet}
             onEditProblem={handleOpenProblemEdit}
             onDeleteProblem={requestDeleteProblem}
             onBackToList={handleBackToList}
