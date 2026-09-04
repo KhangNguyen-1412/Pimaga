@@ -49,13 +49,20 @@ describe('MathRenderer parser', () => {
     expect(parts).toContain('[Tạp chí Pi](https://pimaga.vn)');
   });
 
-  it('correctly matches LaTeX TikZ blocks', () => {
-    const TIKZ_REGEX = /(\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}|```(?:tikz|latex)\s*[\s\S]*?\\begin\{tikzpicture\}[\s\S]*?```)/g;
-    const text = 'Đề bài có hình:\n\\begin{tikzpicture}\n\\draw (0,0) -- (1,1);\n\\end{tikzpicture}\nTiếp theo...';
-    const matches = text.match(TIKZ_REGEX);
+  it('renders MathRenderer component without ReferenceError', async () => {
+    const React = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    const { default: MathRenderer } = await import('../components/common/MathRenderer');
 
-    expect(matches).not.toBeNull();
-    expect(matches.length).toBe(1);
-    expect(matches[0]).toContain('\\begin{tikzpicture}');
+    const element = React.createElement(MathRenderer, {
+      content: `Số lượng số kỳ lạ là **vô hạn**.\n\n$N = m^3$\n\n*không* phải là.\n\n![Hình vẽ](https://example.com/hinh.png)\n\n\\begin{tikzpicture}\n\\draw (0,0) -- (1,1);\n\\end{tikzpicture}`
+    });
+
+    const html = renderToString(element);
+
+    expect(html).toContain('font-bold');
+    expect(html).toContain('vô hạn');
+    expect(html).toContain('không');
+    expect(html).toContain('img');
   });
 });

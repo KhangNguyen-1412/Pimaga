@@ -53,7 +53,7 @@ function renderKatex(mathItem, key) {
 }
 
 // Thay thế các placeholder \uE000MATH_i\uE001 và \uE002TIKZ_i\uE003
-function resolveMathAndTikz(text, mathStore, tikzStore, keyPrefix, onZoomImage) {
+function resolveMathAndTikz(text, mathStore = [], tikzStore = [], keyPrefix = '', onZoomImage = null) {
   if (!text) return null;
   const parts = text.split(/(\uE000MATH_\d+\uE001|\uE002TIKZ_\d+\uE003)/g);
 
@@ -80,7 +80,7 @@ function resolveMathAndTikz(text, mathStore, tikzStore, keyPrefix, onZoomImage) 
 }
 
 // Phân tích và tạo React elements cho các định dạng Markdown inline
-function renderInlineMarkdown(text, mathStore, keyPrefix, onZoomImage) {
+function renderInlineMarkdown(text, mathStore = [], tikzStore = [], keyPrefix = '', onZoomImage = null) {
   if (!text) return null;
 
   const parts = text.split(INLINE_MARKDOWN_REGEX);
