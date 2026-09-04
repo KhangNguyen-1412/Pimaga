@@ -29,6 +29,7 @@ export function DataProvider({ children }) {
   const [categories, setCategories] = useState(initialCategories);
   const [problems, setProblems] = useState(initialProblems);
   const [userSolutionsMap, setUserSolutionsMap] = useState(initialSolutions);
+  const [userProfile, setUserProfile] = useState(() => cache.get(`profile_${currentUserId}`) || {});
   const [isDataLoaded, setIsDataLoaded] = useState(initialProblems.length > 0);
 
   const [filterIssue, setFilterIssue] = useState('');
@@ -77,17 +78,22 @@ export function DataProvider({ children }) {
     };
   }, []);
 
-  // 2. Subscribe to User Solutions when currentUserId changes and user is authenticated
+  // 2. Subscribe to User Solutions and Profile when currentUserId changes
   useEffect(() => {
     if (!isRealUser || !currentUserId) {
       setUserSolutionsMap({});
+      setUserProfile({});
       return;
     }
 
-    // Hydrate cached user solutions
+    // Hydrate cached user solutions & profile
     const cachedUserSols = cache.get(`solutions_${currentUserId}`) || cache.get('solutions');
     if (cachedUserSols && typeof cachedUserSols === 'object') {
       setUserSolutionsMap(cachedUserSols);
+    }
+    const cachedProfile = cache.get(`profile_${currentUserId}`);
+    if (cachedProfile && typeof cachedProfile === 'object') {
+      setUserProfile(cachedProfile);
     }
 
     const unsubSolutions = onSnapshot(
@@ -104,7 +110,25 @@ export function DataProvider({ children }) {
       (err) => console.warn("Solutions listener note:", err?.message || err)
     );
 
-    return () => unsubSolutions();
+    const unsubProfile = onSnapshot(
+      doc(db, 'artifacts', sysAppId, 'users', currentUserId, 'profile', 'info'),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUserProfile(data);
+          cache.set(`profile_${currentUserId}`, data);
+        } else {
+          // Initialize default empty profile if none exists
+          setUserProfile((prev) => prev || {});
+        }
+      },
+      (err) => console.warn("Profile listener note:", err?.message || err)
+    );
+
+    return () => {
+      unsubSolutions();
+      unsubProfile();
+    };
   }, [currentUserId, isRealUser]);
 
   // Problem count maps for fast badges
@@ -237,6 +261,75 @@ export function DataProvider({ children }) {
     showToast('Lưu bài làm thành công', 'success');
   }, [currentUserId, showToast]);
 
+  // Quản lý Hồ sơ người dùng
+  const updateUserProfile = useCallback(async (newData) => {
+    if (!currentUserId) throw new Error('Vui lòng đăng nhập để cập nhật hồ sơ!');
+    
+    const updated = {
+      ...userProfile,
+      ...newData,
+      updatedAt: Date.now(),
+    };
+
+    setUserProfile(updated);
+    cache.set(`profile_${currentUserId}`, updated);
+
+    await setDoc(
+      doc(db, 'artifacts', sysAppId, 'users', currentUserId, 'profile', 'info'),
+      updated,
+      { merge: true }
+    );
+    showToast('Cập nhật hồ sơ thành công!', 'success');
+  }, [currentUserId, userProfile, showToast]);
+
+  // Quản lý Đánh dấu / Lưu bài toán (Bookmarks)
+  const bookmarks = useMemo(() => {
+    return Array.isArray(userProfile?.bookmarks) ? userProfile.bookmarks : [];
+  }, [userProfile?.bookmarks]);
+
+  const toggleBookmark = useCallback(async (probId) => {
+    if (!currentUserId) {
+      showToast('Vui lòng đăng nhập để lưu bài toán!', 'warning');
+      return;
+    }
+    if (!probId) return;
+
+    const currentBookmarks = Array.isArray(userProfile?.bookmarks) ? [...userProfile.bookmarks] : [];
+    const isAlreadyBookmarked = currentBookmarks.includes(probId);
+
+    let nextBookmarks;
+    if (isAlreadyBookmarked) {
+      nextBookmarks = currentBookmarks.filter((id) => id !== probId);
+    } else {
+      nextBookmarks = [probId, ...currentBookmarks];
+    }
+
+    const updated = {
+      ...userProfile,
+      bookmarks: nextBookmarks,
+      updatedAt: Date.now(),
+    };
+
+    setUserProfile(updated);
+    cache.set(`profile_${currentUserId}`, updated);
+
+    await setDoc(
+      doc(db, 'artifacts', sysAppId, 'users', currentUserId, 'profile', 'info'),
+      { bookmarks: nextBookmarks, updatedAt: Date.now() },
+      { merge: true }
+    );
+
+    if (isAlreadyBookmarked) {
+      showToast('Đã bỏ lưu bài toán.', 'info');
+    } else {
+      showToast('Đã lưu bài toán vào hồ sơ cá nhân!', 'success');
+    }
+  }, [currentUserId, userProfile, showToast]);
+
+  const isBookmarked = useCallback((probId) => {
+    return bookmarks.includes(probId);
+  }, [bookmarks]);
+
   return (
     <DataContext.Provider
       value={{
@@ -244,6 +337,11 @@ export function DataProvider({ children }) {
         categories,
         problems,
         userSolutionsMap,
+        userProfile,
+        updateUserProfile,
+        bookmarks,
+        toggleBookmark,
+        isBookmarked,
         isDataLoaded,
         filterIssue,
         setFilterIssue,

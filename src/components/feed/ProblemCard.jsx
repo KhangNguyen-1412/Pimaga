@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import MathRenderer from '../common/MathRenderer';
 import { DIFFICULTY_LEVELS } from '../../constants/difficulty';
 import { useToast } from '../../context/ToastContext';
+import { useData } from '../../context/DataContext';
 
 export default function ProblemCard({
   problem,
@@ -15,8 +16,10 @@ export default function ProblemCard({
   onOpenDetail,
 }) {
   const { showToast } = useToast();
+  const { isBookmarked, toggleBookmark } = useData();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const bookmarked = isBookmarked(problem.id);
 
   const diffData = DIFFICULTY_LEVELS.find((d) => d.level === problem.difficulty);
   const problemHeaderTitle = problem.code
@@ -71,8 +74,34 @@ export default function ProblemCard({
       }`}
       data-problem-id={problem.id}
     >
-      {/* Top right actions: Share + Admin */}
-      <div className="absolute top-6 right-6 flex items-center gap-2">
+      {/* Top right actions: Bookmark + Share + Admin */}
+      <div className="absolute top-6 right-6 flex items-center gap-1.5 sm:gap-2">
+        {/* Bookmark Button */}
+        <button
+          type="button"
+          onClick={() => toggleBookmark(problem.id)}
+          className={`text-xs px-2.5 py-1.5 rounded-md transition shadow-2xs font-newsreader font-bold flex items-center gap-1 cursor-pointer border ${
+            bookmarked
+              ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400'
+              : 'bg-gray-50 dark:bg-night hover:bg-amber-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-amber-600 border-gray-200 dark:border-slate-700'
+          }`}
+          title={bookmarked ? 'Bỏ lưu bài toán khỏi hồ sơ cá nhân' : 'Lưu bài toán vào hồ sơ cá nhân'}
+        >
+          <svg
+            className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : 'fill-none'}`}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+            />
+          </svg>
+          <span>{bookmarked ? 'Đã lưu' : 'Lưu bài'}</span>
+        </button>
+
         {/* Share Button */}
         <button
           type="button"

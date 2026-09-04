@@ -11,6 +11,7 @@ import ProblemModal from './components/modals/ProblemModal';
 import SolutionModal from './components/modals/SolutionModal';
 import LatexCheatsheetModal from './components/modals/LatexCheatsheetModal';
 import ProblemDetailPage from './components/detail/ProblemDetailPage';
+import ProfilePage from './components/profile/ProfilePage';
 import LoginGate from './components/auth/LoginGate';
 import ConfirmModal from './components/modals/ConfirmModal';
 import GeminiKeyModal from './components/modals/GeminiKeyModal';
@@ -64,6 +65,13 @@ export default function App() {
 
     if (pathname === '/so-tay-latex') {
       setIsLatexModalOpen(true);
+      return;
+    }
+
+    if (pathname === '/ho-so' || pathname === '/profile') {
+      setFilterIssue('');
+      setFilterCategory('');
+      setHighlightedProblemId(null);
       return;
     }
 
@@ -162,8 +170,9 @@ export default function App() {
   const issueMap = useMemo(() => new Map(issues.map((i) => [i.id, i.name])), [issues]);
   const categoryMap = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
 
-  // Check if current route is a problem detail page
+  // Check if current route is a problem detail page or profile page
   const isDetailPage = location.pathname.startsWith('/bai-toan/');
+  const isProfilePage = location.pathname === '/ho-so' || location.pathname === '/profile';
 
   const activeDetailProblem = useMemo(() => {
     const match = location.pathname.match(/^\/bai-toan\/([^/]+)/i);
@@ -241,6 +250,14 @@ export default function App() {
 
   // 3. Dynamic SEO Meta Calculation
   const seoData = useMemo(() => {
+    if (isProfilePage) {
+      return {
+        title: 'Hồ Sơ Học Thuật & Bài Giải Cá Nhân - Tạp Chí Pi',
+        description: 'Hồ sơ học thuật, danh sách bài toán đã giải, bài đã lưu và thống kê năng lực toán học cá nhân trên Tạp chí Pi.',
+        canonicalPath: '/ho-so',
+      };
+    }
+
     const activeProblem = activeDetailProblem || problems.find((p) => p.id === highlightedProblemId);
     if (activeProblem) {
       const title = `Bài ${activeProblem.code || 'Toán'} - Tạp Chí Pi${
@@ -420,6 +437,12 @@ export default function App() {
       <div id="app" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 relative">
         {!isRealUser ? (
           <LoginGate />
+        ) : isProfilePage ? (
+          <ProfilePage
+            onOpenDetail={handleOpenDetail}
+            onOpenSolution={handleOpenSolution}
+            onBackToList={handleBackToList}
+          />
         ) : isDetailPage ? (
           <ProblemDetailPage
             problem={activeDetailProblem}

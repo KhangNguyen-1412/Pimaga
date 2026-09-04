@@ -20,8 +20,9 @@ export default function ProblemDetailPage({
   onSelectProblem,
 }) {
   const { showToast } = useToast();
-  const { saveUserSolution } = useData();
+  const { saveUserSolution, isBookmarked, toggleBookmark } = useData();
   const [copied, setCopied] = useState(false);
+  const bookmarked = isBookmarked(problem?.id);
   // Default to false for spoiler protection unless user already solved it
   const [showEditorialSolution, setShowEditorialSolution] = useState(!!userSolution);
 
@@ -320,6 +321,34 @@ export default function ProblemDetailPage({
               )}
               <span>{copied ? 'Đã sao chép link' : 'Chia sẻ bài'}</span>
             </button>
+
+            {/* Bookmark Button */}
+            {problem?.id && (
+              <button
+                type="button"
+                onClick={() => toggleBookmark(problem.id)}
+                className={`text-xs md:text-sm px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer border ${
+                  bookmarked
+                    ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400'
+                    : 'bg-gray-100 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 hover:text-amber-600 border-gray-200 dark:border-slate-700'
+                }`}
+                title={bookmarked ? 'Bỏ lưu bài toán khỏi hồ sơ cá nhân' : 'Lưu bài toán vào hồ sơ cá nhân'}
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : 'fill-none'}`}
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                  />
+                </svg>
+                <span>{bookmarked ? 'Đã lưu bài' : 'Lưu bài'}</span>
+              </button>
+            )}
 
             {/* Admin Controls */}
             {onEditProblem && (

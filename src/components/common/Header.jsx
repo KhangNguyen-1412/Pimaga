@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser, isRealUser, loginWithGoogle, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -46,6 +49,9 @@ export default function Header() {
   }, []);
 
   const scrollToTop = () => {
+    if (location.pathname === '/ho-so' || location.pathname === '/profile') {
+      navigate('/');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const container = document.getElementById('problems-container');
     if (container) {
@@ -139,26 +145,44 @@ export default function Header() {
           </button>
 
           {isRealUser ? (
-            <div className="flex items-center gap-2 sm:gap-2.5">
-              {currentUser.photoURL && (
-                <img
-                  src={currentUser.photoURL}
-                  alt="Avatar"
-                  className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-300 dark:border-slate-700 shadow-xs object-cover"
-                />
-              )}
-              <div className="flex flex-col items-end">
-                <span className="text-xs md:text-sm font-bold text-ink dark:text-slate-100 max-w-[100px] sm:max-w-[120px] truncate">
-                  {currentUser.displayName || currentUser.email || 'Người dùng PI'}
-                </span>
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="text-[11px] text-jasper dark:text-red-400 hover:underline font-bold cursor-pointer"
-                >
-                  Đăng xuất
-                </button>
-              </div>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button
+                type="button"
+                onClick={() => navigate('/ho-so')}
+                className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-xl border border-gray-200 dark:border-slate-800 hover:border-cerulean dark:hover:border-blue-500 bg-white/80 dark:bg-nightCard/80 hover:bg-blue-50/50 dark:hover:bg-slate-800 transition cursor-pointer group shadow-2xs text-left"
+                title="Truy cập Trang cá nhân & Hồ sơ học thuật"
+              >
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt="Avatar"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-gray-300 dark:border-slate-700 shadow-xs object-cover group-hover:border-cerulean transition"
+                  />
+                ) : (
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-cerulean/10 text-cerulean dark:text-blue-400 font-bold flex items-center justify-center text-xs">
+                    {(currentUser.displayName || 'P').charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-xs font-bold text-ink dark:text-slate-100 max-w-[85px] sm:max-w-[110px] truncate group-hover:text-cerulean dark:group-hover:text-blue-400 font-sans transition">
+                    {currentUser.displayName || currentUser.email || 'Người dùng PI'}
+                  </span>
+                  <span className="text-[10px] text-cerulean dark:text-blue-400 font-semibold font-sans flex items-center gap-0.5">
+                    <span>Hồ sơ</span>
+                    <svg className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={logout}
+                className="text-[11px] text-jasper dark:text-red-400 hover:underline font-bold cursor-pointer px-1 py-1 font-sans shrink-0"
+                title="Đăng xuất khỏi tài khoản"
+              >
+                Đăng xuất
+              </button>
             </div>
           ) : (
             <button
