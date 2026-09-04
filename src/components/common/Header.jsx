@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function Header() {
   const { currentUser, isRealUser, loginWithGoogle, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [dateString, setDateString] = useState('');
 
@@ -54,10 +56,10 @@ export default function Header() {
   return (
     <header
       id="main-header"
-      className={`sticky top-0 z-40 w-full bg-paper/95 backdrop-blur-md transition-all duration-300 border-b ${
+      className={`sticky top-0 z-40 w-full bg-paper/95 dark:bg-night/95 backdrop-blur-md transition-all duration-300 border-b ${
         isScrolled
-          ? 'shadow-lg border-slate-300/90 bg-paper/95'
-          : 'border-ink/20'
+          ? 'shadow-lg border-slate-300/90 dark:border-slate-800 bg-paper/95 dark:bg-night/95'
+          : 'border-ink/20 dark:border-slate-800/80'
       }`}
     >
       <div
@@ -69,7 +71,7 @@ export default function Header() {
         {/* Left: Metadata (Date & Journal Motto) */}
         <div className="w-1/4 text-left hidden sm:flex flex-col justify-center transition-all duration-300 shrink-0">
           <p
-            className={`text-xs font-bold text-gray-500 uppercase tracking-widest transition-all duration-300 overflow-hidden whitespace-nowrap ${
+            className={`text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest transition-all duration-300 overflow-hidden whitespace-nowrap ${
               isScrolled ? 'max-h-0 opacity-0 m-0' : 'max-h-6 opacity-100'
             }`}
           >
@@ -77,7 +79,7 @@ export default function Header() {
           </p>
           <p
             className={`font-newsreader italic transition-all duration-300 whitespace-nowrap ${
-              isScrolled ? 'text-xs text-slate-600 font-medium' : 'text-xs md:text-sm text-gray-600'
+              isScrolled ? 'text-xs text-slate-600 dark:text-slate-400 font-medium' : 'text-xs md:text-sm text-gray-600 dark:text-slate-300'
             }`}
           >
             {dateString}
@@ -93,7 +95,7 @@ export default function Header() {
             title="Tạp Chí Pi - Bấm để cuộn lên đầu"
           >
             <h1
-              className={`font-playfair font-black text-cerulean tracking-tight whitespace-nowrap transition-all duration-300 group-hover:text-blue-800 ${
+              className={`font-playfair font-black text-cerulean dark:text-blue-400 tracking-tight whitespace-nowrap transition-all duration-300 group-hover:text-blue-800 dark:group-hover:text-blue-300 ${
                 isScrolled
                   ? 'text-2xl sm:text-3xl leading-tight'
                   : 'text-4xl sm:text-5xl md:text-6xl'
@@ -103,7 +105,7 @@ export default function Header() {
             </h1>
           </button>
           <h2
-            className={`font-playfair italic text-cerulean/85 transition-all duration-300 whitespace-nowrap overflow-hidden ${
+            className={`font-playfair italic text-cerulean/85 dark:text-blue-300/85 transition-all duration-300 whitespace-nowrap overflow-hidden ${
               isScrolled
                 ? 'max-h-0 opacity-0 m-0 text-xs'
                 : 'max-h-8 opacity-100 text-sm sm:text-base md:text-xl mt-1'
@@ -113,25 +115,46 @@ export default function Header() {
           </h2>
         </div>
 
-        {/* Right: Auth UI */}
-        <div className="w-1/4 flex justify-end items-center transition-all duration-300 shrink-0">
+        {/* Right: Auth UI & Theme Toggle */}
+        <div className="w-1/4 flex justify-end items-center gap-2 sm:gap-3 transition-all duration-300 shrink-0">
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-nightCard text-gray-600 dark:text-amber-300 hover:text-cerulean dark:hover:text-amber-200 hover:border-cerulean dark:hover:border-amber-400/50 shadow-2xs hover:shadow transition-all duration-200 flex items-center justify-center cursor-pointer"
+            title={isDark ? 'Chuyển sang Chế độ Sáng (Light Mode)' : 'Chuyển sang Chế độ Tối (Dark Mode)'}
+            aria-label="Chuyển đổi giao diện sáng/tối"
+          >
+            {isDark ? (
+              /* Sun Icon */
+              <svg className="w-4 h-4 text-amber-300 transform transition-transform hover:rotate-45" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              /* Moon Icon */
+              <svg className="w-4 h-4 text-slate-600 hover:text-cerulean transform transition-transform hover:-rotate-12" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+              </svg>
+            )}
+          </button>
+
           {isRealUser ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5">
               {currentUser.photoURL && (
                 <img
                   src={currentUser.photoURL}
                   alt="Avatar"
-                  className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-300 shadow-xs object-cover"
+                  className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-300 dark:border-slate-700 shadow-xs object-cover"
                 />
               )}
               <div className="flex flex-col items-end">
-                <span className="text-xs md:text-sm font-bold text-ink max-w-[120px] truncate">
+                <span className="text-xs md:text-sm font-bold text-ink dark:text-slate-100 max-w-[100px] sm:max-w-[120px] truncate">
                   {currentUser.displayName || currentUser.email || 'Người dùng PI'}
                 </span>
                 <button
                   type="button"
                   onClick={logout}
-                  className="text-[11px] text-jasper hover:underline font-bold cursor-pointer"
+                  className="text-[11px] text-jasper dark:text-red-400 hover:underline font-bold cursor-pointer"
                 >
                   Đăng xuất
                 </button>
@@ -141,7 +164,7 @@ export default function Header() {
             <button
               type="button"
               onClick={loginWithGoogle}
-              className="bg-white border border-gray-300 text-ink shadow-sm px-3.5 py-1.5 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 font-newsreader font-bold text-xs md:text-sm whitespace-nowrap cursor-pointer"
+              className="bg-white dark:bg-nightCard border border-gray-300 dark:border-slate-700 text-ink dark:text-slate-200 shadow-sm px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition flex items-center gap-2 font-newsreader font-bold text-xs md:text-sm whitespace-nowrap cursor-pointer"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

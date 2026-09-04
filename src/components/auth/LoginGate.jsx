@@ -16,15 +16,15 @@ export default function LoginGate() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center py-10 px-4 animate-dropdownFade">
-      <div className="w-full max-w-xl bg-white border border-gray-200/90 rounded-2xl shadow-xl p-8 sm:p-12 text-center relative overflow-hidden">
+      <div className="w-full max-w-xl bg-white dark:bg-nightCard border border-gray-200/90 dark:border-slate-800 rounded-2xl shadow-xl p-8 sm:p-12 text-center relative overflow-hidden transition-colors">
         {/* Subtle decorative background accents */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cerulean via-blue-700 to-jasper"></div>
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-50 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 dark:bg-blue-950/30 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-50 dark:bg-rose-950/30 rounded-full blur-2xl pointer-events-none"></div>
 
         {/* Pimaga Logo Emblem */}
         <div className="relative inline-flex items-center justify-center mb-6">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-paper border-2 border-cerulean/30 shadow-md flex items-center justify-center p-3 group transition-transform hover:scale-105 duration-300">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-paper dark:bg-nightInput border-2 border-cerulean/30 dark:border-blue-500/40 shadow-md flex items-center justify-center p-3 group transition-transform hover:scale-105 duration-300">
             <img
               src="/assets/pimaga-logo.svg"
               alt="Tạp Chí Pi"
@@ -38,34 +38,34 @@ export default function LoginGate() {
 
         {/* Academic Motto Badge */}
         <div className="mb-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-jasper bg-red-50 border border-red-200/70 px-3 py-1 rounded-full uppercase tracking-widest font-newsreader shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-jasper dark:text-rose-400 bg-red-50 dark:bg-rose-950/40 border border-red-200/70 dark:border-rose-900/60 px-3 py-1 rounded-full uppercase tracking-widest font-newsreader shadow-2xs">
             Toán Học & Tuổi Trẻ
           </span>
         </div>
 
         {/* Main Headline */}
-        <h2 className="font-playfair text-3xl sm:text-4xl font-black text-ink tracking-tight mb-3">
+        <h2 className="font-playfair text-3xl sm:text-4xl font-black text-ink dark:text-slate-100 tracking-tight mb-3">
           Cổng Tra Cứu & Giải Toán Pi
         </h2>
 
         {/* Introduction */}
-        <p className="font-newsreader text-gray-600 text-lg sm:text-xl leading-relaxed mb-8 max-w-md mx-auto">
+        <p className="font-newsreader text-gray-600 dark:text-slate-300 text-lg sm:text-xl leading-relaxed mb-8 max-w-md mx-auto">
           Chào mừng bạn đến với chuyên trang đề thi và bài giải chính thức của Tạp chí Pi. Vui lòng đăng nhập để bắt đầu trải nghiệm.
         </p>
 
         {/* Highlights feature list */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 text-left">
-          <div className="p-3 bg-paper rounded-xl border border-gray-200/80 shadow-2xs">
-            <div className="text-cerulean font-bold text-xs uppercase tracking-wider mb-1 font-newsreader">Kho Đề Thi</div>
-            <p className="text-xs text-gray-600 font-newsreader">Đề toán Olympic và chuyên đề học sinh giỏi.</p>
+          <div className="p-3 bg-paper dark:bg-nightInput rounded-xl border border-gray-200/80 dark:border-slate-800 shadow-2xs transition-colors">
+            <div className="text-cerulean dark:text-blue-400 font-bold text-xs uppercase tracking-wider mb-1 font-newsreader">Kho Đề Thi</div>
+            <p className="text-xs text-gray-600 dark:text-slate-400 font-newsreader">Đề toán Olympic và chuyên đề học sinh giỏi.</p>
           </div>
-          <div className="p-3 bg-paper rounded-xl border border-gray-200/80 shadow-2xs">
-            <div className="text-cerulean font-bold text-xs uppercase tracking-wider mb-1 font-newsreader">Soạn Thảo LaTeX</div>
-            <p className="text-xs text-gray-600 font-newsreader">Tích hợp KaTeX và sổ tay 60+ công thức.</p>
+          <div className="p-3 bg-paper dark:bg-nightInput rounded-xl border border-gray-200/80 dark:border-slate-800 shadow-2xs transition-colors">
+            <div className="text-cerulean dark:text-blue-400 font-bold text-xs uppercase tracking-wider mb-1 font-newsreader">Soạn Thảo LaTeX</div>
+            <p className="text-xs text-gray-600 dark:text-slate-400 font-newsreader">Tích hợp KaTeX và sổ tay 60+ công thức.</p>
           </div>
-          <div className="p-3 bg-paper rounded-xl border border-gray-200/80 shadow-2xs">
-            <div className="text-jasper font-bold text-xs uppercase tracking-wider mb-1 font-newsreader">Lời Giải Chuẩn</div>
-            <p className="text-xs text-gray-600 font-newsreader">Đối chiếu bài làm cùng Ban Biên Tập Pi.</p>
+          <div className="p-3 bg-paper dark:bg-nightInput rounded-xl border border-gray-200/80 dark:border-slate-800 shadow-2xs transition-colors">
+            <div className="text-jasper dark:text-rose-400 font-bold text-xs uppercase tracking-wider mb-1 font-newsreader">Lời Giải Chuẩn</div>
+            <p className="text-xs text-gray-600 dark:text-slate-400 font-newsreader">Đối chiếu bài làm cùng Ban Biên Tập Pi.</p>
           </div>
         </div>
 
@@ -75,10 +75,10 @@ export default function LoginGate() {
             type="button"
             onClick={handleLogin}
             disabled={isLoggingIn}
-            className="w-full py-3.5 px-6 bg-white hover:bg-gray-50 text-ink border-2 border-gray-300 hover:border-cerulean rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-3 font-newsreader font-bold text-base sm:text-lg cursor-pointer group disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3.5 px-6 bg-white dark:bg-nightInput hover:bg-gray-50 dark:hover:bg-slate-800 text-ink dark:text-slate-100 border-2 border-gray-300 dark:border-slate-700 hover:border-cerulean dark:hover:border-blue-500 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-3 font-newsreader font-bold text-base sm:text-lg cursor-pointer group disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isLoggingIn ? (
-              <svg className="animate-spin h-5 w-5 text-cerulean" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-5 w-5 text-cerulean dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -93,7 +93,7 @@ export default function LoginGate() {
             <span>{isLoggingIn ? 'Đang kết nối Google...' : 'Đăng nhập với Google'}</span>
           </button>
 
-          <p className="text-xs text-gray-500 font-newsreader">
+          <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
             Xác thực an toàn qua Google OAuth 2.0 • Không thu thập dữ liệu riêng tư
           </p>
         </div>

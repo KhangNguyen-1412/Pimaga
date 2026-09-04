@@ -75,7 +75,7 @@ export default function MathRenderer({ content, className = '' }) {
   }, [content]);
 
   if (!content) {
-    return <span className="italic text-gray-400">Xem trước sẽ hiển thị tại đây...</span>;
+    return <span className="italic text-gray-400 dark:text-slate-500">Xem trước sẽ hiển thị tại đây...</span>;
   }
 
   return <div className={`leading-relaxed ${className}`}>{renderedElements}</div>;

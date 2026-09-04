@@ -99,9 +99,9 @@ export default function ProblemList({
   }, [hasMore]);
 
   return (
-    <section className="bg-paper border border-gray-300 rounded-2xl shadow-sm overflow-hidden flex flex-col mb-16">
+    <section className="bg-paper dark:bg-nightCard border border-gray-300 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col mb-16 transition-colors duration-200">
       {/* Header bar */}
-      <div className="px-6 py-3.5 bg-paperDark border-b border-gray-200 flex justify-between items-center shrink-0">
+      <div className="px-6 py-3.5 bg-paperDark dark:bg-slate-900/80 border-b border-gray-200 dark:border-slate-800 flex justify-between items-center shrink-0 transition-colors duration-200">
         <div className="flex items-center gap-2.5">
           <img
             src="/assets/pimaga-logo.svg"
@@ -111,15 +111,15 @@ export default function ProblemList({
               e.target.style.display = 'none';
             }}
           />
-          <h3 className="font-playfair font-bold text-ink text-base md:text-lg tracking-wide uppercase">
+          <h3 className="font-playfair font-bold text-ink dark:text-slate-100 text-base md:text-lg tracking-wide uppercase">
             Danh Sách Tài Liệu Đề Bài
           </h3>
-          <span className="text-xs bg-white text-cerulean font-bold px-2.5 py-0.5 rounded-full border border-blue-200 font-mono shadow-xs">
+          <span className="text-xs bg-white dark:bg-blue-950/70 text-cerulean dark:text-blue-300 font-bold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900 font-mono shadow-xs">
             {filteredProblems.length} bài
           </span>
         </div>
-        <div className="text-xs text-gray-500 font-newsreader italic hidden sm:flex items-center gap-1.5">
-          <svg className="w-4 h-4 text-cerulean" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-xs text-gray-500 dark:text-slate-400 font-newsreader italic hidden sm:flex items-center gap-1.5">
+          <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
           <span>Cuộn danh sách bên dưới để đọc toàn bộ tài liệu đề</span>
@@ -135,21 +135,21 @@ export default function ProblemList({
         {/* Loading Skeleton */}
         {!isDataLoaded && problems.length === 0 && (
           <div className="space-y-6">
-            <div className="animate-pulse bg-white p-6 md:p-10 rounded-xl shadow-sm border border-gray-200">
+            <div className="animate-pulse bg-white dark:bg-nightCard p-6 md:p-10 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-4 bg-gray-200 rounded w-24"></div>
-                <div className="h-4 bg-gray-100 rounded w-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
+                <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded w-4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-32"></div>
               </div>
-              <div className="h-8 bg-gray-200 rounded-lg w-3/4 mb-6"></div>
+              <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded-lg w-3/4 mb-6"></div>
               <div className="space-y-3 mb-8">
-                <div className="h-4 bg-gray-100 rounded w-full"></div>
-                <div className="h-4 bg-gray-100 rounded w-11/12"></div>
-                <div className="h-4 bg-gray-100 rounded w-4/5"></div>
+                <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded w-full"></div>
+                <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded w-11/12"></div>
+                <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded w-4/5"></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100">
-                <div className="h-28 bg-gray-50 border-l-4 border-gray-200 rounded p-4"></div>
-                <div className="h-28 bg-gray-50 border-l-4 border-gray-200 rounded p-4"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 dark:border-slate-800">
+                <div className="h-28 bg-gray-50 dark:bg-nightInput border-l-4 border-gray-200 dark:border-slate-700 rounded p-4"></div>
+                <div className="h-28 bg-gray-50 dark:bg-nightInput border-l-4 border-gray-200 dark:border-slate-700 rounded p-4"></div>
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function ProblemList({
 
         {/* Empty State */}
         {isDataLoaded && filteredProblems.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center p-6">
+          <div className="text-center py-16 bg-white dark:bg-nightCard rounded-xl border border-dashed border-gray-300 dark:border-slate-800 flex flex-col items-center justify-center p-6">
             <img
               src="/assets/pimaga-logo.svg"
               alt="Pimaga Emblem"
@@ -166,8 +166,8 @@ export default function ProblemList({
                 e.target.style.display = 'none';
               }}
             />
-            <h3 className="font-playfair text-2xl text-gray-500 mb-2">Chưa có bài toán nào</h3>
-            <p className="font-newsreader text-gray-400">Hãy là người đầu tiên soạn đề bài cho chuyên mục này.</p>
+            <h3 className="font-playfair text-2xl text-gray-500 dark:text-slate-300 mb-2">Chưa có bài toán nào</h3>
+            <p className="font-newsreader text-gray-400 dark:text-slate-500">Hãy là người đầu tiên soạn đề bài cho chuyên mục này.</p>
           </div>
         )}
 
@@ -193,10 +193,10 @@ export default function ProblemList({
             <button
               type="button"
               onClick={loadMore}
-              className="bg-white hover:bg-blue-50/70 border-2 border-cerulean text-cerulean px-8 py-3 rounded-xl font-playfair font-bold text-lg shadow-sm hover:shadow-md transition-all flex items-center gap-3 cursor-pointer group"
+              className="bg-white dark:bg-nightInput hover:bg-blue-50/70 dark:hover:bg-slate-800 border-2 border-cerulean dark:border-blue-500 text-cerulean dark:text-blue-400 px-8 py-3 rounded-xl font-playfair font-bold text-lg shadow-sm hover:shadow-md transition-all flex items-center gap-3 cursor-pointer group"
             >
               <span>Xem Thêm Bài Toán</span>
-              <span className="text-xs bg-blue-100 text-cerulean font-sans font-bold px-2.5 py-1 rounded-full border border-blue-200">
+              <span className="text-xs bg-blue-100 dark:bg-blue-950 text-cerulean dark:text-blue-300 font-sans font-bold px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800">
                 Còn {remaining} bài
               </span>
               <svg
@@ -208,7 +208,7 @@ export default function ProblemList({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <span className="text-xs text-gray-400 font-newsreader mt-2.5">
+            <span className="text-xs text-gray-400 dark:text-slate-500 font-newsreader mt-2.5">
               Đang hiển thị {visibleItems.length} trên tổng số {filteredProblems.length} bài toán
             </span>
             <div ref={sentinelRef} className="w-full h-2"></div>
@@ -216,7 +216,7 @@ export default function ProblemList({
         )}
 
         {!hasMore && filteredProblems.length > 10 && (
-          <div className="text-center py-6 text-gray-400 text-sm font-newsreader italic border-t border-gray-200">
+          <div className="text-center py-6 text-gray-400 dark:text-slate-500 text-sm font-newsreader italic border-t border-gray-200 dark:border-slate-800">
             Đã hiển thị toàn bộ {filteredProblems.length} bài toán.
           </div>
         )}

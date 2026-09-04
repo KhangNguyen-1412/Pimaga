@@ -394,19 +394,19 @@ export default function App() {
 
   if (loadingAuth) {
     return (
-      <div className="bg-paper text-ink font-newsreader min-h-screen flex items-center justify-center">
+      <div className="bg-paper dark:bg-night text-ink dark:text-slate-100 font-newsreader min-h-screen flex items-center justify-center transition-colors duration-200">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-paper border-2 border-cerulean/30 flex items-center justify-center p-3 animate-pulse shadow-md">
+          <div className="w-16 h-16 rounded-full bg-paper dark:bg-nightCard border-2 border-cerulean/30 flex items-center justify-center p-3 animate-pulse shadow-md">
             <img src="/assets/pimaga-logo.svg" alt="Pi" className="w-full h-full object-contain" />
           </div>
-          <p className="text-gray-500 font-newsreader italic text-base">Đang tải Tạp Chí Pi...</p>
+          <p className="text-gray-500 dark:text-slate-400 font-newsreader italic text-base">Đang tải Tạp Chí Pi...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-paper text-ink font-newsreader min-h-screen relative">
+    <div className="bg-paper dark:bg-night text-ink dark:text-slate-100 font-newsreader min-h-screen relative transition-colors duration-200">
       {/* Dynamic SEO Meta Tags */}
       <SEOHead
         title={seoData.title}
