@@ -440,7 +440,7 @@ export default function ProblemDetailPage({
                     value={solutionDraft}
                     onChange={(e) => setSolutionDraft(e.target.value)}
                     rows={8}
-                    className="w-full flex-1 min-h-[180px] md:min-h-[220px] border border-cerulean/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 rounded-lg p-3 font-newsreader text-base outline-none transition resize-y leading-relaxed"
+                    className="w-full flex-1 min-h-[180px] md:min-h-[220px] max-h-[360px] overflow-y-auto border border-cerulean/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 rounded-lg p-3 font-newsreader text-base outline-none transition resize-y leading-relaxed custom-scrollbar"
                     placeholder="Nhập các bước lập luận, biến đổi toán học vào đây. Dùng $...$ cho công thức nằm trong dòng, $$...$$ cho công thức đứng riêng dòng..."
                   />
                 </div>
@@ -450,7 +450,7 @@ export default function ProblemDetailPage({
                   <label className="text-xs font-bold text-cerulean font-playfair uppercase tracking-wider mb-1.5">
                     Xem trước trực tiếp (KaTeX Preview):
                   </label>
-                  <div className="flex-1 min-h-[180px] md:min-h-[220px] max-h-[340px] overflow-y-auto p-3.5 bg-paper border border-gray-200 rounded-lg text-ink font-newsreader text-base leading-relaxed shadow-inner">
+                  <div className="flex-1 min-h-[180px] md:min-h-[220px] max-h-[360px] overflow-y-auto p-3.5 bg-paper border border-gray-200 rounded-lg text-ink font-newsreader text-base leading-relaxed shadow-inner custom-scrollbar">
                     {solutionDraft.trim() ? (
                       <MathRenderer content={solutionDraft} />
                     ) : (
@@ -525,7 +525,7 @@ export default function ProblemDetailPage({
               {/* Solution Content or Empty State */}
               {userSolution ? (
                 <div>
-                  <div className="bg-blue-50/40 border border-cerulean/20 p-5 rounded-xl font-newsreader text-lg text-ink leading-relaxed">
+                  <div className="bg-blue-50/40 border border-cerulean/20 p-5 rounded-xl font-newsreader text-lg text-ink leading-relaxed max-h-[420px] overflow-y-auto pr-3 custom-scrollbar">
                     <MathRenderer content={userSolution} />
                   </div>
                   <div className="mt-4 flex justify-end">
@@ -620,7 +620,7 @@ export default function ProblemDetailPage({
             {/* Editorial Solution Display */}
             {problem.editorialSolution ? (
               showEditorialSolution ? (
-                <div className="bg-gray-50 border-l-4 border-jasper p-5 rounded-r-xl font-newsreader text-lg text-gray-900 leading-relaxed animate-dropdownFade">
+                <div className="bg-gray-50 border-l-4 border-jasper p-5 rounded-r-xl font-newsreader text-lg text-gray-900 leading-relaxed animate-dropdownFade max-h-[420px] overflow-y-auto pr-3 custom-scrollbar">
                   <MathRenderer content={problem.editorialSolution} />
                 </div>
               ) : (

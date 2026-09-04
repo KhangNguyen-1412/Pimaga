@@ -203,7 +203,7 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
               ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full flex-1 min-h-[160px] md:min-h-[200px] border border-cerulean/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 rounded-lg p-3 font-newsreader text-base resize-y outline-none transition"
+              className="w-full flex-1 min-h-[160px] md:min-h-[200px] max-h-[380px] overflow-y-auto border border-cerulean/40 focus:border-cerulean focus:ring-2 focus:ring-cerulean/20 bg-blue-50/20 rounded-lg p-3 font-newsreader text-base resize-y outline-none transition custom-scrollbar"
               placeholder="Ghi chép cách giải của bạn vào đây. Sử dụng $công thức$ hoặc $$công thức$$ để KaTeX hiển thị đẹp..."
             />
           </div>
@@ -217,7 +217,7 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
               </svg>
               Xem Trước Trực Tiếp (Live Preview):
             </div>
-            <div className="flex-1 min-h-[160px] overflow-y-auto p-3.5 bg-paper border border-gray-200 rounded-lg text-ink font-newsreader text-base leading-relaxed shadow-inner">
+            <div className="flex-1 min-h-[160px] max-h-[380px] overflow-y-auto p-3.5 bg-paper border border-gray-200 rounded-lg text-ink font-newsreader text-base leading-relaxed shadow-inner custom-scrollbar">
               <MathRenderer content={content} />
             </div>
           </div>
