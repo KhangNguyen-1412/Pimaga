@@ -35,7 +35,7 @@ export const ACADEMIC_RANKS = [
     title: 'Đại kiện tướng Pi',
     minSolved: 30,
     maxSolved: Infinity,
-    badgeColor: 'bg-linear-to-r from-blue-50 to-red-50 dark:from-blue-950/60 dark:to-rose-950/60 text-jasper dark:text-rose-300 border-jasper/40 dark:border-rose-800',
+    badgeColor: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 dark:border-amber-800',
     iconType: 'trophy',
     desc: 'Bậc thầy giải đề Pi với kho bài giải đồ sộ và xuất sắc.',
   },
@@ -284,3 +284,130 @@ function cleanLatexMath(text = '') {
   // Giữ nguyên các khối công thức toán $...$ hoặc $$...$$, xử lý xuống dòng
   return String(text).trim();
 }
+
+/**
+ * Tính toán chuỗi ngày học liên tục (Streak Counter)
+ * @param {Object} streakData { current: number, longest: number, lastActiveDate: string }
+ * @param {string} [todayDateStr] YYYY-MM-DD
+ */
+export function calculateStreak(streakData = {}, todayDateStr) {
+  const today = todayDateStr || new Date().toISOString().split('T')[0];
+  const lastActive = streakData.lastActiveDate;
+  const current = Math.max(0, Number(streakData.current) || 0);
+  const longest = Math.max(0, Number(streakData.longest) || 0);
+
+  if (!lastActive) {
+    return {
+      current: 1,
+      longest: Math.max(1, longest),
+      lastActiveDate: today,
+    };
+  }
+
+  if (lastActive === today) {
+    const validCurrent = Math.max(1, current);
+    return {
+      current: validCurrent,
+      longest: Math.max(validCurrent, longest),
+      lastActiveDate: today,
+    };
+  }
+
+  // Day difference calculation
+  const dLast = new Date(lastActive + 'T00:00:00');
+  const dToday = new Date(today + 'T00:00:00');
+  const diffTime = dToday.getTime() - dLast.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+
+  if (diffDays === 1) {
+    // Consecutive day
+    const nextCurrent = current + 1;
+    return {
+      current: nextCurrent,
+      longest: Math.max(nextCurrent, longest),
+      lastActiveDate: today,
+    };
+  } else if (diffDays > 1) {
+    // Missed a day or more
+    return {
+      current: 1,
+      longest: longest,
+      lastActiveDate: today,
+    };
+  }
+
+  return {
+    current: Math.max(1, current),
+    longest: Math.max(current, longest),
+    lastActiveDate: today,
+  };
+}
+
+/**
+ * Tính toán tiến độ thử thách theo từng Số phát hành (Monthly Issue Challenges)
+ */
+export function calculateIssueChallenges(issues = [], problems = [], userSolutionsMap = {}) {
+  return issues.map((issue) => {
+    const issueProblems = problems.filter((p) => p.issueId === issue.id);
+    const total = issueProblems.length;
+    let solved = 0;
+
+    issueProblems.forEach((p) => {
+      if (userSolutionsMap[p.id] && String(userSolutionsMap[p.id]).trim()) {
+        solved += 1;
+      }
+    });
+
+    const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
+    const isCompleted = total > 0 && solved === total;
+
+    return {
+      issueId: issue.id,
+      issueName: issue.name,
+      total,
+      solved,
+      percent,
+      isCompleted,
+    };
+  });
+}
+
+/**
+ * Danh sách Bảng vinh danh học thuật (Leaderboard / Hall of Fame)
+ */
+export function generateLeaderboard(userProfile = {}, solvedCount = 0, currentStreak = 0) {
+  const currentUserName = userProfile.displayName || 'Bạn (Hồ sơ của bạn)';
+  const currentUserSchool = userProfile.school || 'Tạp chí Pi';
+
+  const sampleHonors = [
+    { id: 'h1', name: 'Nguyễn Chu An', school: 'Chuyên KHTN Hà Nội', solved: 38, streak: 19, tier: 4, rankTitle: 'Đại kiện tướng Pi' },
+    { id: 'h2', name: 'Trần Minh Đức', school: 'Chuyên Lê Hồng Phong TP.HCM', solved: 27, streak: 12, tier: 3, rankTitle: 'Kiện tướng Toán học' },
+    { id: 'h3', name: 'Lê Hoàng Yến', school: 'ĐH Sư Phạm Hà Nội', solved: 22, streak: 15, tier: 3, rankTitle: 'Kiện tướng Toán học' },
+    { id: 'h4', name: 'Vũ Quốc Bảo', school: 'Chuyên Lam Sơn Thanh Hóa', solved: 14, streak: 7, tier: 2, rankTitle: 'Tín đồ Pi' },
+    { id: 'h5', name: 'Phạm Thu Trang', school: 'Chuyên Phan Bội Châu Nghệ An', solved: 9, streak: 5, tier: 2, rankTitle: 'Tín đồ Pi' },
+  ];
+
+  const userRankObj = getAcademicRank(solvedCount);
+  const currentUserEntry = {
+    id: 'current_user',
+    name: currentUserName,
+    school: currentUserSchool,
+    solved: solvedCount,
+    streak: currentStreak,
+    tier: userRankObj.tier,
+    rankTitle: userRankObj.title,
+    isCurrentUser: true,
+  };
+
+  const list = [...sampleHonors, currentUserEntry];
+  list.sort((a, b) => {
+    if (b.solved !== a.solved) return b.solved - a.solved;
+    return b.streak - a.streak;
+  });
+
+  return list.map((item, index) => ({
+    ...item,
+    position: index + 1,
+  }));
+}
+

@@ -5,6 +5,9 @@ import {
   calculateCategoryStats,
   generateSolutionsLatex,
   generateSolutionsMarkdown,
+  calculateStreak,
+  calculateIssueChallenges,
+  generateLeaderboard,
   ACADEMIC_RANKS,
 } from '../utils/profileUtils';
 
@@ -85,6 +88,76 @@ describe('profileUtils', () => {
       expect(stats[1].name).toBe('Số học');
       expect(stats[1].solved).toBe(0);
       expect(stats[1].percent).toBe(0);
+    });
+  });
+
+  describe('calculateStreak', () => {
+    it('initializes streak to 1 if no previous active date', () => {
+      const res = calculateStreak({}, '2026-09-05');
+      expect(res.current).toBe(1);
+      expect(res.longest).toBe(1);
+      expect(res.lastActiveDate).toBe('2026-09-05');
+    });
+
+    it('increments streak on consecutive day', () => {
+      const res = calculateStreak({ current: 2, longest: 5, lastActiveDate: '2026-09-04' }, '2026-09-05');
+      expect(res.current).toBe(3);
+      expect(res.longest).toBe(5);
+      expect(res.lastActiveDate).toBe('2026-09-05');
+    });
+
+    it('resets current streak to 1 if more than 1 day was missed', () => {
+      const res = calculateStreak({ current: 4, longest: 7, lastActiveDate: '2026-09-01' }, '2026-09-05');
+      expect(res.current).toBe(1);
+      expect(res.longest).toBe(7);
+      expect(res.lastActiveDate).toBe('2026-09-05');
+    });
+
+    it('keeps streak intact when active multiple times on the same day', () => {
+      const res = calculateStreak({ current: 3, longest: 3, lastActiveDate: '2026-09-05' }, '2026-09-05');
+      expect(res.current).toBe(3);
+      expect(res.longest).toBe(3);
+    });
+  });
+
+  describe('calculateIssueChallenges', () => {
+    it('computes issue completion percentage and badges', () => {
+      const issues = [
+        { id: 'iss1', name: 'Số 1' },
+        { id: 'iss2', name: 'Số 2' },
+      ];
+      const problems = [
+        { id: 'p1', issueId: 'iss1' },
+        { id: 'p2', issueId: 'iss1' },
+        { id: 'p3', issueId: 'iss2' },
+      ];
+      const userSolutionsMap = {
+        p1: 'Lời giải bài 1',
+        p2: 'Lời giải bài 2',
+      };
+
+      const challenges = calculateIssueChallenges(issues, problems, userSolutionsMap);
+      expect(challenges[0].total).toBe(2);
+      expect(challenges[0].solved).toBe(2);
+      expect(challenges[0].percent).toBe(100);
+      expect(challenges[0].isCompleted).toBe(true);
+
+      expect(challenges[1].total).toBe(1);
+      expect(challenges[1].solved).toBe(0);
+      expect(challenges[1].percent).toBe(0);
+      expect(challenges[1].isCompleted).toBe(false);
+    });
+  });
+
+  describe('generateLeaderboard', () => {
+    it('places current user in ranked leaderboard list', () => {
+      const board = generateLeaderboard({ displayName: 'Euler', school: 'THPT Chuyên' }, 15, 6);
+      expect(board.length).toBeGreaterThan(5);
+      const currentUser = board.find((u) => u.isCurrentUser);
+      expect(currentUser).toBeDefined();
+      expect(currentUser.name).toBe('Euler');
+      expect(currentUser.solved).toBe(15);
+      expect(currentUser.position).toBeGreaterThan(0);
     });
   });
 

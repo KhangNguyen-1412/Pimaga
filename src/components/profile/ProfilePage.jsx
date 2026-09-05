@@ -9,6 +9,8 @@ import {
   getAcademicRank,
   calculateDifficultyStats,
   calculateCategoryStats,
+  calculateIssueChallenges,
+  generateLeaderboard,
   generateSolutionsLatex,
   generateSolutionsMarkdown,
   downloadFile,
@@ -146,6 +148,37 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
     () => calculateCategoryStats(problems, userSolutionsMap, categories),
     [problems, userSolutionsMap, categories]
   );
+
+  // Gamification: Thử thách kỳ báo
+  const issueChallenges = useMemo(
+    () => calculateIssueChallenges(issues, problems, userSolutionsMap),
+    [issues, problems, userSolutionsMap]
+  );
+
+  // Gamification: Bảng vinh danh học thuật (Leaderboard)
+  const leaderboard = useMemo(
+    () => generateLeaderboard(userProfile, solvedItems.length, userProfile?.streak?.current || 1),
+    [userProfile, solvedItems.length]
+  );
+
+  // Gamification: 7-day visual week calendar
+  const weekDayTracker = useMemo(() => {
+    const today = new Date();
+    const currentDayIdx = (today.getDay() + 6) % 7; // Thứ 2 = 0, ..., Chủ Nhật = 6
+    const days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+    const currentStreak = userProfile?.streak?.current || 1;
+
+    return days.map((dayLabel, idx) => {
+      const isToday = idx === currentDayIdx;
+      const isActive = idx <= currentDayIdx && (currentDayIdx - idx) < currentStreak;
+      return {
+        label: dayLabel,
+        isToday,
+        isActive,
+        isPastOrToday: idx <= currentDayIdx,
+      };
+    });
+  }, [userProfile?.streak?.current]);
 
   // Handlers for exporting solutions
   const handleExportLatex = () => {
@@ -792,6 +825,75 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                 </div>
               </div>
 
+              {/* Chuỗi Ngày Rèn Luyện (Streak Tracker) */}
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4 font-newsreader">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-rose-950/60 text-jasper dark:text-rose-400 border border-jasper/30 flex items-center justify-center">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.173 1.559-1.874 2.257-.905.903-1.847 1.846-2.316 3.018-.46 1.15-.46 2.378-.052 3.518.397 1.11 1.18 2.052 2.122 2.684.945.635 2.062.98 3.197.98 1.135 0 2.252-.345 3.197-.98.942-.632 1.725-1.574 2.122-2.684.408-1.14.408-2.368-.052-3.518-.469-1.172-1.411-2.115-2.316-3.018-.701-.698-1.347-1.437-1.874-2.257a3.834 3.834 0 01-.291-.492zM10 14a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base text-gray-900 dark:text-slate-100 font-playfair leading-tight">
+                        Chuỗi Ngày Rèn Luyện (Streak)
+                      </h4>
+                      <span className="text-xs text-gray-500 dark:text-slate-400">
+                        Duy trì thói quen học tập và rèn luyện toán học đều đặn
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-full font-medium">
+                      Kỷ lục: <strong className="text-ink dark:text-slate-100 font-bold">{userProfile?.streak?.longest || 1} ngày</strong>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center pt-1">
+                  {/* Left: Current count */}
+                  <div className="sm:col-span-4 flex items-baseline gap-2 bg-red-50/50 dark:bg-rose-950/20 p-3.5 rounded-xl border border-jasper/20">
+                    <span className="text-4xl font-black text-jasper dark:text-rose-400 font-playfair">
+                      {userProfile?.streak?.current || 1}
+                    </span>
+                    <div className="leading-tight">
+                      <span className="text-sm font-bold text-jasper dark:text-rose-300 block">Ngày liên tiếp</span>
+                      <span className="text-xs text-gray-500 dark:text-slate-400">Mục tiêu: Đạt 7 ngày</span>
+                    </div>
+                  </div>
+
+                  {/* Right: 7-day visual week calendar */}
+                  <div className="sm:col-span-8 flex justify-between items-center gap-1.5 p-2 bg-gray-50 dark:bg-slate-900/60 rounded-xl border border-gray-200 dark:border-slate-800">
+                    {weekDayTracker.map((day) => (
+                      <div key={day.label} className="flex-1 flex flex-col items-center gap-1">
+                        <span className={`text-[11px] font-bold ${day.isToday ? 'text-cerulean dark:text-blue-400' : 'text-gray-500 dark:text-slate-400'}`}>
+                          {day.label}
+                        </span>
+                        <div
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
+                            day.isActive
+                              ? 'bg-jasper text-white shadow-xs'
+                              : day.isToday
+                              ? 'bg-white dark:bg-slate-800 border-2 border-cerulean text-cerulean dark:text-blue-400'
+                              : 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-400 dark:text-slate-500'
+                          }`}
+                          title={`${day.label}: ${day.isActive ? 'Đã hoạt động' : day.isToday ? 'Hôm nay' : 'Chưa điểm danh'}`}
+                        >
+                          {day.isActive ? (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <span className="text-xs font-mono">{day.isToday ? '•' : ''}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {/* Breakdown by Difficulty */}
               <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-4 shadow-2xs space-y-3 font-newsreader">
                 <h4 className="font-bold text-base text-gray-900 dark:text-slate-100 flex items-center gap-2 font-playfair">
@@ -857,6 +959,199 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                       </div>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Thử Thách Hoàn Thành Kỳ Báo */}
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4 font-newsreader">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 border border-cerulean/30 flex items-center justify-center">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base text-gray-900 dark:text-slate-100 font-playfair leading-tight">
+                        Thử Thách Hoàn Thành Kỳ Báo
+                      </h4>
+                      <span className="text-xs text-gray-500 dark:text-slate-400">
+                        Chinh phục toàn bộ các bài toán trong từng số phát hành
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-cerulean dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-cerulean/20 px-2.5 py-0.5 rounded-full font-bold">
+                    {issueChallenges.filter((c) => c.isCompleted).length} / {issueChallenges.length} kỳ hoàn tất
+                  </span>
+                </div>
+
+                {issueChallenges.length === 0 ? (
+                  <div className="text-center py-6 text-sm text-gray-400 dark:text-slate-500 italic">
+                    Chưa có số phát hành nào trong hệ thống.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    {issueChallenges.map((challenge) => {
+                      return (
+                        <div
+                          key={challenge.issueId}
+                          className={`p-3.5 rounded-xl border transition-all ${
+                            challenge.isCompleted
+                              ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800'
+                              : 'bg-gray-50/70 dark:bg-slate-900/50 border-gray-200 dark:border-slate-800'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                              <h5 className="font-bold text-sm text-gray-900 dark:text-slate-100 font-playfair leading-snug">
+                                {challenge.name}
+                              </h5>
+                              <span className="text-xs text-gray-500 dark:text-slate-400">
+                                Đã giải {challenge.solvedCount} / {challenge.totalCount} bài ({challenge.percent}%)
+                              </span>
+                            </div>
+
+                            {challenge.isCompleted ? (
+                              <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[11px] font-bold rounded-full shrink-0">
+                                <svg className="w-3 h-3 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span>100% Hoàn thành</span>
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-mono text-gray-500 dark:text-slate-400 font-bold px-2 py-0.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full shrink-0">
+                                {challenge.percent}%
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Progress bar */}
+                          <div className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-300 ${
+                                challenge.isCompleted ? 'bg-amber-500' : 'bg-cerulean dark:bg-blue-400'
+                              }`}
+                              style={{ width: `${challenge.percent}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Bảng Vinh Danh Học Thuật (Hall of Fame) */}
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4 font-newsreader">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300/60 flex items-center justify-center">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base text-gray-900 dark:text-slate-100 font-playfair leading-tight">
+                        Bảng Vinh Danh Học Thuật
+                      </h4>
+                      <span className="text-xs text-gray-500 dark:text-slate-400">
+                        Cộng đồng độc giả và các nhà toán học trẻ xuất sắc
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className="text-xs text-gray-500 dark:text-slate-400 italic">
+                    Cập nhật theo chu kỳ hàng ngày
+                  </span>
+                </div>
+
+                {/* Leaderboard Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm font-newsreader">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-slate-800 text-xs text-gray-500 dark:text-slate-400 uppercase tracking-wider font-bold">
+                        <th className="py-2.5 px-3 w-14">Hạng</th>
+                        <th className="py-2.5 px-3">Học Giả</th>
+                        <th className="py-2.5 px-3 text-center">Đã Giải</th>
+                        <th className="py-2.5 px-3 text-right">Chuỗi Học</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800/60">
+                      {leaderboard.map((scholar) => {
+                        const isTop1 = scholar.rank === 1;
+                        const isTop2 = scholar.rank === 2;
+                        const isTop3 = scholar.rank === 3;
+
+                        return (
+                          <tr
+                            key={scholar.id}
+                            className={`transition-colors ${
+                              scholar.isUser
+                                ? 'bg-blue-50/70 dark:bg-blue-950/40 font-semibold'
+                                : 'hover:bg-gray-50/60 dark:hover:bg-slate-800/40'
+                            }`}
+                          >
+                            {/* Rank Column */}
+                            <td className="py-2.5 px-3">
+                              {isTop1 ? (
+                                <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 border border-amber-300 font-bold flex items-center justify-center text-xs">
+                                  1
+                                </span>
+                              ) : isTop2 ? (
+                                <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200 border border-slate-300 font-bold flex items-center justify-center text-xs">
+                                  2
+                                </span>
+                              ) : isTop3 ? (
+                                <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-900 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-300 font-bold flex items-center justify-center text-xs">
+                                  3
+                                </span>
+                              ) : (
+                                <span className="w-6 h-6 rounded-full text-gray-500 dark:text-slate-400 font-mono text-xs flex items-center justify-center">
+                                  {scholar.rank}
+                                </span>
+                              )}
+                            </td>
+
+                            {/* Scholar Info */}
+                            <td className="py-2.5 px-3">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-gray-900 dark:text-slate-100">
+                                  {scholar.name}
+                                </span>
+                                {scholar.isUser && (
+                                  <span className="text-[10px] bg-cerulean text-white font-bold px-1.5 py-0.2 rounded-full font-mono">
+                                    Bạn
+                                  </span>
+                                )}
+                                <span className="text-xs text-gray-500 dark:text-slate-400 hidden sm:inline">
+                                  ({scholar.role})
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* Solved Count */}
+                            <td className="py-2.5 px-3 text-center">
+                              <span className="font-bold text-cerulean dark:text-blue-400">
+                                {scholar.solvedCount}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-slate-400 ml-1">bài</span>
+                            </td>
+
+                            {/* Streak */}
+                            <td className="py-2.5 px-3 text-right">
+                              <span className="inline-flex items-center gap-1 text-jasper dark:text-rose-400 font-bold text-xs">
+                                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.173 1.559-1.874 2.257-.905.903-1.847 1.846-2.316 3.018-.46 1.15-.46 2.378-.052 3.518.397 1.11 1.18 2.052 2.122 2.684.945.635 2.062.98 3.197.98 1.135 0 2.252-.345 3.197-.98.942-.632 1.725-1.574 2.122-2.684.408-1.14.408-2.368-.052-3.518-.469-1.172-1.411-2.115-2.316-3.018-.701-.698-1.347-1.437-1.874-2.257a3.834 3.834 0 01-.291-.492zM10 14a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                </svg>
+                                <span>{scholar.streak} ngày</span>
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

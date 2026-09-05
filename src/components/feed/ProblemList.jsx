@@ -9,7 +9,22 @@ export default function ProblemList({
   onOpenSolution,
   onOpenDetail,
 }) {
-  const { problems, issues, categories, userSolutionsMap, filterIssue, filterCategory, isDataLoaded } = useData();
+  const {
+    problems,
+    issues,
+    categories,
+    userSolutionsMap,
+    filterIssue,
+    filterCategory,
+    filterSearch,
+    filterDifficulty,
+    filterProvince,
+    filterStatus,
+    isBookmarked,
+    resetFilters,
+    activeFilterCount,
+    isDataLoaded,
+  } = useData();
   const [visibleCount, setVisibleCount] = useState(10);
   const containerRef = useRef(null);
   const sentinelRef = useRef(null);
@@ -20,10 +35,58 @@ export default function ProblemList({
 
   // Filtered and sorted problems
   const filteredProblems = useMemo(() => {
+    const q = (filterSearch || '').trim().toLowerCase();
+
     const list = problems.filter((p) => {
-      const matchIssue = filterIssue ? p.issueId === filterIssue : true;
-      const matchCat = filterCategory ? p.categoryId === filterCategory : true;
-      return matchIssue && matchCat;
+      // 1. Issue filter
+      if (filterIssue && p.issueId !== filterIssue) return false;
+
+      // 2. Category filter
+      if (filterCategory && p.categoryId !== filterCategory) return false;
+
+      // 3. Search query filter (matches code, title, content, author, province)
+      if (q) {
+        const codeMatch = (p.code || '').toLowerCase().includes(q);
+        const titleMatch = (p.title || '').toLowerCase().includes(q);
+        const contentMatch = (p.content || '').toLowerCase().includes(q);
+        const authorMatch = (p.author || '').toLowerCase().includes(q);
+        const provinceMatch = (p.province || '').toLowerCase().includes(q);
+        if (!codeMatch && !titleMatch && !contentMatch && !authorMatch && !provinceMatch) {
+          return false;
+        }
+      }
+
+      // 4. Difficulty filter
+      if (filterDifficulty && filterDifficulty !== 'all') {
+        const diff = parseInt(p.difficulty, 10) || 2;
+        if (filterDifficulty === 'basic') {
+          if (diff > 2) return false;
+        } else if (filterDifficulty === 'standard') {
+          if (diff !== 3) return false;
+        } else if (filterDifficulty === 'advanced') {
+          if (diff < 4) return false;
+        } else {
+          const targetDiff = parseInt(filterDifficulty, 10);
+          if (diff !== targetDiff) return false;
+        }
+      }
+
+      // 5. Province filter
+      if (filterProvince && filterProvince !== 'all') {
+        if ((p.province || '').trim().toLowerCase() !== filterProvince.trim().toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 6. Status filter
+      if (filterStatus && filterStatus !== 'all') {
+        const hasSol = Boolean(userSolutionsMap[p.id]);
+        if (filterStatus === 'solved' && !hasSol) return false;
+        if (filterStatus === 'unsolved' && hasSol) return false;
+        if (filterStatus === 'bookmarked' && !isBookmarked(p.id)) return false;
+      }
+
+      return true;
     });
 
     // Sort by code number ascending: P1, P2, P3...
@@ -32,7 +95,17 @@ export default function ProblemList({
       const numB = parseInt((b.code || '').replace(/^[pP]/i, ''), 10) || 0;
       return numA - numB;
     });
-  }, [problems, filterIssue, filterCategory]);
+  }, [
+    problems,
+    filterIssue,
+    filterCategory,
+    filterSearch,
+    filterDifficulty,
+    filterProvince,
+    filterStatus,
+    userSolutionsMap,
+    isBookmarked,
+  ]);
 
   // If a problem is highlighted (direct link), ensure visibleCount includes it
   useEffect(() => {
@@ -68,7 +141,15 @@ export default function ProblemList({
         containerRef.current.scrollTop = 0;
       }
     }
-  }, [filterIssue, filterCategory, highlightedProblemId]);
+  }, [
+    filterIssue,
+    filterCategory,
+    filterSearch,
+    filterDifficulty,
+    filterProvince,
+    filterStatus,
+    highlightedProblemId,
+  ]);
 
   const visibleItems = useMemo(() => {
     return filteredProblems.slice(0, visibleCount);
@@ -157,18 +238,44 @@ export default function ProblemList({
 
         {/* Empty State */}
         {isDataLoaded && filteredProblems.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-nightCard rounded-xl border border-dashed border-gray-300 dark:border-slate-800 flex flex-col items-center justify-center p-6">
-            <img
-              src="/assets/pimaga-logo.svg"
-              alt="Pimaga Emblem"
-              className="w-16 h-16 rounded-full opacity-60 mb-4 select-none filter grayscale hover:grayscale-0 hover:opacity-100 hover:scale-105 transition-all duration-300 shadow-md"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-            <h3 className="font-playfair text-2xl text-gray-500 dark:text-slate-300 mb-2">Chưa có bài toán nào</h3>
-            <p className="font-newsreader text-gray-400 dark:text-slate-500">Hãy là người đầu tiên soạn đề bài cho chuyên mục này.</p>
-          </div>
+          (activeFilterCount > 0 || Boolean(filterSearch) || Boolean(filterIssue) || Boolean(filterCategory)) ? (
+            <div className="text-center py-16 bg-white dark:bg-nightCard rounded-xl border border-dashed border-gray-300 dark:border-slate-800 flex flex-col items-center justify-center p-6 space-y-3.5 font-newsreader">
+              <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-900 shadow-2xs">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <h3 className="font-playfair text-2xl font-bold text-gray-800 dark:text-slate-200">
+                Không tìm thấy bài toán phù hợp
+              </h3>
+              <p className="font-newsreader text-sm text-gray-500 dark:text-slate-400 max-w-md">
+                Không có bài toán nào khớp với từ khóa tìm kiếm hoặc các tiêu chí bộ lọc đã chọn. Hãy thử nới lỏng hoặc đặt lại các bộ lọc.
+              </p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="px-5 py-2.5 bg-cerulean hover:bg-blue-800 text-white rounded-lg font-bold text-sm transition cursor-pointer shadow-xs font-newsreader flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Xóa tất cả bộ lọc</span>
+              </button>
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-white dark:bg-nightCard rounded-xl border border-dashed border-gray-300 dark:border-slate-800 flex flex-col items-center justify-center p-6">
+              <img
+                src="/assets/pimaga-logo.svg"
+                alt="Pimaga Emblem"
+                className="w-16 h-16 rounded-full opacity-60 mb-4 select-none filter grayscale hover:grayscale-0 hover:opacity-100 hover:scale-105 transition-all duration-300 shadow-md"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+              <h3 className="font-playfair text-2xl text-gray-500 dark:text-slate-300 mb-2">Chưa có bài toán nào</h3>
+              <p className="font-newsreader text-gray-400 dark:text-slate-500">Hãy là người đầu tiên soạn đề bài cho chuyên mục này.</p>
+            </div>
+          )
         )}
 
         {/* Problem Cards */}

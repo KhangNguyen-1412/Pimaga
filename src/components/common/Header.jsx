@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, isRealUser, loginWithGoogle, logout } = useAuth();
+  const { userProfile } = useData();
   const { isDark, toggleTheme } = useTheme();
+  const { isOnline } = useNetworkStatus();
   const [isScrolled, setIsScrolled] = useState(false);
   const [dateString, setDateString] = useState('');
 
@@ -122,7 +126,36 @@ export default function Header() {
         </div>
 
         {/* Right: Auth UI & Theme Toggle */}
-        <div className="w-1/4 flex justify-end items-center gap-2 sm:gap-3 transition-all duration-300 shrink-0">
+        <div className="w-auto flex justify-end items-center gap-1.5 sm:gap-2.5 transition-all duration-300 shrink-0">
+          {/* Offline Mode Indicator */}
+          {!isOnline && (
+            <div
+              className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs font-newsreader font-bold shadow-xs animate-pulse"
+              title="Đang làm việc ngoại tuyến với dữ liệu bộ nhớ đệm (Cache)"
+            >
+              <svg className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01" />
+              </svg>
+              <span className="hidden sm:inline">Ngoại tuyến</span>
+            </div>
+          )}
+
+          {/* Gamification Streak Counter Badge */}
+          {isRealUser && (
+            <button
+              type="button"
+              onClick={() => navigate('/ho-so')}
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-jasper/30 dark:border-rose-900/60 text-jasper dark:text-rose-300 text-xs font-newsreader font-bold shadow-2xs hover:bg-rose-100/70 transition cursor-pointer"
+              title={`Chuỗi học tập liên tục: ${userProfile?.streak?.current || 1} ngày. Nhấn để xem hồ sơ.`}
+            >
+              <svg className="w-3.5 h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.173 1.559-1.874 2.257-.905.903-1.847 1.846-2.316 3.018-.46 1.15-.46 2.378-.052 3.518.397 1.11 1.18 2.052 2.122 2.684.945.635 2.062.98 3.197.98 1.135 0 2.252-.345 3.197-.98.942-.632 1.725-1.574 2.122-2.684.408-1.14.408-2.368-.052-3.518-.469-1.172-1.411-2.115-2.316-3.018-.701-.698-1.347-1.437-1.874-2.257a3.834 3.834 0 01-.291-.492zM10 14a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              <span className="font-semibold">{userProfile?.streak?.current || 1} ngày</span>
+            </button>
+          )}
+
           {/* Theme Toggle Button */}
           <button
             type="button"

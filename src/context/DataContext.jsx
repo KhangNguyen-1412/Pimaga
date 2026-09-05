@@ -12,6 +12,7 @@ import { db, sysAppId } from '../config/firebase';
 import { cache } from '../utils/cache';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
+import { calculateStreak } from '../utils/profileUtils';
 
 const DataContext = createContext(null);
 
@@ -34,6 +35,12 @@ export function DataProvider({ children }) {
 
   const [filterIssue, setFilterIssue] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+
+  // Bộ lọc nâng cao & Tìm kiếm đa tiêu chí
+  const [filterSearch, setFilterSearch] = useState('');
+  const [filterDifficulty, setFilterDifficulty] = useState('all');
+  const [filterProvince, setFilterProvince] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   // 1. Subscribe to Public Collections
   useEffect(() => {
@@ -249,6 +256,74 @@ export function DataProvider({ children }) {
     }
   }, [currentUserId, showToast]);
 
+  // Danh sách Tỉnh thành trích xuất từ dữ liệu bài toán
+  const availableProvinces = useMemo(() => {
+    const set = new Set();
+    problems.forEach((p) => {
+      if (p.province && p.province.trim()) {
+        set.add(p.province.trim());
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'vi'));
+  }, [problems]);
+
+  // Số lượng bộ lọc nâng cao đang kích hoạt
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filterSearch.trim()) count++;
+    if (filterDifficulty && filterDifficulty !== 'all') count++;
+    if (filterProvince && filterProvince !== 'all') count++;
+    if (filterStatus && filterStatus !== 'all') count++;
+    return count;
+  }, [filterSearch, filterDifficulty, filterProvince, filterStatus]);
+
+  // Đặt lại toàn bộ bộ lọc
+  const resetFilters = useCallback(() => {
+    setFilterSearch('');
+    setFilterDifficulty('all');
+    setFilterProvince('all');
+    setFilterStatus('all');
+    setFilterIssue('');
+    setFilterCategory('');
+  }, []);
+
+  // Cập nhật và lưu chuỗi học tập (Streak)
+  const recordActivityStreak = useCallback(async () => {
+    if (!currentUserId) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const currentStreakObj = userProfile?.streak || { current: 1, longest: 1, lastActiveDate: today };
+    const nextStreak = calculateStreak(currentStreakObj, today);
+
+    if (
+      nextStreak.current !== currentStreakObj.current ||
+      nextStreak.longest !== currentStreakObj.longest ||
+      nextStreak.lastActiveDate !== currentStreakObj.lastActiveDate
+    ) {
+      const updated = {
+        ...userProfile,
+        streak: nextStreak,
+        updatedAt: Date.now(),
+      };
+      setUserProfile(updated);
+      cache.set(`profile_${currentUserId}`, updated);
+      try {
+        await setDoc(
+          doc(db, 'artifacts', sysAppId, 'users', currentUserId, 'profile', 'info'),
+          { streak: nextStreak, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Streak sync note:', err);
+      }
+    }
+  }, [currentUserId, userProfile]);
+
+  useEffect(() => {
+    if (isRealUser && currentUserId) {
+      recordActivityStreak();
+    }
+  }, [isRealUser, currentUserId]);
+
   const saveUserSolution = useCallback(async (probId, content) => {
     if (!currentUserId) throw new Error('Vui lòng đăng nhập để lưu bài làm!');
     if (!content || !content.trim()) throw new Error('Vui lòng nhập nội dung bài làm trước khi lưu!');
@@ -258,8 +333,9 @@ export function DataProvider({ children }) {
       content: content.trim(),
       updatedAt: Date.now()
     });
+    recordActivityStreak();
     showToast('Lưu bài làm thành công', 'success');
-  }, [currentUserId, showToast]);
+  }, [currentUserId, recordActivityStreak, showToast]);
 
   // Quản lý Hồ sơ người dùng
   const updateUserProfile = useCallback(async (newData) => {
@@ -319,12 +395,14 @@ export function DataProvider({ children }) {
       { merge: true }
     );
 
+    recordActivityStreak();
+
     if (isAlreadyBookmarked) {
       showToast('Đã bỏ lưu bài toán.', 'info');
     } else {
       showToast('Đã lưu bài toán vào hồ sơ cá nhân!', 'success');
     }
-  }, [currentUserId, userProfile, showToast]);
+  }, [currentUserId, userProfile, recordActivityStreak, showToast]);
 
   const isBookmarked = useCallback((probId) => {
     return bookmarks.includes(probId);
@@ -347,6 +425,18 @@ export function DataProvider({ children }) {
         setFilterIssue,
         filterCategory,
         setFilterCategory,
+        filterSearch,
+        setFilterSearch,
+        filterDifficulty,
+        setFilterDifficulty,
+        filterProvince,
+        setFilterProvince,
+        filterStatus,
+        setFilterStatus,
+        availableProvinces,
+        activeFilterCount,
+        resetFilters,
+        recordActivityStreak,
         problemCounts,
         addIssue,
         deleteIssue,
