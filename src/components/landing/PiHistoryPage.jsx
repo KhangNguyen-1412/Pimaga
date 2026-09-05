@@ -547,7 +547,7 @@ export default function PiHistoryPage() {
           {/* Interactive Hint Indicator */}
           <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-paper dark:bg-nightInput border border-gray-200 dark:border-slate-800 text-xs text-gray-700 dark:text-slate-300 font-newsreader font-bold shadow-xs">
             <span className="w-2 h-2 rounded-full bg-jasper animate-ping"></span>
-            <span>Rê chuột qua bất kỳ mốc năm nào trên trục thời gian để xem chi tiết; di chuột ra ngoài dòng thời gian để tự động trở về toàn cảnh</span>
+            <span>Chạm hoặc rê chuột vào bất kỳ mốc năm nào trên trục thời gian để xem chi tiết; di chuột ra ngoài để trở về toàn cảnh</span>
           </div>
         </div>
 
@@ -619,8 +619,8 @@ export default function PiHistoryPage() {
               ></div>
             )}
 
-            {/* 7 Year Nodes in a responsive grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 lg:gap-2 relative z-10">
+            {/* 7 Year Nodes in a horizontal scroll rail on mobile, grid on sm+ */}
+            <div className="flex overflow-x-auto snap-x no-scrollbar pb-3 sm:pb-0 sm:grid sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3 lg:gap-2 relative z-10">
               {timelineMilestones.map((m) => {
                 const isActive = activeMilestoneId === m.id;
                 const isCerulean = m.theme === 'cerulean';
@@ -629,7 +629,7 @@ export default function PiHistoryPage() {
                     key={m.id}
                     onMouseEnter={() => setActiveMilestoneId(m.id)}
                     onClick={() => setActiveMilestoneId(m.id)}
-                    className={`p-3 rounded-2xl transition-all duration-200 cursor-pointer flex flex-col items-center text-center relative select-none group ${
+                    className={`p-2.5 sm:p-3 rounded-2xl transition-all duration-200 cursor-pointer flex flex-col items-center text-center relative select-none group min-w-[130px] sm:min-w-0 shrink-0 snap-center ${
                       isActive
                         ? isCerulean
                           ? 'bg-blue-50/80 dark:bg-blue-950/40 border-2 border-cerulean shadow-md -translate-y-1.5'

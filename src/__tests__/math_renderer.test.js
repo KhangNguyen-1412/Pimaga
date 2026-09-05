@@ -85,4 +85,28 @@ v &= 2
     expect(html).toContain('katex');
     expect(html).not.toContain('katex-error');
   });
+
+  it('renders Vietnamese characters inside KaTeX without console.warn metrics warnings', async () => {
+    const React = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    const { default: MathRenderer } = await import('../components/common/MathRenderer');
+
+    const warnings = [];
+    const origWarn = console.warn;
+    console.warn = (...args) => {
+      warnings.push(args.join(' '));
+    };
+
+    try {
+      const element = React.createElement(MathRenderer, {
+        content: '$$\\pi \\approx \\frac{355}{113} \\quad (\\text{Sai số } < 3 \\times 10^{-7}, \\text{đạt tại } x = 1)$$'
+      });
+      const html = renderToString(element);
+      expect(html).toContain('katex');
+      const metricWarnings = warnings.filter((w) => w.includes('No character metrics'));
+      expect(metricWarnings.length).toBe(0);
+    } finally {
+      console.warn = origWarn;
+    }
+  });
 });

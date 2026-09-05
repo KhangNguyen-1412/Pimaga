@@ -36,8 +36,8 @@ export default function LandingHeader({ onOpenLatexModal }) {
       id="landing-header"
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         isScrolled
-          ? 'bg-paper/95 dark:bg-night/95 backdrop-blur-md shadow-md border-b border-gray-200/90 dark:border-slate-800 py-3'
-          : 'bg-paper/90 dark:bg-night/90 backdrop-blur-sm border-b border-gray-200/60 dark:border-slate-800/80 py-4'
+          ? 'bg-white/95 dark:bg-nightCard/95 backdrop-blur-xl shadow-lg shadow-cerulean/10 dark:shadow-black/60 border-b border-gray-200/90 dark:border-slate-700/80 py-2.5'
+          : 'bg-white/92 dark:bg-nightCard/92 backdrop-blur-xl border-b border-gray-200/70 dark:border-slate-700/60 py-3.5'
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
@@ -48,9 +48,9 @@ export default function LandingHeader({ onOpenLatexModal }) {
             navigate('/');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="flex items-center gap-3 group cursor-pointer text-left select-none bg-transparent border-none p-0"
+          className="flex items-center gap-2 sm:gap-3 group cursor-pointer text-left select-none bg-transparent border-none p-0 shrink-0"
         >
-          <div className="w-10 h-10 rounded-full group-hover:scale-105 transition-all flex items-center justify-center drop-shadow-xs">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full group-hover:scale-105 transition-all flex items-center justify-center drop-shadow-xs shrink-0">
             <img
               src="/assets/pimaga-logo.svg"
               alt="Pi"
@@ -61,7 +61,7 @@ export default function LandingHeader({ onOpenLatexModal }) {
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-playfair font-black text-xl sm:text-2xl leading-tight">
+            <span className="font-playfair font-black text-lg sm:text-2xl leading-tight">
               <span className="text-cerulean dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 transition-colors">
                 Tạp Chí{' '}
               </span>
@@ -69,14 +69,14 @@ export default function LandingHeader({ onOpenLatexModal }) {
                 Pi
               </span>
             </span>
-            <span className="font-newsreader text-2xs uppercase tracking-widest text-gray-500 dark:text-slate-400 font-bold hidden sm:inline-block">
+            <span className="font-newsreader text-[10px] sm:text-2xs uppercase tracking-widest text-gray-500 dark:text-slate-400 font-bold hidden sm:inline-block">
               Hội Toán Học Việt Nam
             </span>
           </div>
         </button>
 
         {/* Center: Multi-Page Navigation Links (Desktop) */}
-        <nav className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-newsreader font-bold">
+        <nav className="hidden md:flex items-center gap-2 lg:gap-3 text-sm font-newsreader font-bold">
           {navItems.map((item) => {
             const active = isActive(item.path);
             const isJasperTheme = item.color === 'jasper';
@@ -88,14 +88,14 @@ export default function LandingHeader({ onOpenLatexModal }) {
                   navigate(item.path);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`transition cursor-pointer py-1 ${
+                className={`transition-all duration-200 cursor-pointer px-3 py-1.5 rounded-xl active:scale-95 ${
                   active
                     ? isJasperTheme
-                      ? 'text-jasper dark:text-rose-400 font-black border-b-2 border-jasper dark:border-rose-400'
-                      : 'text-cerulean dark:text-blue-400 font-black border-b-2 border-cerulean dark:border-blue-400'
+                      ? 'text-jasper dark:text-rose-300 font-bold bg-jasper/15 dark:bg-jasper/30 border border-jasper/35 dark:border-rose-400/40 shadow-xs'
+                      : 'text-cerulean dark:text-blue-300 font-bold bg-cerulean/15 dark:bg-cerulean/30 border border-cerulean/35 dark:border-blue-400/40 shadow-xs'
                     : isJasperTheme
-                    ? 'text-gray-600 dark:text-slate-300 hover:text-jasper dark:hover:text-rose-400 font-bold'
-                    : 'text-gray-600 dark:text-slate-300 hover:text-cerulean dark:hover:text-blue-400 font-bold'
+                    ? 'text-gray-600 dark:text-slate-300 hover:text-jasper dark:hover:text-rose-300 hover:bg-jasper/10 dark:hover:bg-jasper/20 font-medium'
+                    : 'text-gray-600 dark:text-slate-300 hover:text-cerulean dark:hover:text-blue-300 hover:bg-cerulean/10 dark:hover:bg-cerulean/20 font-medium'
                 }`}
               >
                 {item.label}
@@ -110,16 +110,16 @@ export default function LandingHeader({ onOpenLatexModal }) {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-nightCard text-gray-600 dark:text-blue-300 hover:text-cerulean dark:hover:text-blue-200 hover:border-cerulean dark:hover:border-blue-400/50 shadow-2xs transition flex items-center justify-center cursor-pointer"
+            className="p-2 rounded-xl bg-cerulean/15 dark:bg-cerulean/30 border border-cerulean/35 dark:border-blue-400/40 text-cerulean dark:text-blue-300 hover:bg-cerulean/25 dark:hover:bg-cerulean/40 shadow-xs active:scale-95 transition-all flex items-center justify-center cursor-pointer"
             title={isDark ? 'Chuyển sang Chế độ Sáng' : 'Chuyển sang Chế độ Tối'}
             aria-label="Chuyển đổi giao diện sáng/tối"
           >
             {isDark ? (
-              <svg className="w-4 h-4 text-cerulean dark:text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-cerulean dark:text-blue-300 transform transition-transform hover:rotate-45" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
               </svg>
             ) : (
-              <svg className="w-4 h-4 text-slate-600 hover:text-cerulean" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-cerulean dark:text-blue-300 transform transition-transform hover:-rotate-12" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
               </svg>
             )}
@@ -129,7 +129,7 @@ export default function LandingHeader({ onOpenLatexModal }) {
           <button
             type="button"
             onClick={onOpenLatexModal}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cerulean/30 dark:border-blue-800 bg-white/80 dark:bg-nightCard/80 text-xs font-newsreader font-bold text-cerulean dark:text-blue-300 hover:border-cerulean transition cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cerulean/35 dark:border-blue-400/40 bg-white/92 dark:bg-nightCard/92 text-xs font-newsreader font-bold text-cerulean dark:text-blue-300 hover:bg-cerulean/15 dark:hover:bg-cerulean/30 shadow-xs active:scale-95 transition-all cursor-pointer"
             title="Sổ tay tra cứu công thức LaTeX"
           >
             <span className="font-serif font-bold text-2xs opacity-90 tracking-tighter">TeX</span>
@@ -147,7 +147,7 @@ export default function LandingHeader({ onOpenLatexModal }) {
                 navigate('/kho-de');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="px-3.5 sm:px-4 py-2 rounded-xl bg-cerulean hover:bg-blue-800 text-white font-newsreader font-bold text-xs sm:text-sm shadow-xs hover:shadow transition-all flex items-center gap-1.5 cursor-pointer group"
+              className="px-3.5 sm:px-4 py-2 rounded-xl bg-cerulean hover:bg-blue-800 text-white font-newsreader font-bold text-xs sm:text-sm shadow-xs hover:shadow active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer group"
             >
               <span>Kho Đề</span>
               <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +158,7 @@ export default function LandingHeader({ onOpenLatexModal }) {
             <button
               type="button"
               onClick={() => navigate('/dang-nhap')}
-              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl bg-jasper hover:bg-red-700 text-white text-xs sm:text-sm font-newsreader font-bold shadow-sm hover:shadow transition cursor-pointer"
+              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl bg-jasper hover:bg-red-700 text-white text-xs sm:text-sm font-newsreader font-bold shadow-sm hover:shadow active:scale-95 transition-all cursor-pointer"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#FFFFFF"/>
@@ -190,70 +190,78 @@ export default function LandingHeader({ onOpenLatexModal }) {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-slate-800 bg-paper dark:bg-night px-4 pt-3 pb-4 space-y-2 font-newsreader font-bold text-sm text-gray-700 dark:text-slate-200 animate-dropdownFade">
-          {navItems.map((item) => {
-            const active = isActive(item.path);
-            return (
+        <div className="md:hidden border-t border-gray-200/90 dark:border-slate-700/80 bg-white/95 dark:bg-nightCard/95 backdrop-blur-xl px-4 pt-3 pb-5 space-y-2 font-newsreader font-bold text-sm text-gray-700 dark:text-slate-200 animate-dropdownFade shadow-lg">
+          <div className="space-y-1">
+            {navItems.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <button
+                  key={item.path}
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate(item.path);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`w-full text-left py-3 px-3.5 rounded-xl transition-all cursor-pointer min-h-[44px] flex items-center justify-between active:scale-95 ${
+                    active
+                      ? item.color === 'jasper'
+                        ? 'bg-jasper/15 dark:bg-jasper/30 text-jasper dark:text-rose-300 font-bold border border-jasper/35 dark:border-rose-400/40 shadow-xs'
+                        : 'bg-cerulean/15 dark:bg-cerulean/30 text-cerulean dark:text-blue-300 font-bold border border-cerulean/35 dark:border-blue-400/40 shadow-xs'
+                      : item.color === 'jasper'
+                      ? 'hover:bg-jasper/10 dark:hover:bg-jasper/20 hover:text-jasper dark:hover:text-rose-300 text-gray-700 dark:text-slate-300 font-medium'
+                      : 'hover:bg-cerulean/10 dark:hover:bg-cerulean/20 hover:text-cerulean dark:hover:text-blue-300 text-gray-700 dark:text-slate-300 font-medium'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {active && (
+                    <span className={`w-1.5 h-1.5 rounded-full ${item.color === 'jasper' ? 'bg-jasper' : 'bg-cerulean'}`}></span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="pt-2 border-t border-gray-200/90 dark:border-slate-700/80 space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenLatexModal();
+              }}
+              className="w-full text-left py-2.5 px-3.5 rounded-xl hover:bg-cerulean/10 dark:hover:bg-cerulean/20 transition-all flex items-center gap-2 cursor-pointer text-cerulean dark:text-blue-300 min-h-[44px] active:scale-95"
+            >
+              <span className="font-serif font-bold text-xs opacity-90 tracking-tighter bg-cerulean/15 dark:bg-cerulean/30 border border-cerulean/35 px-1.5 py-0.5 rounded">TeX</span>
+              <span>Sổ tay công thức LaTeX</span>
+            </button>
+            {isRealUser ? (
               <button
-                key={item.path}
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  navigate(item.path);
+                  navigate('/kho-de');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`w-full text-left py-2 px-3 rounded-lg transition cursor-pointer ${
-                  active
-                    ? item.color === 'jasper'
-                      ? 'bg-red-50 dark:bg-rose-950/60 text-jasper dark:text-rose-400 font-black'
-                      : 'bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 font-black'
-                    : item.color === 'jasper'
-                    ? 'hover:bg-red-50/50 dark:hover:bg-slate-800 hover:text-jasper'
-                    : 'hover:bg-blue-50/50 dark:hover:bg-slate-800 hover:text-cerulean'
-                }`}
+                className="w-full py-3 px-4 rounded-xl bg-cerulean hover:bg-blue-800 text-white font-bold text-center flex items-center justify-center gap-2 cursor-pointer transition shadow-sm min-h-[44px]"
               >
-                {item.label}
+                <span>Vào Kho Đề Bài</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
               </button>
-            );
-          })}
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onOpenLatexModal();
-            }}
-            className="w-full text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition flex items-center gap-2 cursor-pointer text-cerulean dark:text-blue-300"
-          >
-            <span className="font-serif font-bold text-xs opacity-90 tracking-tighter">TeX</span>
-            <span>Sổ tay công thức LaTeX</span>
-          </button>
-          {isRealUser ? (
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate('/kho-de');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="w-full py-2.5 px-4 rounded-xl bg-cerulean hover:bg-blue-800 text-white font-bold text-center mt-2 flex items-center justify-center gap-2 cursor-pointer transition"
-            >
-              <span>Kho Đề</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate('/dang-nhap');
-              }}
-              className="w-full py-2.5 px-4 rounded-xl bg-jasper hover:bg-red-700 text-white font-bold text-center mt-2 flex items-center justify-center gap-2 cursor-pointer transition"
-            >
-              <span>Đăng Nhập Tài Khoản</span>
-            </button>
-          )}
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/dang-nhap');
+                }}
+                className="w-full py-3 px-4 rounded-xl bg-jasper hover:bg-red-700 text-white font-bold text-center flex items-center justify-center gap-2 cursor-pointer transition shadow-sm min-h-[44px]"
+              >
+                <span>Đăng Nhập Tài Khoản</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
     </header>

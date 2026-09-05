@@ -26,7 +26,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-paper dark:bg-night text-ink dark:text-slate-100 font-newsreader transition-colors duration-200">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-paper dark:bg-night text-ink dark:text-slate-100 font-newsreader transition-colors duration-200 relative overflow-hidden">
+      {/* Mobile Ambient Fluid Chromatic Lights for Liquid Glass Refraction (sm:hidden, strictly zero gradients) */}
+      <div className="sm:hidden fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-cerulean/25 dark:bg-cerulean/35 blur-[80px]" />
+        <div className="absolute top-1/2 -left-20 w-80 h-80 rounded-full bg-jasper/20 dark:bg-jasper/30 blur-[80px]" />
+        <div className="absolute -bottom-16 right-1/4 w-72 h-72 rounded-full bg-cerulean/20 dark:bg-cerulean/30 blur-[85px]" />
+      </div>
+
       {/* ========================================================
           LEFT HALF: ACADEMIC BRANDING & MATHEMATICAL SHOWCASE (Desktop)
           ======================================================== */}

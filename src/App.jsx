@@ -19,6 +19,7 @@ import LandingHeader from './components/landing/LandingHeader';
 import PiHistoryPage from './components/landing/PiHistoryPage';
 import TapChiPiPage from './components/landing/TapChiPiPage';
 import FeaturesPage from './components/landing/FeaturesPage';
+import BottomNavigationBar from './components/common/BottomNavigationBar';
 import ConfirmModal from './components/modals/ConfirmModal';
 import GeminiKeyModal from './components/modals/GeminiKeyModal';
 import { useData } from './context/DataContext';
@@ -607,6 +608,18 @@ export default function App() {
 
   return (
     <div className="bg-paper dark:bg-night text-ink dark:text-slate-100 font-newsreader min-h-screen relative transition-colors duration-200">
+      {/* Mobile Ambient Fluid Chromatic Lights for Liquid Glass Refraction (sm:hidden, strictly zero gradients) */}
+      <div className="sm:hidden fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+        {/* Cerulean Orb 1: Top Right */}
+        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-cerulean/25 dark:bg-cerulean/35 blur-[80px]" />
+        {/* Jasper Orb 2: Mid-screen Left */}
+        <div className="absolute top-1/3 -left-20 w-80 h-80 rounded-full bg-jasper/20 dark:bg-jasper/30 blur-[80px]" />
+        {/* Cerulean Orb 3: Lower-mid Right */}
+        <div className="absolute top-2/3 -right-20 w-80 h-80 rounded-full bg-cerulean/20 dark:bg-cerulean/30 blur-[85px]" />
+        {/* Jasper Orb 4: Bottom Center */}
+        <div className="absolute -bottom-16 left-1/4 w-72 h-72 rounded-full bg-jasper/18 dark:bg-jasper/25 blur-[80px]" />
+      </div>
+
       {/* Top Page Navigation Progress Indicator (Dual Tone Cerulean 50% & Jasper 50%, Zero Gradients) */}
       {isPageTransitioning && (
         <div
@@ -634,7 +647,7 @@ export default function App() {
         <Header />
       )}
 
-      <div id="app" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 relative">
+      <div id="app" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 sm:pb-8 relative z-10">
         <main
           key={pageKey}
           id="main-content"
@@ -702,6 +715,9 @@ export default function App() {
 
         <Footer />
       </div>
+
+      {/* Mobile Bottom Navigation Bar (sm:hidden) */}
+      <BottomNavigationBar onOpenCreateProblem={handleOpenProblemCreate} />
 
       {/* Modals */}
       <IssueModal

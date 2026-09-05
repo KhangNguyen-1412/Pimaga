@@ -67,20 +67,20 @@ export default function ProblemCard({
   return (
     <article
       id={problemAnchorId}
-      className={`problem-article bg-white dark:bg-nightCard p-6 md:p-10 rounded-xl shadow-sm border transition-all duration-300 relative group scroll-mt-28 ${
+      className={`problem-article bg-white dark:bg-nightCard p-4 sm:p-6 md:p-10 rounded-xl shadow-sm border transition-all duration-300 relative group scroll-mt-28 ${
         isHighlighted
           ? 'border-cerulean ring-4 ring-cerulean/20 shadow-xl'
           : 'border-gray-200 dark:border-slate-700/80 hover:border-gray-300 dark:hover:border-slate-600 hover:shadow-md'
       }`}
       data-problem-id={problem.id}
     >
-      {/* Top right actions: Bookmark + Share + Admin */}
-      <div className="absolute top-6 right-6 flex items-center gap-1.5 sm:gap-2">
+      {/* Action buttons: Top row on mobile, absolute top-right on sm+ */}
+      <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 mb-3.5 sm:mb-0 sm:absolute sm:top-6 sm:right-6">
         {/* Bookmark Button */}
         <button
           type="button"
           onClick={() => toggleBookmark(problem.id)}
-          className={`text-xs px-2.5 py-1.5 rounded-md transition shadow-2xs font-newsreader font-bold flex items-center gap-1 cursor-pointer border ${
+          className={`text-xs px-2.5 py-1.5 rounded-md transition shadow-2xs font-newsreader font-bold flex items-center gap-1 cursor-pointer border min-h-[36px] sm:min-h-0 ${
             bookmarked
               ? 'bg-red-50 dark:bg-rose-950/60 border-jasper/40 dark:border-rose-800 text-jasper dark:text-rose-300'
               : 'bg-gray-50 dark:bg-night hover:bg-red-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-jasper dark:hover:text-rose-400 border-gray-200 dark:border-slate-700 hover:border-jasper/30'
@@ -106,7 +106,7 @@ export default function ProblemCard({
         <button
           type="button"
           onClick={handleCopyLink}
-          className="text-xs bg-gray-50 dark:bg-night hover:bg-blue-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-cerulean dark:hover:text-blue-300 border border-gray-200 dark:border-slate-700 hover:border-cerulean/30 px-2.5 py-1.5 rounded-md transition shadow-2xs font-newsreader font-bold flex items-center gap-1.5 cursor-pointer"
+          className="text-xs bg-gray-50 dark:bg-night hover:bg-blue-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-cerulean dark:hover:text-blue-300 border border-gray-200 dark:border-slate-700 hover:border-cerulean/30 px-2.5 py-1.5 rounded-md transition shadow-2xs font-newsreader font-bold flex items-center gap-1.5 cursor-pointer min-h-[36px] sm:min-h-0"
           title="Sao chép đường dẫn thân thiện để chia sẻ bài toán"
         >
           {copied ? (
@@ -121,15 +121,15 @@ export default function ProblemCard({
           <span>{copied ? 'Đã chép link' : 'Chia sẻ'}</span>
         </button>
 
-        {/* Admin Actions */}
-        <div className="opacity-0 group-hover:opacity-100 transition flex gap-1.5">
+        {/* Admin Actions: Always visible on mobile touchscreens, hover on sm+ desktop */}
+        <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition flex gap-1.5">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(problem);
             }}
-            className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-200 px-3 py-1.5 rounded-md hover:bg-cerulean hover:text-white transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer"
+            className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-200 px-2.5 sm:px-3 py-1.5 rounded-md hover:bg-cerulean hover:text-white transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer min-h-[36px] sm:min-h-0"
             title="Chỉnh sửa bài toán"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@ export default function ProblemCard({
               e.stopPropagation();
               onDelete(problem);
             }}
-            className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 text-jasper px-3 py-1.5 rounded-md hover:bg-jasper hover:text-white transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer"
+            className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 text-jasper px-2.5 sm:px-3 py-1.5 rounded-md hover:bg-jasper hover:text-white transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer min-h-[36px] sm:min-h-0"
             title="Xóa bài toán này"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +155,7 @@ export default function ProblemCard({
       </div>
 
       {/* Header Info */}
-      <div className="mb-6 pr-44">
+      <div className="mb-5 sm:mb-6 pr-0 sm:pr-48">
         <div className="flex flex-wrap items-center gap-2 mb-2.5">
           {problem.code && (
             <span
@@ -185,16 +185,16 @@ export default function ProblemCard({
         <button
           type="button"
           onClick={handleGoToDetail}
-          className="text-left group/title cursor-pointer block bg-transparent border-none p-0"
+          className="text-left group/title cursor-pointer block bg-transparent border-none p-0 w-full"
         >
-          <h3 className="text-3xl md:text-4xl font-playfair font-black text-ink dark:text-slate-100 leading-tight group-hover/title:text-cerulean dark:group-hover/title:text-blue-400 transition">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-playfair font-black text-ink dark:text-slate-100 leading-tight group-hover/title:text-cerulean dark:group-hover/title:text-blue-400 transition">
             {problemHeaderTitle}
           </h3>
         </button>
 
         {/* Author Line */}
         {(problem.author || problem.province) && (
-          <div className="mt-2.5 flex items-center gap-1.5 text-gray-700 dark:text-slate-300 font-newsreader text-base md:text-lg">
+          <div className="mt-2.5 flex items-center gap-1.5 text-gray-700 dark:text-slate-300 font-newsreader text-sm sm:text-base md:text-lg">
             <svg className="w-4 h-4 text-cerulean dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
@@ -208,14 +208,14 @@ export default function ProblemCard({
       </div>
 
       {/* Problem Content snippet/statement with KaTeX */}
-      <div className="font-newsreader text-xl text-ink dark:text-slate-100 leading-relaxed mb-6 max-w-none">
+      <div className="font-newsreader text-lg sm:text-xl text-ink dark:text-slate-100 leading-relaxed mb-6 max-w-none overflow-x-auto">
         <MathRenderer content={problem.content} />
       </div>
 
       {/* Bottom Action Bar: Status + Go to Detail / Solve CTA */}
-      <div className="pt-5 border-t border-gray-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className="pt-4 sm:pt-5 border-t border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         {/* Left: Solution Status */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between sm:justify-start gap-3">
           {userSolution ? (
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-cerulean dark:text-blue-300 bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-900 px-3 py-1.5 rounded-full shadow-2xs">
               <svg className="w-3.5 h-3.5 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,11 +230,11 @@ export default function ProblemCard({
           )}
 
           {problem.editorialSolution && (
-            <span className="text-xs text-gray-500 dark:text-slate-400 font-newsreader italic hidden sm:inline-flex items-center gap-1">
+            <span className="text-xs text-gray-500 dark:text-slate-400 font-newsreader italic inline-flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <span>Có đáp án Tòa soạn</span>
+              <span>Có lời giải Pi</span>
             </span>
           )}
         </div>
@@ -243,7 +243,7 @@ export default function ProblemCard({
         <button
           type="button"
           onClick={handleGoToDetail}
-          className="btn-primary text-xs md:text-sm px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer shadow-xs hover:shadow-md transition"
+          className="btn-primary w-full sm:w-auto text-xs md:text-sm px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-md transition min-h-[44px]"
         >
           <span>{userSolution ? 'Xem Chi Tiết & Sửa Bài' : 'Làm Bài Này'}</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

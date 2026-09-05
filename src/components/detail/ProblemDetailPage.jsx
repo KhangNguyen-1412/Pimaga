@@ -277,12 +277,12 @@ export default function ProblemDetailPage({
       </div>
 
       {/* Main Problem Statement Article */}
-      <article className="bg-white dark:bg-nightCard p-6 sm:p-10 md:p-12 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800 relative transition-colors">
+      <article className="bg-white dark:bg-nightCard p-4 sm:p-10 md:p-12 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800 relative transition-colors">
         {/* Top actions: Share + Admin */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 dark:border-slate-800 pb-6 mb-8">
-          <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-gray-100 dark:border-slate-800 pb-5 sm:pb-6 mb-6 sm:mb-8">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
             {problem.code && (
-              <span className="inline-flex items-center px-3 py-1 rounded-md bg-cerulean text-white font-mono font-black text-base tracking-wider shadow-xs border border-blue-900 select-none">
+              <span className="inline-flex items-center px-2.5 sm:px-3 py-1 rounded-md bg-cerulean text-white font-mono font-black text-sm sm:text-base tracking-wider shadow-xs border border-blue-900 select-none">
                 {problem.code}
               </span>
             )}
@@ -291,7 +291,7 @@ export default function ProblemDetailPage({
             <span className="text-xs md:text-sm font-bold text-cerulean dark:text-blue-400 tracking-wider uppercase">{issueName}</span>
             {diffData && (
               <span
-                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold border shadow-xs ${diffData.colorClass}`}
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 rounded-full text-xs font-bold border shadow-xs ${diffData.colorClass}`}
                 title={`Mức độ: ${diffData.name} (${diffData.desc})`}
               >
                 <span className={`${diffData.starColor} font-sans tracking-tighter text-xs leading-none`}>
@@ -302,12 +302,12 @@ export default function ProblemDetailPage({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             {/* Share link button */}
             <button
               type="button"
               onClick={handleCopyLink}
-              className="text-xs md:text-sm bg-gray-50 dark:bg-nightInput hover:bg-blue-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-cerulean dark:hover:text-blue-400 border border-gray-200 dark:border-slate-700 hover:border-cerulean/30 px-3 py-1.5 rounded-lg transition shadow-2xs font-newsreader font-bold flex items-center gap-1.5 cursor-pointer"
+              className="text-xs md:text-sm bg-gray-50 dark:bg-nightInput hover:bg-blue-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-cerulean dark:hover:text-blue-400 border border-gray-200 dark:border-slate-700 hover:border-cerulean/30 px-2.5 sm:px-3 py-1.5 rounded-lg transition shadow-2xs font-newsreader font-bold flex items-center gap-1.5 cursor-pointer min-h-[36px] sm:min-h-0"
               title="Sao chép đường dẫn bài toán"
             >
               {copied ? (
@@ -319,7 +319,7 @@ export default function ProblemDetailPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                 </svg>
               )}
-              <span>{copied ? 'Đã sao chép link' : 'Chia sẻ bài'}</span>
+              <span>{copied ? 'Đã chép link' : 'Chia sẻ'}</span>
             </button>
 
             {/* Bookmark Button */}
@@ -327,7 +327,7 @@ export default function ProblemDetailPage({
               <button
                 type="button"
                 onClick={() => toggleBookmark(problem.id)}
-                className={`text-xs md:text-sm px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer border ${
+                className={`text-xs md:text-sm px-2.5 sm:px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1.5 cursor-pointer border min-h-[36px] sm:min-h-0 ${
                   bookmarked
                     ? 'bg-red-50 dark:bg-rose-950/60 border-jasper/40 dark:border-rose-800 text-jasper dark:text-rose-300'
                     : 'bg-gray-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 hover:text-jasper dark:hover:text-rose-400 border-gray-200 dark:border-slate-700 hover:border-jasper/30'
@@ -346,7 +346,7 @@ export default function ProblemDetailPage({
                     d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
                   />
                 </svg>
-                <span>{bookmarked ? 'Đã lưu bài' : 'Lưu bài'}</span>
+                <span>{bookmarked ? 'Đã lưu' : 'Lưu'}</span>
               </button>
             )}
 
@@ -355,39 +355,39 @@ export default function ProblemDetailPage({
               <button
                 type="button"
                 onClick={() => onEditProblem(problem)}
-                className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 hover:bg-cerulean dark:hover:bg-blue-600 hover:text-white text-gray-700 dark:text-slate-200 px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1 cursor-pointer"
+                className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 hover:bg-cerulean dark:hover:bg-blue-600 hover:text-white text-gray-700 dark:text-slate-200 px-2.5 sm:px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1 cursor-pointer min-h-[36px] sm:min-h-0"
                 title="Chỉnh sửa đề bài"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                <span>Sửa Đề</span>
+                <span>Sửa</span>
               </button>
             )}
             {onDeleteProblem && (
               <button
                 type="button"
                 onClick={() => onDeleteProblem(problem)}
-                className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 hover:bg-jasper dark:hover:bg-rose-600 hover:text-white text-jasper dark:text-rose-400 px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1 cursor-pointer"
+                className="text-xs md:text-sm bg-gray-100 dark:bg-slate-800 hover:bg-jasper dark:hover:bg-rose-600 hover:text-white text-jasper dark:text-rose-400 px-2.5 sm:px-3 py-1.5 rounded-lg transition shadow-2xs font-bold flex items-center gap-1 cursor-pointer min-h-[36px] sm:min-h-0"
                 title="Xóa bài toán"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                <span>Xóa Đề</span>
+                <span>Xóa</span>
               </button>
             )}
           </div>
         </div>
 
         {/* Big Problem Header Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-black text-ink dark:text-slate-100 leading-tight mb-4">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-playfair font-black text-ink dark:text-slate-100 leading-tight mb-3 sm:mb-4">
           {problemHeaderTitle}
         </h1>
 
         {/* Author Line */}
         {(problem.author || problem.province) && (
-          <div className="mb-8 flex items-center gap-2 text-gray-700 dark:text-slate-300 font-newsreader text-lg md:text-xl">
+          <div className="mb-6 sm:mb-8 flex items-center gap-2 text-gray-700 dark:text-slate-300 font-newsreader text-base sm:text-lg md:text-xl">
             <svg className="w-5 h-5 text-cerulean dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
@@ -400,7 +400,7 @@ export default function ProblemDetailPage({
         )}
 
         {/* Problem Statement Box */}
-        <div className="bg-paper dark:bg-nightInput p-6 sm:p-8 rounded-xl border border-gray-200/90 dark:border-slate-800 shadow-inner font-newsreader text-xl sm:text-2xl text-ink dark:text-slate-100 leading-relaxed transition-colors">
+        <div className="bg-paper dark:bg-nightInput p-4 sm:p-8 rounded-xl border border-gray-200/90 dark:border-slate-800 shadow-inner font-newsreader text-lg sm:text-2xl text-ink dark:text-slate-100 leading-relaxed transition-colors overflow-x-auto">
           <MathRenderer content={problem.content} />
         </div>
       </article>
@@ -464,30 +464,30 @@ export default function ProblemDetailPage({
               )}
 
               {/* Quick Math Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-blue-50/50 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-800 rounded-lg">
-                <div className="flex flex-wrap gap-1 text-xs font-mono">
-                  <button type="button" onClick={() => insertMathToDraft('$\\frac{a}{b}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">a/b</button>
-                  <button type="button" onClick={() => insertMathToDraft('$x^2$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x²</button>
-                  <button type="button" onClick={() => insertMathToDraft('$x_1$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x₁</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\sqrt{x}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">√x</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\triangle ABC$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">△ABC</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\widehat{A}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">∠A</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\vec{u}$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">v⃗</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\le$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">≤</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\ge$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">≥</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\neq$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">≠</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\perp$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">⊥</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\parallel$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">∥</button>
-                  <button type="button" onClick={() => insertMathToDraft('$\\pi$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">π</button>
-                  <button type="button" onClick={() => insertMathToDraft('$$\\dots$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">$$...$$</button>
-                  <button type="button" onClick={() => insertMathToDraft('$$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$$')} className="px-2 py-0.5 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">Hệ PT</button>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 p-2 bg-blue-50/50 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-800 rounded-lg">
+                <div className="flex items-center gap-1 text-xs font-mono overflow-x-auto no-scrollbar py-1">
+                  <button type="button" onClick={() => insertMathToDraft('$\\frac{a}{b}$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">a/b</button>
+                  <button type="button" onClick={() => insertMathToDraft('$x^2$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x²</button>
+                  <button type="button" onClick={() => insertMathToDraft('$x_1$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">x₁</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\sqrt{x}$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">√x</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\triangle ABC$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">△ABC</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\widehat{A}$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">∠A</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\vec{u}$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">v⃗</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\le$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">≤</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\ge$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">≥</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\neq$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">≠</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\perp$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">⊥</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\parallel$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">∥</button>
+                  <button type="button" onClick={() => insertMathToDraft('$\\pi$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">π</button>
+                  <button type="button" onClick={() => insertMathToDraft('$$\\dots$$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">$$...$$</button>
+                  <button type="button" onClick={() => insertMathToDraft('$$\\begin{cases} x + y = 1 \\\\\\\\ x - y = 0 \\end{cases}$$')} className="px-2.5 py-1 min-h-[32px] shrink-0 bg-white dark:bg-nightInput border border-gray-300 dark:border-slate-700 rounded hover:bg-blue-100 dark:hover:bg-slate-800 hover:text-cerulean dark:hover:text-blue-400 text-gray-800 dark:text-slate-200 font-bold">Hệ PT</button>
                 </div>
 
                 {onOpenLatexCheatsheet && (
                   <button
                     type="button"
                     onClick={() => onOpenLatexCheatsheet((snippet) => insertMathToDraft(snippet))}
-                    className="px-2.5 py-1 bg-cerulean text-white hover:bg-blue-900 rounded font-bold text-xs flex items-center gap-1.5 transition shadow-2xs font-newsreader cursor-pointer"
+                    className="px-2.5 py-1.5 min-h-[36px] bg-cerulean text-white hover:bg-blue-900 rounded font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-2xs font-newsreader cursor-pointer shrink-0"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />

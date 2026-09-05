@@ -1,5 +1,24 @@
 import katex from 'katex';
 
+function safeRenderKatexToString(tex, options = {}) {
+  const originalWarn = console.warn;
+  console.warn = (...args) => {
+    if (typeof args[0] === 'string' && args[0].includes('No character metrics')) {
+      return;
+    }
+    originalWarn.apply(console, args);
+  };
+  try {
+    return katex.renderToString(tex, {
+      ...options,
+      throwOnError: false,
+      strict: false,
+    });
+  } finally {
+    console.warn = originalWarn;
+  }
+}
+
 /**
  * Tiện ích hồ sơ học thuật, tính toán thống kê và xuất tài liệu toán học
  */
@@ -366,7 +385,7 @@ export function renderMarkdownWithKatex(text = '', svgMap = new Map()) {
   // Display math $$...$$
   processed = processed.replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
     try {
-      return `<div class="katex-display-box">${katex.renderToString(math.trim(), { displayMode: true, throwOnError: false })}</div>`;
+      return `<div class="katex-display-box">${safeRenderKatexToString(math.trim(), { displayMode: true, throwOnError: false })}</div>`;
     } catch {
       return `<div class="katex-display-box">\\[${escapeHtml(math)}\\]</div>`;
     }
@@ -375,7 +394,7 @@ export function renderMarkdownWithKatex(text = '', svgMap = new Map()) {
   // Inline math $...$
   processed = processed.replace(/\$([^\$\n]+?)\$/g, (_, math) => {
     try {
-      return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
+      return safeRenderKatexToString(math.trim(), { displayMode: false, throwOnError: false });
     } catch {
       return `\\(${escapeHtml(math)}\\)`;
     }

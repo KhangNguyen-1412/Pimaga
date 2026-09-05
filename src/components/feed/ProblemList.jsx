@@ -211,7 +211,7 @@ export default function ProblemList({
       <main
         ref={containerRef}
         id="problems-container"
-        className="max-h-[78vh] min-h-[500px] overflow-y-auto p-4 md:p-8 space-y-10 custom-scrollbar scroll-smooth overscroll-contain"
+        className="max-h-[82vh] min-h-[400px] overflow-y-auto p-2.5 sm:p-4 md:p-8 space-y-4 sm:space-y-8 md:space-y-10 custom-scrollbar scroll-smooth overscroll-contain"
       >
         {/* Loading Skeleton */}
         {!isDataLoaded && problems.length === 0 && (

@@ -213,3 +213,314 @@ html, body {
   }
 }
 
+/* ==========================================================================
+   LIQUID GLASS SYSTEM (Apple VisionOS / Fluid Glassmorphism)
+   Strictly Zero CSS Gradients: Solid alpha colors, backdrop-blur, saturation & specular highlights
+   Dual-tone harmony: Cerulean (#2A52BE) 50% & Jasper (#D73B3E) 50%
+   ========================================================================== */
+
+/* Universal Liquid Glass Utility Classes */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03),
+    0 10px 32px 0 rgba(42, 82, 190, 0.08),
+    0 2px 8px 0 rgba(0, 0, 0, 0.04);
+}
+
+.dark .liquid-glass {
+  background: rgba(16, 22, 34, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4),
+    0 12px 36px 0 rgba(0, 0, 0, 0.6),
+    0 2px 8px 0 rgba(42, 82, 190, 0.12);
+}
+
+.liquid-glass-inner {
+  background: rgba(245, 247, 252, 0.55);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.dark .liquid-glass-inner {
+  background: rgba(22, 29, 44, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.liquid-glass-pill {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+}
+.dark .liquid-glass-pill {
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15), 0 2px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   MOBILE COMPREHENSIVE LIQUID GLASS MODE (< 640px)
+   "khi ở chế độ mobile thì toàn bộ trang web thì ở giao diện liquid glass, phải liquid glass nha"
+   Transforms every card, article, filter bar, modal, header, dropdown & form into liquid glass
+   ========================================================================== */
+@media (max-width: 639px) {
+  /* 1. Liquid Glass Sticky Headers */
+  #main-header,
+  #landing-header {
+    background: rgba(255, 255, 255, 0.76) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 
+      inset 0 -1px 1px 0 rgba(255, 255, 255, 0.9),
+      0 8px 30px 0 rgba(42, 82, 190, 0.08) !important;
+  }
+
+  .dark #main-header,
+  .dark #landing-header {
+    background: rgba(16, 21, 30, 0.76) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 
+      inset 0 -1px 1px 0 rgba(255, 255, 255, 0.12),
+      0 8px 30px 0 rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* 2. Liquid Glass Floating Bottom Navigation Bar */
+  nav[aria-label*="điều hướng"] {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.75) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.04),
+      0 12px 36px 0 rgba(42, 82, 190, 0.15) !important;
+  }
+
+  .dark nav[aria-label*="điều hướng"] {
+    background: rgba(16, 21, 30, 0.78) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4),
+      0 14px 40px 0 rgba(0, 0, 0, 0.65) !important;
+  }
+
+  /* 3. Problem Cards & Articles across Feed and Detail Pages */
+  .problem-article,
+  article,
+  [data-problem-id],
+  .rounded-xl.bg-white,
+  .rounded-2xl.bg-white,
+  .rounded-3xl.bg-white {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.75) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03),
+      0 10px 32px -4px rgba(42, 82, 190, 0.08),
+      0 2px 8px 0 rgba(0, 0, 0, 0.03) !important;
+  }
+
+  .dark .problem-article,
+  .dark article,
+  .dark [data-problem-id],
+  .dark .rounded-xl.dark\:bg-nightCard,
+  .dark .rounded-2xl.dark\:bg-nightCard,
+  .dark .rounded-3xl.dark\:bg-nightCard {
+    background: rgba(16, 22, 34, 0.76) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4),
+      0 12px 36px -4px rgba(0, 0, 0, 0.6),
+      0 2px 8px 0 rgba(42, 82, 190, 0.12) !important;
+  }
+
+  /* 4. Filter Bar & Control Decks */
+  section.bg-paperDark,
+  .rounded-xl.bg-paperDark,
+  .rounded-2xl.bg-paperDark,
+  .filter-section {
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03),
+      0 8px 28px 0 rgba(42, 82, 190, 0.07) !important;
+  }
+
+  .dark section.bg-paperDark,
+  .dark .rounded-xl.bg-paperDark,
+  .dark .rounded-2xl.bg-paperDark,
+  .dark .filter-section {
+    background: rgba(16, 22, 34, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.4),
+      0 10px 32px 0 rgba(0, 0, 0, 0.55) !important;
+  }
+
+  /* 5. Dropdowns & Floating Flyout Panels */
+  .animate-dropdownFade,
+  [role="listbox"],
+  .custom-dropdown-panel {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(28px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+      0 16px 40px 0 rgba(42, 82, 190, 0.14),
+      0 4px 12px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .dark .animate-dropdownFade,
+  .dark [role="listbox"],
+  .dark .custom-dropdown-panel {
+    background: rgba(18, 24, 38, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.22),
+      0 18px 45px 0 rgba(0, 0, 0, 0.7),
+      0 4px 14px 0 rgba(42, 82, 190, 0.15) !important;
+  }
+
+  /* 6. Modals & Dialogue Cards */
+  .fixed.inset-0.z-\[100\],
+  .fixed.inset-0.z-50 {
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  }
+
+  .fixed.inset-0 > div.bg-paper,
+  .fixed.inset-0 > div.bg-white,
+  .fixed.inset-0 > div.dark\:bg-nightCard,
+  .modal-card {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(28px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+      0 24px 60px 0 rgba(42, 82, 190, 0.16) !important;
+  }
+
+  .dark .fixed.inset-0 > div.bg-paper,
+  .dark .fixed.inset-0 > div.bg-white,
+  .dark .fixed.inset-0 > div.dark\:bg-nightCard,
+  .dark .modal-card {
+    background: rgba(16, 22, 34, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.22),
+      0 24px 60px 0 rgba(0, 0, 0, 0.75) !important;
+  }
+
+  /* 7. Nested Wells, Math Formula Boxes, and Inner Panels */
+  .problem-article .bg-paper,
+  .problem-article .bg-paperDark,
+  .problem-article .bg-stone-50,
+  article .bg-paper,
+  article .bg-paperDark,
+  article .bg-stone-50,
+  .detail-card .bg-paper,
+  .modal-card .bg-white,
+  .modal-card .bg-paperDark {
+    background: rgba(245, 247, 252, 0.55) !important;
+    backdrop-filter: blur(12px) saturate(170%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(170%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.75) !important;
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .dark .problem-article .bg-paper,
+  .dark .problem-article .bg-paperDark,
+  .dark .problem-article .bg-stone-50,
+  .dark article .bg-paper,
+  .dark article .bg-paperDark,
+  .dark article .bg-stone-50,
+  .dark .detail-card .bg-paper,
+  .dark .modal-card .bg-white,
+  .dark .modal-card .bg-paperDark {
+    background: rgba(22, 29, 44, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* 8. Text Inputs, Search Bars & Textareas */
+  .input-field,
+  input[type="text"]:not(.no-glass),
+  input[type="search"]:not(.no-glass),
+  textarea:not(.no-glass) {
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(14px) saturate(170%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(170%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 
+      inset 0 1px 2px 0 rgba(0, 0, 0, 0.04),
+      0 1px 2px 0 rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .dark .input-field,
+  .dark input[type="text"]:not(.no-glass),
+  .dark input[type="search"]:not(.no-glass),
+  .dark textarea:not(.no-glass) {
+    background: rgba(22, 29, 44, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* 9. Buttons - Liquid Glass Polish */
+  .btn-primary {
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.4),
+      0 4px 14px 0 rgba(42, 82, 190, 0.3) !important;
+  }
+
+  .btn-danger {
+    box-shadow: 
+      inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.4),
+      0 4px 14px 0 rgba(215, 59, 62, 0.3) !important;
+  }
+
+  /* Action buttons on mobile (bookmark, share, admin, latex cheatsheet, etc.) */
+  button.bg-gray-50,
+  button.bg-gray-100,
+  button.bg-white,
+  .dark button.dark\:bg-night,
+  .dark button.dark\:bg-nightInput,
+  .dark button.dark\:bg-slate-800 {
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 
+      inset 0 1px 0.8px 0 rgba(255, 255, 255, 0.7),
+      0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .dark button.bg-gray-50,
+  .dark button.bg-gray-100,
+  .dark button.bg-white,
+  .dark button.dark\:bg-night,
+  .dark button.dark\:bg-nightInput,
+  .dark button.dark\:bg-slate-800 {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 
+      inset 0 1px 0.8px 0 rgba(255, 255, 255, 0.16),
+      0 2px 6px 0 rgba(0, 0, 0, 0.4) !important;
+  }
+}
+

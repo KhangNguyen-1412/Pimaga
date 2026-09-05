@@ -67,27 +67,27 @@ export default function LatexCheatsheetModal({ isOpen, onClose, onInsertSnippet 
   };
 
   return (
-    <div className="fixed inset-0 bg-ink/60 dark:bg-black/70 z-[100] flex justify-center items-center backdrop-blur-sm px-4">
-      <div className="bg-paper dark:bg-nightCard rounded-2xl shadow-2xl w-full max-w-5xl h-[92vh] max-h-[850px] flex flex-col border border-gray-300 dark:border-slate-800 overflow-hidden animate-dropdownFade transition-colors">
+    <div className="fixed inset-0 bg-ink/60 dark:bg-black/70 z-[100] flex justify-center items-center backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-paper dark:bg-nightCard rounded-none sm:rounded-2xl shadow-2xl w-full max-w-5xl h-full sm:h-[92vh] sm:max-h-[850px] flex flex-col border-0 sm:border border-gray-300 dark:border-slate-800 overflow-hidden animate-dropdownFade transition-colors">
         {/* Header */}
-        <div className="px-6 py-3.5 bg-blue-50/70 dark:bg-slate-900/80 border-b border-blue-100 dark:border-slate-800 flex justify-between items-center shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="px-4 sm:px-6 py-3 sm:py-3.5 bg-blue-50/70 dark:bg-slate-900/80 border-b border-blue-100 dark:border-slate-800 flex justify-between items-center shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <img
               src="/assets/pimaga-logo.svg"
               alt="Pimaga Emblem"
-              className="w-8 h-8 rounded-full shadow-xs select-none"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full shadow-xs select-none"
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
             />
             <div>
-              <h3 className="font-playfair text-2xl font-bold text-cerulean dark:text-blue-400 leading-none flex items-center gap-2">
-                <span>Sổ Tay Công Thức Toán LaTeX</span>
-                <span className="text-xs bg-cerulean text-white font-mono px-2 py-0.5 rounded-full font-normal">
+              <h3 className="font-playfair text-lg sm:text-2xl font-bold text-cerulean dark:text-blue-400 leading-none flex items-center gap-2">
+                <span>Sổ Tay LaTeX</span>
+                <span className="text-[10px] sm:text-xs bg-cerulean text-white font-mono px-2 py-0.5 rounded-full font-normal">
                   KaTeX
                 </span>
               </h3>
-              <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader mt-0.5 hidden xs:block">
                 Bấm "Chèn" để thêm vào con trỏ bài viết hoặc "Sao chép" mã LaTeX
               </p>
             </div>

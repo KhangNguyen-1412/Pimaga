@@ -7,7 +7,7 @@ export default function Footer() {
   const { isRealUser } = useAuth();
 
   return (
-    <footer className="mt-8 mb-16 pt-10 border-t-2 border-gray-200/80 dark:border-slate-800 text-center flex flex-col items-center transition-colors">
+    <footer className="hidden sm:flex mt-8 mb-16 pt-10 border-t-2 border-gray-200/80 dark:border-slate-800 text-center flex-col items-center transition-colors">
       <div
         className="relative group cursor-pointer mb-4"
         onClick={() => {

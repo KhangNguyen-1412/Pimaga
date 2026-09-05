@@ -110,24 +110,24 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
   };
 
   return (
-    <div className="fixed inset-0 bg-ink/60 dark:bg-black/70 z-[100] flex justify-center items-center backdrop-blur-sm px-4">
-      <div className="bg-paper dark:bg-nightCard rounded-2xl shadow-2xl w-full max-w-6xl xl:max-w-7xl h-[92vh] max-h-[880px] flex flex-col border border-gray-300 dark:border-slate-800 overflow-hidden animate-dropdownFade transition-colors">
+    <div className="fixed inset-0 bg-ink/60 dark:bg-black/70 z-[100] flex justify-center items-center backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-paper dark:bg-nightCard rounded-none sm:rounded-2xl shadow-2xl w-full max-w-6xl xl:max-w-7xl h-full sm:h-[92vh] sm:max-h-[880px] flex flex-col border-0 sm:border border-gray-300 dark:border-slate-800 overflow-hidden animate-dropdownFade transition-colors">
         {/* Header */}
-        <div className="px-6 py-3.5 bg-blue-50/70 dark:bg-slate-900/80 border-b border-blue-100 dark:border-slate-800 flex justify-between items-center shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="px-4 sm:px-6 py-3 sm:py-3.5 bg-blue-50/70 dark:bg-slate-900/80 border-b border-blue-100 dark:border-slate-800 flex justify-between items-center shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <img
               src="/assets/pimaga-logo.svg"
               alt="Pimaga Logo"
-              className="w-8 h-8 rounded-full shadow-xs select-none"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full shadow-xs select-none"
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
             />
             <div>
-              <h3 className="font-playfair text-2xl font-bold text-cerulean dark:text-blue-400 leading-none">
+              <h3 className="font-playfair text-lg sm:text-2xl font-bold text-cerulean dark:text-blue-400 leading-none">
                 Bài Làm Của Bạn
               </h3>
-              <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader italic mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader italic mt-0.5 truncate max-w-[200px] sm:max-w-none">
                 Đang giải: <strong className="text-ink dark:text-slate-200 not-italic">{problemHeading}</strong>
               </p>
             </div>
@@ -309,18 +309,18 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
       </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-paperDark dark:bg-nightCard border-t border-gray-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
+        <div className="px-4 sm:px-6 py-3 bg-paperDark dark:bg-nightCard border-t border-gray-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
           <div className="text-xs text-gray-500 dark:text-slate-400 font-newsreader flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-cerulean dark:bg-blue-400"></span>
             <span>
-              Nhấn <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded font-mono text-xs text-gray-700 dark:text-slate-300 shadow-xs">Ctrl + Enter</kbd> để lưu nhanh bài làm
+              Nhấn <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded font-mono text-xs text-gray-700 dark:text-slate-300 shadow-xs">Ctrl + Enter</kbd> để lưu nhanh
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded-lg border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition font-newsreader font-bold text-sm cursor-pointer"
+              className="flex-1 sm:flex-initial px-5 py-2.5 sm:py-2 rounded-lg border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition font-newsreader font-bold text-sm cursor-pointer min-h-[44px] sm:min-h-0 text-center"
             >
               Hủy Bỏ
             </button>
@@ -328,12 +328,12 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
               type="button"
               onClick={handleSave}
               disabled={isSubmitting}
-              className="bg-cerulean text-white px-7 py-2 rounded-lg hover:bg-blue-800 transition font-playfair font-bold text-base shadow flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="flex-1 sm:flex-initial bg-cerulean text-white px-7 py-2.5 sm:py-2 rounded-lg hover:bg-blue-800 transition font-playfair font-bold text-base shadow flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-h-[44px] sm:min-h-0 text-center"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
-              Lưu Bài Làm
+              <span>Lưu Bài Làm</span>
             </button>
           </div>
         </div>

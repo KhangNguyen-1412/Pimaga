@@ -70,20 +70,20 @@ export default function Header() {
   return (
     <header
       id="main-header"
-      className={`sticky top-0 z-40 w-full bg-paper/95 dark:bg-night/95 backdrop-blur-md transition-all duration-300 border-b ${
+      className={`sticky top-0 z-40 w-full bg-white/92 dark:bg-nightCard/92 backdrop-blur-xl transition-all duration-300 border-b ${
         isScrolled
-          ? 'shadow-lg border-slate-300/90 dark:border-slate-800 bg-paper/95 dark:bg-night/95'
-          : 'border-ink/20 dark:border-slate-800/80'
+          ? 'shadow-lg shadow-cerulean/10 dark:shadow-black/60 border-gray-200/90 dark:border-slate-700/80 bg-white/95 dark:bg-nightCard/95'
+          : 'border-gray-200/70 dark:border-slate-700/60'
       }`}
     >
       <div
         id="header-inner"
-        className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 flex items-center justify-between gap-4 ${
-          isScrolled ? 'py-2 md:py-2.5' : 'py-5 md:py-6'
+        className={`max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 transition-all duration-300 flex items-center justify-between gap-2 sm:gap-4 ${
+          isScrolled ? 'py-2 md:py-2.5' : 'py-3 sm:py-5 md:py-6'
         }`}
       >
         {/* Left: Metadata (Date & Journal Motto) */}
-        <div className="w-1/4 text-left hidden sm:flex flex-col justify-center transition-all duration-300 shrink-0">
+        <div className="w-1/4 text-left hidden md:flex flex-col justify-center transition-all duration-300 shrink-0">
           <p
             className={`text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest transition-all duration-300 overflow-hidden whitespace-nowrap ${
               isScrolled ? 'max-h-0 opacity-0 m-0' : 'max-h-6 opacity-100'
@@ -114,8 +114,8 @@ export default function Header() {
             <h1
               className={`font-playfair font-black text-cerulean dark:text-blue-400 tracking-tight whitespace-nowrap transition-all duration-300 group-hover:text-blue-800 dark:group-hover:text-blue-300 ${
                 isScrolled
-                  ? 'text-2xl sm:text-3xl leading-tight'
-                  : 'text-4xl sm:text-5xl md:text-6xl'
+                  ? 'text-xl sm:text-3xl leading-tight'
+                  : 'text-2xl sm:text-4xl md:text-6xl'
               }`}
             >
               Tạp Chí Pi
@@ -125,7 +125,7 @@ export default function Header() {
             className={`font-playfair italic text-cerulean/85 dark:text-blue-300/85 transition-all duration-300 whitespace-nowrap overflow-hidden ${
               isScrolled
                 ? 'max-h-0 opacity-0 m-0 text-xs'
-                : 'max-h-8 opacity-100 text-sm sm:text-base md:text-xl mt-1'
+                : 'max-h-8 opacity-100 text-xs sm:text-base md:text-xl mt-0.5 sm:mt-1'
             }`}
           >
             Kho Đề Bài & Lời Giải Chuyên Đề
@@ -133,14 +133,14 @@ export default function Header() {
         </div>
 
         {/* Right: Auth UI & Theme Toggle */}
-        <div className="w-auto flex justify-end items-center gap-1.5 sm:gap-2.5 transition-all duration-300 shrink-0">
+        <div className="w-auto flex justify-end items-center gap-1 sm:gap-2.5 transition-all duration-300 shrink-0">
           {/* Offline Mode Indicator */}
           {!isOnline && (
             <div
-              className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-red-50 dark:bg-rose-950/60 border border-jasper/40 dark:border-rose-800 text-jasper dark:text-rose-300 text-xs font-newsreader font-bold shadow-xs animate-pulse"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-jasper/15 dark:bg-jasper/30 border border-jasper/35 dark:border-rose-400/40 text-jasper dark:text-rose-300 text-xs font-newsreader font-bold shadow-xs animate-pulse"
               title="Đang làm việc ngoại tuyến với dữ liệu bộ nhớ đệm (Cache)"
             >
-              <svg className="w-3.5 h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01" />
               </svg>
@@ -153,13 +153,13 @@ export default function Header() {
             <button
               type="button"
               onClick={() => navigate('/ho-so')}
-              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-jasper/30 dark:border-rose-900/60 text-jasper dark:text-rose-300 text-xs font-newsreader font-bold shadow-2xs hover:bg-rose-100/70 transition cursor-pointer"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl bg-jasper/15 dark:bg-jasper/30 border border-jasper/35 dark:border-rose-400/40 text-jasper dark:text-rose-300 text-xs font-newsreader font-bold shadow-xs hover:bg-jasper/25 dark:hover:bg-jasper/40 active:scale-95 transition-all cursor-pointer"
               title={`Chuỗi học tập liên tục: ${userProfile?.streak?.current || 1} ngày. Nhấn để xem hồ sơ.`}
             >
-              <svg className="w-3.5 h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.527.82-1.173 1.559-1.874 2.257-.905.903-1.847 1.846-2.316 3.018-.46 1.15-.46 2.378-.052 3.518.397 1.11 1.18 2.052 2.122 2.684.945.635 2.062.98 3.197.98 1.135 0 2.252-.345 3.197-.98.942-.632 1.725-1.574 2.122-2.684.408-1.14.408-2.368-.052-3.518-.469-1.172-1.411-2.115-2.316-3.018-.701-.698-1.347-1.437-1.874-2.257a3.834 3.834 0 01-.291-.492zM10 14a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
               </svg>
-              <span className="font-semibold">{userProfile?.streak?.current || 1} ngày</span>
+              <span className="font-semibold text-[11px] sm:text-xs">{userProfile?.streak?.current || 1} ngày</span>
             </button>
           )}
 
@@ -167,29 +167,29 @@ export default function Header() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-nightCard text-gray-600 dark:text-blue-300 hover:text-cerulean dark:hover:text-blue-200 hover:border-cerulean dark:hover:border-blue-400/50 shadow-2xs hover:shadow transition-all duration-200 flex items-center justify-center cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-xl bg-cerulean/15 dark:bg-cerulean/30 border border-cerulean/35 dark:border-blue-400/40 text-cerulean dark:text-blue-300 hover:bg-cerulean/25 dark:hover:bg-cerulean/40 shadow-xs active:scale-95 transition-all duration-200 flex items-center justify-center cursor-pointer"
             title={isDark ? 'Chuyển sang Chế độ Sáng (Light Mode)' : 'Chuyển sang Chế độ Tối (Dark Mode)'}
             aria-label="Chuyển đổi giao diện sáng/tối"
           >
             {isDark ? (
               /* Sun Icon */
-              <svg className="w-4 h-4 text-cerulean dark:text-blue-300 transform transition-transform hover:rotate-45" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cerulean dark:text-blue-300 transform transition-transform hover:rotate-45" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
               </svg>
             ) : (
               /* Moon Icon */
-              <svg className="w-4 h-4 text-slate-600 hover:text-cerulean transform transition-transform hover:-rotate-12" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cerulean dark:text-blue-300 transform transition-transform hover:-rotate-12" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
               </svg>
             )}
           </button>
 
           {isRealUser ? (
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 type="button"
                 onClick={() => navigate('/ho-so')}
-                className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-xl border border-gray-200 dark:border-slate-800 hover:border-cerulean dark:hover:border-blue-500 bg-white/80 dark:bg-nightCard/80 hover:bg-blue-50/50 dark:hover:bg-slate-800 transition cursor-pointer group shadow-2xs text-left"
+                className="flex items-center gap-1.5 p-1 sm:pl-1.5 sm:pr-2 rounded-xl border border-gray-200/90 dark:border-slate-700/80 hover:border-cerulean/40 dark:hover:border-blue-400/50 bg-white/92 dark:bg-nightCard/92 hover:bg-cerulean/15 dark:hover:bg-cerulean/30 active:scale-95 transition-all cursor-pointer group shadow-xs text-left"
                 title="Truy cập Trang cá nhân & Hồ sơ học thuật"
               >
                 {currentUser.photoURL ? (
@@ -199,11 +199,11 @@ export default function Header() {
                     className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-gray-300 dark:border-slate-700 shadow-xs object-cover group-hover:border-cerulean transition"
                   />
                 ) : (
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-cerulean/10 text-cerulean dark:text-blue-400 font-bold flex items-center justify-center text-xs">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-cerulean/15 text-cerulean dark:text-blue-300 font-bold flex items-center justify-center text-xs">
                     {(currentUser.displayName || 'P').charAt(0).toUpperCase()}
                   </div>
                 )}
-                <div className="flex flex-col items-start leading-tight">
+                <div className="hidden sm:flex flex-col items-start leading-tight">
                   <span className="text-sm font-bold text-ink dark:text-slate-100 max-w-[85px] sm:max-w-[110px] truncate group-hover:text-cerulean dark:group-hover:text-blue-400 font-newsreader transition">
                     {currentUser.displayName || currentUser.email || 'Người dùng PI'}
                   </span>
@@ -218,7 +218,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={logout}
-                className="text-xs text-jasper dark:text-rose-400 hover:underline font-bold cursor-pointer px-1 py-1 font-newsreader shrink-0"
+                className="hidden sm:inline-block text-xs text-jasper dark:text-rose-400 hover:underline font-bold cursor-pointer px-1 py-1 font-newsreader shrink-0 active:scale-95 transition-transform"
                 title="Đăng xuất khỏi tài khoản"
               >
                 Đăng xuất
@@ -228,7 +228,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => navigate('/dang-nhap')}
-              className="bg-white dark:bg-nightCard border border-gray-300 dark:border-slate-700 text-ink dark:text-slate-200 shadow-sm px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition flex items-center gap-2 font-newsreader font-bold text-xs md:text-sm whitespace-nowrap cursor-pointer"
+              className="bg-jasper/15 dark:bg-jasper/30 border border-jasper/35 dark:border-rose-400/40 text-jasper dark:text-rose-300 hover:bg-jasper/25 dark:hover:bg-jasper/40 shadow-xs active:scale-95 px-3 py-1.5 rounded-xl transition-all flex items-center gap-2 font-newsreader font-bold text-xs md:text-sm whitespace-nowrap cursor-pointer"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

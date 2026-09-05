@@ -19,9 +19,49 @@ const MATH_REGEX = /(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\begin\{(?:equation|alig
 // 7. ~~Gạch ngang chữ~~
 const INLINE_MARKDOWN_REGEX = /(!\[[^\]]*?\]\([^)\s]+\)|(?<!!)\[[^\]]+?\]\((?:https?:\/\/[^\s)]+|\/[^\s)]+|data:image\/[^\s)]+)\)|\*\*\*[^*\n]+?\*\*\*|\*\*[^*\n]+?\*\*|(?<!\*)\*(?!\s)[^*\n]+?(?<!\s)\*(?!\*)|`[^`\n]+?`|~~[^~\n]+?~~)/g;
 
+// Bộ đệm cache kết quả render KaTeX để tối ưu hiệu năng và tránh tính toán lại
+const KATEX_CACHE = new Map();
+const MAX_CACHE_SIZE = 600;
+
+export function safeRenderKatexToString(tex, options = {}) {
+  const cacheKey = `${options.displayMode ? 'D:' : 'I:'}${tex}`;
+  if (KATEX_CACHE.has(cacheKey)) {
+    return KATEX_CACHE.get(cacheKey);
+  }
+
+  const originalWarn = console.warn;
+  // KaTeX ghi cảnh báo "No character metrics for '...' in style '...' and mode '...'"
+  // khi công thức chứa ký tự tiếng Việt có dấu (ví dụ trong \text{...} như 'ạ', 'ớ').
+  // Các ký tự này vẫn được hiển thị bình thường qua font dự phòng của trình duyệt,
+  // việc lọc cảnh báo giúp console sạch sẽ và không gây hiểu nhầm là lỗi.
+  console.warn = (...args) => {
+    if (typeof args[0] === 'string' && args[0].includes('No character metrics')) {
+      return;
+    }
+    originalWarn.apply(console, args);
+  };
+
+  try {
+    const html = katex.renderToString(tex, {
+      ...options,
+      throwOnError: false,
+      strict: false,
+    });
+
+    if (KATEX_CACHE.size >= MAX_CACHE_SIZE) {
+      const keysToDelete = Array.from(KATEX_CACHE.keys()).slice(0, 150);
+      keysToDelete.forEach((k) => KATEX_CACHE.delete(k));
+    }
+    KATEX_CACHE.set(cacheKey, html);
+    return html;
+  } finally {
+    console.warn = originalWarn;
+  }
+}
+
 function renderKatex(mathItem, key) {
   try {
-    const html = katex.renderToString(mathItem.tex, {
+    const html = safeRenderKatexToString(mathItem.tex, {
       displayMode: mathItem.display,
       throwOnError: false,
       strict: false,
