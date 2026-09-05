@@ -50,7 +50,7 @@ export default function LandingHeader({ onOpenLatexModal }) {
           }}
           className="flex items-center gap-3 group cursor-pointer text-left select-none bg-transparent border-none p-0"
         >
-          <div className="w-10 h-10 rounded-full bg-paper dark:bg-nightInput border-2 border-cerulean p-1 shadow-sm ring-2 ring-jasper/40 group-hover:scale-105 transition-all flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full group-hover:scale-105 transition-all flex items-center justify-center drop-shadow-xs">
             <img
               src="/assets/pimaga-logo.svg"
               alt="Pi"
