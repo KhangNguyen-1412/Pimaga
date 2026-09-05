@@ -82,8 +82,8 @@ export default function ProblemCard({
           onClick={() => toggleBookmark(problem.id)}
           className={`text-xs px-2.5 py-1.5 rounded-md transition shadow-2xs font-newsreader font-bold flex items-center gap-1 cursor-pointer border ${
             bookmarked
-              ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400'
-              : 'bg-gray-50 dark:bg-night hover:bg-amber-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-amber-600 border-gray-200 dark:border-slate-700'
+              ? 'bg-red-50 dark:bg-rose-950/60 border-jasper/40 dark:border-rose-800 text-jasper dark:text-rose-300'
+              : 'bg-gray-50 dark:bg-night hover:bg-red-50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-jasper dark:hover:text-rose-400 border-gray-200 dark:border-slate-700 hover:border-jasper/30'
           }`}
           title={bookmarked ? 'Bỏ lưu bài toán khỏi hồ sơ cá nhân' : 'Lưu bài toán vào hồ sơ cá nhân'}
         >
@@ -110,7 +110,7 @@ export default function ProblemCard({
           title="Sao chép đường dẫn thân thiện để chia sẻ bài toán"
         >
           {copied ? (
-            <svg className="w-3.5 h-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
             </svg>
           ) : (

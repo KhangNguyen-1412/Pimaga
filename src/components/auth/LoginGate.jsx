@@ -18,7 +18,7 @@ export default function LoginGate() {
     <div className="min-h-[70vh] flex items-center justify-center py-10 px-4 animate-dropdownFade">
       <div className="w-full max-w-xl bg-white dark:bg-nightCard border border-gray-200/90 dark:border-slate-800 rounded-2xl shadow-xl p-8 sm:p-12 text-center relative overflow-hidden transition-colors">
         {/* Subtle decorative background accents */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cerulean via-blue-700 to-jasper"></div>
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-cerulean dark:bg-blue-500"></div>
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 dark:bg-blue-950/30 rounded-full blur-2xl pointer-events-none"></div>
         <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-red-50 dark:bg-rose-950/30 rounded-full blur-2xl pointer-events-none"></div>
 

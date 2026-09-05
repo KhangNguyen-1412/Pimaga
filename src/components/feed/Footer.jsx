@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="mt-8 mb-16 pt-10 border-t-2 border-gray-200/80 dark:border-slate-800 text-center flex flex-col items-center transition-colors">
       <div className="relative group cursor-pointer mb-4">
-        <div className="absolute -inset-1.5 bg-gradient-to-r from-cerulean to-jasper rounded-full blur opacity-25 group-hover:opacity-60 transition duration-300"></div>
+        <div className="absolute -inset-1.5 bg-cerulean/20 dark:bg-blue-500/20 rounded-full blur opacity-40 group-hover:opacity-80 transition duration-300"></div>
         <img
           src="/assets/pimaga-logo.svg"
           alt="Pimaga Emblem"

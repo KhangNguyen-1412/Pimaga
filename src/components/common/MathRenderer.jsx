@@ -190,7 +190,7 @@ function renderInlineMarkdown(text, mathStore = [], tikzStore = [], keyPrefix = 
       return (
         <code
           key={key}
-          className="bg-gray-100 dark:bg-slate-800 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded text-[0.88em] font-mono border border-gray-200 dark:border-slate-700"
+          className="bg-gray-100 dark:bg-slate-800 text-cerulean dark:text-blue-300 px-1.5 py-0.5 rounded text-[0.88em] font-mono border border-gray-200 dark:border-slate-700"
         >
           {content}
         </code>
@@ -292,7 +292,7 @@ export default function MathRenderer({ content, className = '' }) {
       // Trích dẫn: > 
       if (line.startsWith('> ')) {
         return (
-          <blockquote key={lineIdx} className="border-l-4 border-amber-500/60 pl-3 py-1 my-2 italic text-gray-700 dark:text-slate-300 bg-gray-50/50 dark:bg-slate-800/30 rounded-r">
+          <blockquote key={lineIdx} className="border-l-4 border-cerulean/70 dark:border-blue-500/70 pl-3 py-1 my-2 italic text-gray-700 dark:text-slate-300 bg-gray-50/50 dark:bg-slate-800/30 rounded-r">
             {renderInlineMarkdown(line.slice(2), mathStore, tikzStore, `l${lineIdx}-bq`, setZoomModal)}
           </blockquote>
         );

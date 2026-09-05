@@ -145,8 +145,8 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 md:p-5 flex flex-col gap-4 custom-scrollbar">
           {/* 1. Problem Statement Card (ĐỀ BÀI TOÁN - Luôn hiển thị để người giải quan sát) */}
-          <div className="bg-amber-50/70 dark:bg-amber-950/25 border border-amber-200/90 dark:border-amber-900/50 rounded-xl p-3.5 sm:p-4 shadow-2xs shrink-0">
-            <div className="flex items-center justify-between gap-3 mb-2 pb-2 border-b border-amber-200/70 dark:border-amber-900/50">
+          <div className="bg-blue-50/60 dark:bg-blue-950/25 border border-cerulean/20 dark:border-blue-900/50 rounded-xl p-3.5 sm:p-4 shadow-2xs shrink-0">
+            <div className="flex items-center justify-between gap-3 mb-2 pb-2 border-b border-cerulean/20 dark:border-blue-900/50">
               <div className="flex items-center gap-2.5 flex-wrap">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold font-playfair bg-cerulean text-white uppercase tracking-wider shadow-2xs">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,14 +164,14 @@ export default function SolutionModal({ isOpen, problem, onClose, onOpenLatexChe
               <button
                 type="button"
                 onClick={() => setIsProblemCollapsed((prev) => !prev)}
-                className="text-xs font-bold text-amber-900 dark:text-amber-300 hover:text-cerulean dark:hover:text-blue-300 flex items-center gap-1 transition cursor-pointer px-2 py-0.5 rounded hover:bg-amber-100/60 dark:hover:bg-amber-900/40"
+                className="text-xs font-bold text-cerulean dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 flex items-center gap-1 transition cursor-pointer px-2 py-0.5 rounded hover:bg-blue-100/60 dark:hover:bg-blue-900/40"
               >
                 <span>{isProblemCollapsed ? 'Xem chi tiết đề bài ▼' : 'Thu gọn đề bài ▲'}</span>
               </button>
             </div>
 
             {!isProblemCollapsed && (
-              <div className="font-newsreader text-base md:text-lg text-ink dark:text-slate-100 leading-relaxed max-h-52 overflow-y-auto pr-2 bg-paper/70 dark:bg-nightInput p-3 rounded-lg border border-amber-100/80 dark:border-slate-800">
+              <div className="font-newsreader text-base md:text-lg text-ink dark:text-slate-100 leading-relaxed max-h-52 overflow-y-auto pr-2 bg-paper/70 dark:bg-nightInput p-3 rounded-lg border border-cerulean/10 dark:border-slate-800">
                 <MathRenderer content={problem.content} />
               </div>
             )}

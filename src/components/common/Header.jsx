@@ -130,10 +130,10 @@ export default function Header() {
           {/* Offline Mode Indicator */}
           {!isOnline && (
             <div
-              className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs font-newsreader font-bold shadow-xs animate-pulse"
+              className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-red-50 dark:bg-rose-950/60 border border-jasper/40 dark:border-rose-800 text-jasper dark:text-rose-300 text-xs font-newsreader font-bold shadow-xs animate-pulse"
               title="Đang làm việc ngoại tuyến với dữ liệu bộ nhớ đệm (Cache)"
             >
-              <svg className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-jasper dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01" />
               </svg>
@@ -160,13 +160,13 @@ export default function Header() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-nightCard text-gray-600 dark:text-amber-300 hover:text-cerulean dark:hover:text-amber-200 hover:border-cerulean dark:hover:border-amber-400/50 shadow-2xs hover:shadow transition-all duration-200 flex items-center justify-center cursor-pointer"
+            className="p-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-nightCard text-gray-600 dark:text-blue-300 hover:text-cerulean dark:hover:text-blue-200 hover:border-cerulean dark:hover:border-blue-400/50 shadow-2xs hover:shadow transition-all duration-200 flex items-center justify-center cursor-pointer"
             title={isDark ? 'Chuyển sang Chế độ Sáng (Light Mode)' : 'Chuyển sang Chế độ Tối (Dark Mode)'}
             aria-label="Chuyển đổi giao diện sáng/tối"
           >
             {isDark ? (
               /* Sun Icon */
-              <svg className="w-4 h-4 text-amber-300 transform transition-transform hover:rotate-45" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-cerulean dark:text-blue-300 transform transition-transform hover:rotate-45" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
               </svg>
             ) : (

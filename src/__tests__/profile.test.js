@@ -5,6 +5,8 @@ import {
   calculateCategoryStats,
   generateSolutionsLatex,
   generateSolutionsMarkdown,
+  generateSolutionsDocxHtml,
+  generateSolutionsPrintableHtml,
   calculateStreak,
   calculateIssueChallenges,
   generateLeaderboard,
@@ -187,6 +189,94 @@ describe('profileUtils', () => {
       expect(md).toContain('Nguyễn Văn A');
       expect(md).toContain('[P101]');
       expect(md).toContain('Ta có $x = 1, y = 1$');
+    });
+
+    it('generates MS Word compatible HTML for DOCX export', () => {
+      const docxHtml = generateSolutionsDocxHtml(user, items, 'Số 50 - Tháng 2/2021');
+      expect(docxHtml).toContain('xmlns:w=\'urn:schemas-microsoft-com:office:word\'');
+      expect(docxHtml).toContain('Nguyễn Văn A');
+      expect(docxHtml).toContain('Số 50 - Tháng 2/2021');
+      expect(docxHtml).toContain('P101');
+      expect(docxHtml).toContain('#2A52BE'); // Cerulean
+      expect(docxHtml).toContain('#D73B3E'); // Jasper
+    });
+
+    it('generates KaTeX-rendered printable HTML for PDF export', () => {
+      const pdfHtml = generateSolutionsPrintableHtml(user, items, 'Toàn tập bài giải');
+      expect(pdfHtml).toContain('<!DOCTYPE html>');
+      expect(pdfHtml).toContain('katex.min.css');
+      expect(pdfHtml).toContain('window.print()');
+      expect(pdfHtml).toContain('Nguyễn Văn A');
+      expect(pdfHtml).toContain('Toàn tập bài giải');
+      expect(pdfHtml).toContain('#2A52BE'); // Cerulean
+      expect(pdfHtml).toContain('#D73B3E'); // Jasper
+    });
+
+    it('renders TikZ SVG figure instead of raw code in PDF export', () => {
+      const tikzCode = '\\begin{tikzpicture}\n\\draw (0,0) -- (1,1);\n\\end{tikzpicture}';
+      const geometryItems = [
+        {
+          problem: {
+            code: 'P202',
+            content: `Cho tam giác $ABC$ như hình vẽ bên dưới:\n\n${tikzCode}`,
+          },
+          solution: 'Theo định lý Pythagoras, ta có $BC = \\sqrt{2}$',
+          issueName: 'Số 54',
+          categoryName: 'Hình học',
+        },
+      ];
+
+      const svgMock = '<svg viewBox="0 0 100 100"><line x1="0" y1="0" x2="100" y2="100"/></svg>';
+      const svgMap = new Map([[tikzCode, svgMock]]);
+
+      const pdfHtml = generateSolutionsPrintableHtml(user, geometryItems, 'Số 54', svgMap);
+      // Ensure SVG is rendered in place of the raw TikZ code
+      expect(pdfHtml).toContain('<svg viewBox="0 0 100 100">');
+      expect(pdfHtml).toContain('Hình vẽ hình học (LaTeX TikZ)');
+      expect(pdfHtml).not.toContain('\\draw (0,0) -- (1,1);');
+    });
+
+    it('renders Markdown images as figure and img tags in PDF export', () => {
+      const imageItems = [
+        {
+          problem: {
+            code: 'P203',
+            content: 'Quan sát đồ thị bên dưới:\n\n![Đồ thị hàm số](https://example.com/dothi.png)',
+          },
+          solution: 'Hàm số đồng biến trên khoảng $(0, +\\infty)$',
+          issueName: 'Số 54',
+          categoryName: 'Giải tích',
+        },
+      ];
+
+      const pdfHtml = generateSolutionsPrintableHtml(user, imageItems, 'Số 54');
+      expect(pdfHtml).toContain('<img src="https://example.com/dothi.png" alt="Đồ thị hàm số"');
+      expect(pdfHtml).toContain('Hình vẽ: Đồ thị hàm số');
+      expect(pdfHtml).not.toContain('![Đồ thị hàm số](https://example.com/dothi.png)');
+    });
+
+    it('renders TikZ and Markdown images as img tags in DOCX Word export', () => {
+      const tikzCode = '\\begin{tikzpicture}\n\\draw (0,0) circle (1);\n\\end{tikzpicture}';
+      const geometryItems = [
+        {
+          problem: {
+            code: 'P204',
+            content: `Đường tròn tâm $O$:\n\n${tikzCode}\n\n![Sơ đồ](https://example.com/sodo.png)`,
+          },
+          solution: 'Bán kính $R = 1$',
+          issueName: 'Số 54',
+          categoryName: 'Hình học',
+        },
+      ];
+
+      const imgMap = new Map([[tikzCode, 'data:image/png;base64,mockPngData']]);
+      const docxHtml = generateSolutionsDocxHtml(user, geometryItems, 'Số 54', imgMap);
+
+      expect(docxHtml).toContain('<img src="data:image/png;base64,mockPngData"');
+      expect(docxHtml).toContain('Hình vẽ hình học (LaTeX TikZ)');
+      expect(docxHtml).toContain('<img src="https://example.com/sodo.png" alt="Sơ đồ"');
+      expect(docxHtml).not.toContain('![Sơ đồ](https://example.com/sodo.png)');
+      expect(docxHtml).not.toContain('\\draw (0,0) circle (1);');
     });
   });
 });

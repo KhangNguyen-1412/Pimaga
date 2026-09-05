@@ -13,6 +13,8 @@ import {
   generateLeaderboard,
   generateSolutionsLatex,
   generateSolutionsMarkdown,
+  exportSolutionsDocx,
+  exportSolutionsPdf,
   downloadFile,
 } from '../../utils/profileUtils';
 
@@ -73,6 +75,11 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
   const [bmSearch, setBmSearch] = useState('');
   const [bmCatFilter, setBmCatFilter] = useState('');
 
+  // Export states (Bước 1: Chọn định dạng -> Bước 2: Chọn Số / Tập)
+  const [exportFormat, setExportFormat] = useState('pdf'); // 'pdf' | 'docx' | 'latex' | 'markdown'
+  const [exportScope, setExportScope] = useState('all'); // 'all' | issueId
+  const [isExporting, setIsExporting] = useState(false);
+
   // Gemini API Key state inside settings
   const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('pimaga_gemini_api_key') || '');
   const [showKey, setShowKey] = useState(false);
@@ -100,6 +107,37 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
         categoryName: categoryMap.get(p.categoryId) || 'Chuyên mục Toán',
       }));
   }, [problems, userSolutionsMap, issueMap, categoryMap]);
+
+  // Scope options for export SelectDropdown
+  const exportScopeOptions = useMemo(() => {
+    const list = [
+      {
+        value: 'all',
+        label: `Toàn tập tất cả các số (${solvedItems.length} bài đã giải)`,
+      },
+    ];
+    issues.forEach((issue) => {
+      const count = solvedItems.filter((item) => item.problem?.issueId === issue.id).length;
+      list.push({
+        value: issue.id,
+        label: `${issue.name} (${count} bài đã giải)`,
+      });
+    });
+    return list;
+  }, [issues, solvedItems]);
+
+  // Target solved items based on selected export scope
+  const targetSolvedItems = useMemo(() => {
+    if (exportScope === 'all') return solvedItems;
+    return solvedItems.filter((item) => item.problem?.issueId === exportScope);
+  }, [solvedItems, exportScope]);
+
+  // Name of selected scope
+  const selectedScopeName = useMemo(() => {
+    if (exportScope === 'all') return 'Toàn tập tất cả các số';
+    const found = issues.find((i) => i.id === exportScope);
+    return found ? found.name : 'Tập bài giải Pi';
+  }, [issues, exportScope]);
 
   // Filtered solved items
   const filteredSolvedItems = useMemo(() => {
@@ -180,31 +218,46 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
     });
   }, [userProfile?.streak?.current]);
 
-  // Handlers for exporting solutions
-  const handleExportLatex = () => {
-    if (solvedItems.length === 0) {
-      showToast('Bạn chưa có bài giải nào để xuất tài liệu!', 'warning');
+  // Unified handler for exporting solutions (PDF, DOCX, LaTeX, Markdown)
+  const handleExecuteExport = async () => {
+    if (targetSolvedItems.length === 0) {
+      showToast('Không có bài giải nào trong số phát hành đã chọn để xuất!', 'warning');
       return;
     }
-    const latexCode = generateSolutionsLatex(
-      { displayName: userProfile.displayName || currentUser?.displayName, email: currentUser?.email },
-      solvedItems
-    );
-    downloadFile(latexCode, `pimaga_bai_giai_${Date.now()}.tex`, 'application/x-tex;charset=utf-8');
-    showToast(`Đã xuất thành công ${solvedItems.length} bài giải ra file LaTeX (.tex)!`, 'success');
-  };
 
-  const handleExportMarkdown = () => {
-    if (solvedItems.length === 0) {
-      showToast('Bạn chưa có bài giải nào để xuất tài liệu!', 'warning');
-      return;
+    const author = {
+      displayName: userProfile.displayName || currentUser?.displayName || 'Người dùng Pimaga',
+      email: currentUser?.email,
+    };
+    const scopeTitle = selectedScopeName;
+    const safeTag = exportScope === 'all' ? 'toan_tap' : exportScope;
+
+    setIsExporting(true);
+
+    try {
+      if (exportFormat === 'pdf') {
+        showToast('Đang kết xuất bản in & kết xuất hình học TikZ...', 'info');
+        await exportSolutionsPdf(author, targetSolvedItems, scopeTitle);
+        showToast(`Đã mở giao diện in / lưu PDF cho ${targetSolvedItems.length} bài giải (${scopeTitle})!`, 'success');
+      } else if (exportFormat === 'docx') {
+        showToast('Đang kết xuất tài liệu Word & chuyển đổi hình vẽ...', 'info');
+        await exportSolutionsDocx(author, targetSolvedItems, scopeTitle);
+        showToast(`Đã xuất thành công ${targetSolvedItems.length} bài giải ra file Word (.docx)!`, 'success');
+      } else if (exportFormat === 'latex') {
+        const latexCode = generateSolutionsLatex(author, targetSolvedItems, scopeTitle);
+        downloadFile(latexCode, `pimaga_bai_giai_${safeTag}_${Date.now()}.tex`, 'application/x-tex;charset=utf-8');
+        showToast(`Đã xuất thành công ${targetSolvedItems.length} bài giải ra file LaTeX (.tex)!`, 'success');
+      } else if (exportFormat === 'markdown') {
+        const mdContent = generateSolutionsMarkdown(author, targetSolvedItems, scopeTitle);
+        downloadFile(mdContent, `pimaga_bai_giai_${safeTag}_${Date.now()}.md`, 'text/markdown;charset=utf-8');
+        showToast(`Đã xuất thành công ${targetSolvedItems.length} bài giải ra file Markdown (.md)!`, 'success');
+      }
+    } catch (err) {
+      console.error('Lỗi xuất tài liệu:', err);
+      showToast('Có lỗi xảy ra khi chuẩn bị xuất tài liệu!', 'error');
+    } finally {
+      setIsExporting(false);
     }
-    const mdContent = generateSolutionsMarkdown(
-      { displayName: userProfile.displayName || currentUser?.displayName, email: currentUser?.email },
-      solvedItems
-    );
-    downloadFile(mdContent, `pimaga_bai_giai_${Date.now()}.md`, 'text/markdown;charset=utf-8');
-    showToast(`Đã xuất thành công ${solvedItems.length} bài giải ra file Markdown (.md)!`, 'success');
   };
 
   const handleSaveGeminiKey = (e) => {
@@ -998,7 +1051,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                           key={challenge.issueId}
                           className={`p-3.5 rounded-xl border transition-all ${
                             challenge.isCompleted
-                              ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800'
+                              ? 'bg-red-50/50 dark:bg-rose-950/30 border-jasper/30 dark:border-rose-900/60'
                               : 'bg-gray-50/70 dark:bg-slate-900/50 border-gray-200 dark:border-slate-800'
                           }`}
                         >
@@ -1013,8 +1066,8 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                             </div>
 
                             {challenge.isCompleted ? (
-                              <span className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[11px] font-bold rounded-full shrink-0">
-                                <svg className="w-3 h-3 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                              <span className="flex items-center gap-1 px-2 py-0.5 bg-red-50 dark:bg-rose-950/80 text-jasper dark:text-rose-300 border border-jasper/30 dark:border-rose-900/60 text-[11px] font-bold rounded-full shrink-0">
+                                <svg className="w-3 h-3 text-jasper dark:text-rose-400" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
                                 <span>100% Hoàn thành</span>
@@ -1030,7 +1083,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                           <div className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-300 ${
-                                challenge.isCompleted ? 'bg-amber-500' : 'bg-cerulean dark:bg-blue-400'
+                                challenge.isCompleted ? 'bg-jasper dark:bg-rose-500' : 'bg-cerulean dark:bg-blue-400'
                               }`}
                               style={{ width: `${challenge.percent}%` }}
                             />
@@ -1046,7 +1099,7 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
               <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4 font-newsreader">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300/60 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 border border-cerulean/30 flex items-center justify-center">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                       </svg>
@@ -1095,15 +1148,15 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                             {/* Rank Column */}
                             <td className="py-2.5 px-3">
                               {isTop1 ? (
-                                <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 border border-amber-300 font-bold flex items-center justify-center text-xs">
+                                <span className="w-6 h-6 rounded-full bg-blue-50 text-cerulean dark:bg-blue-950/80 dark:text-blue-200 border border-cerulean/40 font-bold flex items-center justify-center text-xs">
                                   1
                                 </span>
                               ) : isTop2 ? (
-                                <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200 border border-slate-300 font-bold flex items-center justify-center text-xs">
+                                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold flex items-center justify-center text-xs">
                                   2
                                 </span>
                               ) : isTop3 ? (
-                                <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-900 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-300 font-bold flex items-center justify-center text-xs">
+                                <span className="w-6 h-6 rounded-full bg-red-50 text-jasper dark:bg-rose-950/80 dark:text-rose-300 border border-jasper/30 font-bold flex items-center justify-center text-xs">
                                   3
                                 </span>
                               ) : (
@@ -1215,74 +1268,340 @@ export default function ProfilePage({ onOpenDetail, onOpenSolution, onBackToList
                 </form>
               </div>
 
-              {/* Data Export Box */}
-              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4 font-newsreader">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-rose-950/60 border border-jasper/30 dark:border-rose-900 flex items-center justify-center text-jasper dark:text-rose-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
+              {/* Data Export Box - Quy trình 2 bước: Chọn định dạng trước -> Chọn Số/Tập sau */}
+              <div className="bg-white dark:bg-nightCard border border-gray-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-5 font-newsreader">
+                {/* Header of Section */}
+                <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-gray-100 dark:border-slate-800">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-cerulean/30 dark:border-blue-900 flex items-center justify-center text-cerulean dark:text-blue-400">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair">
+                        Xuất Bản In &amp; Tài Liệu Bài Giải
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
+                        Chọn định dạng mong muốn rồi chọn kỳ báo hoặc toàn bộ tập bài giải của bạn
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-base font-bold text-gray-900 dark:text-slate-100 font-playfair">
-                      Xuất Tài Liệu & Kho Bài Giải Cá Nhân
-                    </h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
-                      Tải về toàn bộ bài giải của bạn để in ấn, nộp báo cáo hoặc lưu trữ ngoại tuyến
-                    </p>
+
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-jasper dark:text-rose-400 bg-red-50 dark:bg-rose-950/50 border border-jasper/30 px-2.5 py-1 rounded-full font-mono">
+                    <span>Tổng: {solvedItems.length} bài giải</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-                  {/* Export LaTeX - Cerulean Accent */}
-                  <div className="p-4 bg-paper dark:bg-nightInput rounded-xl border border-gray-200 dark:border-slate-800 space-y-3 flex flex-col justify-between">
-                    <div>
-                      <span className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1.5 font-playfair">
-                        <svg className="w-4 h-4 text-cerulean dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>Mã nguồn LaTeX (.tex)</span>
+                {/* BƯỚC 1: CHỌN ĐỊNH DẠNG FILE XUẤT TRƯỚC */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-slate-100 flex items-center gap-2 font-playfair">
+                      <span className="w-5 h-5 rounded-full bg-cerulean text-white text-xs flex items-center justify-center font-mono font-bold">
+                        1
                       </span>
-                      <p className="text-xs text-gray-600 dark:text-slate-400 leading-relaxed font-newsreader">
-                        Sinh file .tex đầy đủ preamble tiếng Việt, gói amsmath và tikz, sẵn sàng biên dịch trực tiếp bằng TeXLive hoặc Overleaf.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleExportLatex}
-                      className="w-full py-2.5 bg-cerulean hover:bg-blue-800 text-white rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs font-newsreader"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      <span>Tải Tập Bài Giải (.tex)</span>
-                    </button>
+                      <span>Bước 1: Chọn định dạng file xuất</span>
+                    </label>
+                    <span className="text-xs text-gray-500 dark:text-slate-400">
+                      Đang chọn:{' '}
+                      <span className="font-mono font-bold text-cerulean dark:text-blue-400 uppercase">
+                        .{exportFormat}
+                      </span>
+                    </span>
                   </div>
 
-                  {/* Export Markdown - Jasper Accent */}
-                  <div className="p-4 bg-paper dark:bg-nightInput rounded-xl border border-gray-200 dark:border-slate-800 space-y-3 flex flex-col justify-between">
-                    <div>
-                      <span className="font-bold text-sm text-gray-900 dark:text-slate-100 flex items-center gap-1.5 mb-1.5 font-playfair">
-                        <svg className="w-4 h-4 text-jasper dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        <span>Tài liệu Markdown (.md)</span>
-                      </span>
-                      <p className="text-xs text-gray-600 dark:text-slate-400 leading-relaxed font-newsreader">
-                        Định dạng văn bản Markdown chuẩn quốc tế với công thức KaTeX, tương thích với Obsidian, Notion và GitHub.
-                      </p>
-                    </div>
+                  {/* 4 Format Options Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {/* PDF (.pdf) - Cerulean */}
                     <button
                       type="button"
-                      onClick={handleExportMarkdown}
-                      className="w-full py-2.5 bg-jasper hover:bg-red-800 text-white rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs font-newsreader"
+                      onClick={() => setExportFormat('pdf')}
+                      className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer ${
+                        exportFormat === 'pdf'
+                          ? 'border-cerulean bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-cerulean shadow-2xs'
+                          : 'border-gray-200 dark:border-slate-800 bg-paper dark:bg-nightInput hover:border-gray-300 dark:hover:border-slate-700'
+                      }`}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      <span>Tải Bản Markdown (.md)</span>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            exportFormat === 'pdf'
+                              ? 'bg-cerulean text-white'
+                              : 'bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 border border-cerulean/20'
+                          }`}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            exportFormat === 'pdf'
+                              ? 'bg-cerulean text-white'
+                              : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400'
+                          }`}>
+                            .PDF
+                          </span>
+                        </div>
+                        <h5 className={`font-playfair font-bold text-sm mb-1 ${
+                          exportFormat === 'pdf' ? 'text-cerulean dark:text-blue-400' : 'text-gray-900 dark:text-slate-100'
+                        }`}>
+                          Tài liệu PDF
+                        </h5>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader leading-relaxed">
+                          Bản in A4 chuẩn mực với KaTeX sắc nét, hỗ trợ xem trước và in / xuất PDF trực tiếp.
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-2 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className={`font-bold flex items-center gap-1 ${
+                          exportFormat === 'pdf' ? 'text-cerulean dark:text-blue-400' : 'text-gray-400'
+                        }`}>
+                          {exportFormat === 'pdf' ? '✓ Đang chọn' : 'Chọn định dạng'}
+                        </span>
+                        {exportFormat === 'pdf' && <span className="w-2 h-2 rounded-full bg-cerulean" />}
+                      </div>
+                    </button>
+
+                    {/* Word (.docx) - Jasper */}
+                    <button
+                      type="button"
+                      onClick={() => setExportFormat('docx')}
+                      className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer ${
+                        exportFormat === 'docx'
+                          ? 'border-jasper bg-red-50/70 dark:bg-rose-950/40 ring-1 ring-jasper shadow-2xs'
+                          : 'border-gray-200 dark:border-slate-800 bg-paper dark:bg-nightInput hover:border-gray-300 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            exportFormat === 'docx'
+                              ? 'bg-jasper text-white'
+                              : 'bg-red-50 dark:bg-rose-950/60 text-jasper dark:text-rose-400 border border-jasper/20'
+                          }`}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            exportFormat === 'docx'
+                              ? 'bg-jasper text-white'
+                              : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400'
+                          }`}>
+                            .DOCX
+                          </span>
+                        </div>
+                        <h5 className={`font-playfair font-bold text-sm mb-1 ${
+                          exportFormat === 'docx' ? 'text-jasper dark:text-rose-400' : 'text-gray-900 dark:text-slate-100'
+                        }`}>
+                          Microsoft Word
+                        </h5>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader leading-relaxed">
+                          Tài liệu Word căn lề A4, bảng biểu bài giải sẵn sàng nộp bài hoặc sửa trên MS Word.
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-2 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className={`font-bold flex items-center gap-1 ${
+                          exportFormat === 'docx' ? 'text-jasper dark:text-rose-400' : 'text-gray-400'
+                        }`}>
+                          {exportFormat === 'docx' ? '✓ Đang chọn' : 'Chọn định dạng'}
+                        </span>
+                        {exportFormat === 'docx' && <span className="w-2 h-2 rounded-full bg-jasper" />}
+                      </div>
+                    </button>
+
+                    {/* LaTeX (.tex) - Cerulean */}
+                    <button
+                      type="button"
+                      onClick={() => setExportFormat('latex')}
+                      className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer ${
+                        exportFormat === 'latex'
+                          ? 'border-cerulean bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-cerulean shadow-2xs'
+                          : 'border-gray-200 dark:border-slate-800 bg-paper dark:bg-nightInput hover:border-gray-300 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            exportFormat === 'latex'
+                              ? 'bg-cerulean text-white'
+                              : 'bg-blue-50 dark:bg-blue-950/60 text-cerulean dark:text-blue-400 border border-cerulean/20'
+                          }`}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                          </div>
+                          <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            exportFormat === 'latex'
+                              ? 'bg-cerulean text-white'
+                              : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400'
+                          }`}>
+                            .TEX
+                          </span>
+                        </div>
+                        <h5 className={`font-playfair font-bold text-sm mb-1 ${
+                          exportFormat === 'latex' ? 'text-cerulean dark:text-blue-400' : 'text-gray-900 dark:text-slate-100'
+                        }`}>
+                          Mã nguồn LaTeX
+                        </h5>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader leading-relaxed">
+                          Mã TeX hoàn chỉnh với preamble tiếng Việt, amsmath, tikz, biên dịch TeXLive / Overleaf.
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-2 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className={`font-bold flex items-center gap-1 ${
+                          exportFormat === 'latex' ? 'text-cerulean dark:text-blue-400' : 'text-gray-400'
+                        }`}>
+                          {exportFormat === 'latex' ? '✓ Đang chọn' : 'Chọn định dạng'}
+                        </span>
+                        {exportFormat === 'latex' && <span className="w-2 h-2 rounded-full bg-cerulean" />}
+                      </div>
+                    </button>
+
+                    {/* Markdown (.md) - Jasper */}
+                    <button
+                      type="button"
+                      onClick={() => setExportFormat('markdown')}
+                      className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer ${
+                        exportFormat === 'markdown'
+                          ? 'border-jasper bg-red-50/70 dark:bg-rose-950/40 ring-1 ring-jasper shadow-2xs'
+                          : 'border-gray-200 dark:border-slate-800 bg-paper dark:bg-nightInput hover:border-gray-300 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            exportFormat === 'markdown'
+                              ? 'bg-jasper text-white'
+                              : 'bg-red-50 dark:bg-rose-950/60 text-jasper dark:text-rose-400 border border-jasper/20'
+                          }`}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </div>
+                          <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            exportFormat === 'markdown'
+                              ? 'bg-jasper text-white'
+                              : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400'
+                          }`}>
+                            .MD
+                          </span>
+                        </div>
+                        <h5 className={`font-playfair font-bold text-sm mb-1 ${
+                          exportFormat === 'markdown' ? 'text-jasper dark:text-rose-400' : 'text-gray-900 dark:text-slate-100'
+                        }`}>
+                          Tài liệu Markdown
+                        </h5>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader leading-relaxed">
+                          Markdown quốc tế kèm KaTeX, đồng bộ với Obsidian, Notion, GitHub và Logseq.
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-2 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className={`font-bold flex items-center gap-1 ${
+                          exportFormat === 'markdown' ? 'text-jasper dark:text-rose-400' : 'text-gray-400'
+                        }`}>
+                          {exportFormat === 'markdown' ? '✓ Đang chọn' : 'Chọn định dạng'}
+                        </span>
+                        {exportFormat === 'markdown' && <span className="w-2 h-2 rounded-full bg-jasper" />}
+                      </div>
                     </button>
                   </div>
+                </div>
+
+                {/* BƯỚC 2: CHỌN SỐ PHÁT HÀNH HOẶC TOÀN TẬP */}
+                <div className="space-y-2.5 pt-2">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <label className="text-xs sm:text-sm font-bold text-gray-900 dark:text-slate-100 flex items-center gap-2 font-playfair">
+                      <span className="w-5 h-5 rounded-full bg-jasper text-white text-xs flex items-center justify-center font-mono font-bold">
+                        2
+                      </span>
+                      <span>Bước 2: Chọn Số phát hành / Tập bài giải cần xuất</span>
+                    </label>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
+                      Phạm vi:{' '}
+                      <strong className="text-jasper dark:text-rose-400 font-bold">
+                        {selectedScopeName}
+                      </strong>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+                    <div className="md:col-span-2">
+                      <SelectDropdown
+                        value={exportScope}
+                        onChange={setExportScope}
+                        options={exportScopeOptions}
+                        placeholder="Chọn số hoặc toàn tập..."
+                      />
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-paper dark:bg-nightInput flex items-center justify-between text-xs font-newsreader">
+                      <span className="text-gray-600 dark:text-slate-400">Số bài giải được lọc:</span>
+                      <span className="font-bold text-sm text-cerulean dark:text-blue-400 font-mono">
+                        {targetSolvedItems.length} bài
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* BƯỚC 3: TỔNG KẾT & NÚT BẤM XUẤT TÀI LIỆU */}
+                <div className="p-4 rounded-xl border border-gray-200 dark:border-slate-800 bg-paper dark:bg-nightInput flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-gray-700 dark:text-slate-300 font-newsreader">
+                        Đang cấu hình:
+                      </span>
+                      <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md ${
+                        exportFormat === 'pdf' || exportFormat === 'latex'
+                          ? 'bg-blue-50 text-cerulean dark:bg-blue-950/60 dark:text-blue-400 border border-cerulean/30'
+                          : 'bg-red-50 text-jasper dark:bg-rose-950/60 dark:text-rose-400 border border-jasper/30'
+                      }`}>
+                        .{exportFormat.toUpperCase()}
+                      </span>
+                      <span className="text-xs font-newsreader font-bold px-2.5 py-0.5 rounded-md bg-white dark:bg-nightCard text-gray-800 dark:text-slate-200 border border-gray-200 dark:border-slate-700">
+                        {selectedScopeName}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-newsreader">
+                      {targetSolvedItems.length > 0
+                        ? `Sẵn sàng trích xuất và lưu ${targetSolvedItems.length} bài giải toán học vào tài liệu.`
+                        : 'Không có bài giải nào trong kỳ báo này. Vui lòng chọn "Toàn tập" hoặc kỳ báo khác.'}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleExecuteExport}
+                    disabled={targetSolvedItems.length === 0 || isExporting}
+                    className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs font-newsreader shrink-0 ${
+                      targetSolvedItems.length === 0 || isExporting
+                        ? 'bg-gray-200 dark:bg-slate-800 text-gray-400 dark:text-slate-600 cursor-not-allowed border border-gray-300 dark:border-slate-700'
+                        : exportFormat === 'docx' || exportFormat === 'markdown'
+                        ? 'bg-jasper hover:bg-red-800 text-white border border-jasper'
+                        : 'bg-cerulean hover:bg-blue-800 text-white border border-cerulean'
+                    }`}
+                  >
+                    {isExporting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0"></div>
+                        <span>Đang xử lý hình vẽ &amp; tạo tài liệu...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>
+                          {exportFormat === 'pdf' && `Xem Trước & Xuất PDF (${targetSolvedItems.length} bài)`}
+                          {exportFormat === 'docx' && `Tải File Word (.docx) (${targetSolvedItems.length} bài)`}
+                          {exportFormat === 'latex' && `Tải Mã Nguồn LaTeX (.tex) (${targetSolvedItems.length} bài)`}
+                          {exportFormat === 'markdown' && `Tải Tài Liệu Markdown (.md) (${targetSolvedItems.length} bài)`}
+                        </span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
