@@ -65,4 +65,24 @@ describe('MathRenderer parser', () => {
     expect(html).toContain('không');
     expect(html).toContain('img');
   });
+
+  it('renders standard LaTeX delimiters and display environments', async () => {
+    const React = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    const { default: MathRenderer } = await import('../components/common/MathRenderer');
+
+    const element = React.createElement(MathRenderer, {
+      content: `Công thức hiển thị:
+\\[\\frac{a}{b} = 1\\]
+Và công thức trong dòng \\(x > 0\\) cùng hệ:
+\\begin{align}
+u &= 1 \\\\
+v &= 2
+\\end{align}`
+    });
+
+    const html = renderToString(element);
+    expect(html).toContain('katex');
+    expect(html).not.toContain('katex-error');
+  });
 });

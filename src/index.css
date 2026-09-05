@@ -150,3 +150,66 @@ html, body {
 .animate-slideUp {
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* -------------------------------------------------------------
+   Page Transition Animations (Smooth, Prestigious & Responsive)
+   ------------------------------------------------------------- */
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pageTransition {
+  animation: pageEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+/* Page Navigation Top Progress Bar (Cerulean + Jasper, NO gradients) */
+@keyframes pageProgressSlide {
+  0% {
+    transform: translateX(-100%);
+  }
+  60% {
+    transform: translateX(-15%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-pageProgress {
+  animation: pageProgressSlide 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform;
+}
+
+@keyframes pageProgressFade {
+  0%, 75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-pageProgressContainer {
+  animation: pageProgressFade 0.52s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pageTransition {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .animate-pageProgress,
+  .animate-pageProgressContainer {
+    display: none !important;
+  }
+}
+

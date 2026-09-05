@@ -53,7 +53,11 @@ export default function Header() {
   }, []);
 
   const scrollToTop = () => {
-    if (location.pathname === '/ho-so' || location.pathname === '/profile') {
+    if (
+      location.pathname === '/ho-so' ||
+      location.pathname === '/profile' ||
+      location.pathname.startsWith('/bai-toan/')
+    ) {
       navigate('/');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -100,9 +104,12 @@ export default function Header() {
         <div className="flex-1 flex flex-col items-center justify-center text-center transition-all duration-300 min-w-0">
           <button
             type="button"
-            onClick={scrollToTop}
+            onClick={() => {
+              navigate('/');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="inline-flex items-center justify-center group cursor-pointer select-none bg-transparent border-none p-0"
-            title="Tạp Chí Pi - Bấm để cuộn lên đầu"
+            title="Tạp Chí Pi - Trở về Trang Chủ"
           >
             <h1
               className={`font-playfair font-black text-cerulean dark:text-blue-400 tracking-tight whitespace-nowrap transition-all duration-300 group-hover:text-blue-800 dark:group-hover:text-blue-300 ${
@@ -220,7 +227,7 @@ export default function Header() {
           ) : (
             <button
               type="button"
-              onClick={loginWithGoogle}
+              onClick={() => navigate('/dang-nhap')}
               className="bg-white dark:bg-nightCard border border-gray-300 dark:border-slate-700 text-ink dark:text-slate-200 shadow-sm px-3 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition flex items-center gap-2 font-newsreader font-bold text-xs md:text-sm whitespace-nowrap cursor-pointer"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

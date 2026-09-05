@@ -6,8 +6,8 @@ import TikzRenderer from './TikzRenderer';
 // Regex nhận diện khối mã LaTeX TikZ (vẽ hình hình học)
 const TIKZ_REGEX = /(\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}|```(?:tikz|latex)\s*[\s\S]*?\\begin\{tikzpicture\}[\s\S]*?```)/g;
 
-// Regex nhận diện công thức Toán: $$...$$ (display block) và $...$ (inline)
-const MATH_REGEX = /(\$\$[\s\S]*?\$\$|\$(?!\$)[^$\n]+?\$)/g;
+// Regex nhận diện công thức Toán: $$...$$ (display block), \\[...\\] (display), \\begin{align...} (display), \\(...\\) (inline), $...$ (inline)
+const MATH_REGEX = /(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\begin\{(?:equation|align|gather|alignat|multline)\*?\}[\s\S]*?\\end\{(?:equation|align|gather|alignat|multline)\*?\}|\\\([\s\S]*?\\\)|\$(?!\$)[^$\n]+?\$)/g;
 
 // Regex nhận diện các định dạng Markdown inline:
 // 1. Hình ảnh: ![alt](url)
@@ -24,6 +24,7 @@ function renderKatex(mathItem, key) {
     const html = katex.renderToString(mathItem.tex, {
       displayMode: mathItem.display,
       throwOnError: false,
+      strict: false,
     });
 
     if (mathItem.display) {
@@ -231,10 +232,11 @@ export default function MathRenderer({ content, className = '' }) {
 
   const renderedElements = useMemo(() => {
     if (!content) return null;
+    const strContent = typeof content === 'string' ? content : String(content);
 
     // 1. Tách và lưu trữ toàn bộ các khối mã LaTeX TikZ trước tiên để bảo toàn cú pháp
     const tikzStore = [];
-    const textWithoutTikz = content.replace(TIKZ_REGEX, (match) => {
+    const textWithoutTikz = strContent.replace(TIKZ_REGEX, (match) => {
       const idx = tikzStore.length;
       tikzStore.push(match);
       return `\uE002TIKZ_${idx}\uE003`;
@@ -244,10 +246,36 @@ export default function MathRenderer({ content, className = '' }) {
     const mathStore = [];
     const textWithPlaceholders = textWithoutTikz.replace(MATH_REGEX, (match) => {
       const idx = mathStore.length;
-      const isDisplay = match.startsWith('$$') && match.endsWith('$$');
+      let isDisplay = false;
+      let tex = '';
+
+      if (match.startsWith('$$') && match.endsWith('$$')) {
+        isDisplay = true;
+        tex = match.slice(2, -2).trim();
+      } else if (match.startsWith('\\[') && match.endsWith('\\]')) {
+        isDisplay = true;
+        tex = match.slice(2, -2).trim();
+      } else if (match.startsWith('\\(') && match.endsWith('\\)')) {
+        isDisplay = false;
+        tex = match.slice(2, -2).trim();
+      } else if (match.startsWith('\\begin{')) {
+        isDisplay = true;
+        tex = match.trim();
+      } else if (match.startsWith('$') && match.endsWith('$')) {
+        isDisplay = false;
+        tex = match.slice(1, -1).trim();
+      } else {
+        tex = match.trim();
+      }
+
+      // Tự động chuyển sang display mode nếu công thức dùng các môi trường đặc biệt của KaTeX
+      if (/\\begin\{(?:align|gather|equation|multline)\*?\}/.test(tex)) {
+        isDisplay = true;
+      }
+
       mathStore.push({
         display: isDisplay,
-        tex: isDisplay ? match.slice(2, -2).trim() : match.slice(1, -1).trim(),
+        tex,
         raw: match,
       });
       return `\uE000MATH_${idx}\uE001`;
@@ -298,8 +326,10 @@ export default function MathRenderer({ content, className = '' }) {
         );
       }
 
-      // Kiểm tra nếu dòng chỉ là 1 khối display math ($$...$$), khối TikZ, hoặc 1 hình vẽ đơn lẻ
-      const isSingleBlockElement = /^\s*(\uE000MATH_\d+\uE001|\uE002TIKZ_\d+\uE003|!\[[^\]]*?\]\([^)\s]+\))\s*$/.test(line);
+      // Kiểm tra nếu dòng chỉ là 1 khối display math, khối TikZ, hoặc 1 hình vẽ đơn lẻ
+      const mathLineMatch = line.trim().match(/^\uE000MATH_(\d+)\uE001$/);
+      const isDisplayMath = mathLineMatch && mathStore[parseInt(mathLineMatch[1], 10)]?.display;
+      const isSingleBlockElement = isDisplayMath || /^\s*(\uE002TIKZ_\d+\uE003|!\[[^\]]*?\]\([^)\s]+\))\s*$/.test(line);
 
       return (
         <React.Fragment key={lineIdx}>

@@ -13,16 +13,24 @@ import LatexCheatsheetModal from './components/modals/LatexCheatsheetModal';
 import ProblemDetailPage from './components/detail/ProblemDetailPage';
 import ProfilePage from './components/profile/ProfilePage';
 import LoginGate from './components/auth/LoginGate';
+import LoginPage from './components/auth/LoginPage';
+import LandingPage from './components/landing/LandingPage';
+import LandingHeader from './components/landing/LandingHeader';
+import PiHistoryPage from './components/landing/PiHistoryPage';
+import TapChiPiPage from './components/landing/TapChiPiPage';
+import FeaturesPage from './components/landing/FeaturesPage';
 import ConfirmModal from './components/modals/ConfirmModal';
 import GeminiKeyModal from './components/modals/GeminiKeyModal';
 import { useData } from './context/DataContext';
 import { useAuth } from './context/AuthContext';
+import { useToast } from './context/ToastContext';
 import { slugify, findIssueBySlug, findCategoryBySlug } from './utils/slugify';
 
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isRealUser, loadingAuth } = useAuth();
+  const { isRealUser, loadingAuth, loginWithGoogle } = useAuth();
+  const { showToast } = useToast();
 
   const {
     issues,
@@ -59,12 +67,53 @@ export default function App() {
     onConfirm: null,
   });
 
+  // Page Transition & Navigation Progress Bar state
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+
+  useEffect(() => {
+    setIsPageTransitioning(true);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const timer = setTimeout(() => {
+      setIsPageTransitioning(false);
+    }, 520);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   // 1. Sync URL Route -> App Filters & Modals
   useEffect(() => {
     const pathname = location.pathname;
 
     if (pathname === '/so-tay-latex') {
       setIsLatexModalOpen(true);
+      return;
+    }
+
+    if (
+      pathname === '/' ||
+      pathname === '/gioi-thieu' ||
+      pathname === '/about' ||
+      pathname === '/landing' ||
+      pathname === '/tinh-nang' ||
+      pathname === '/lich-su-so-pi' ||
+      pathname === '/tap-chi-pi'
+    ) {
+      setFilterIssue('');
+      setFilterCategory('');
+      setHighlightedProblemId(null);
+      return;
+    }
+
+    if (pathname === '/dang-nhap' || pathname === '/login') {
+      setFilterIssue('');
+      setFilterCategory('');
+      setHighlightedProblemId(null);
+      return;
+    }
+
+    if (pathname === '/kho-de') {
+      setFilterIssue('');
+      setFilterCategory('');
+      setHighlightedProblemId(null);
       return;
     }
 
@@ -117,14 +166,28 @@ export default function App() {
       setFilterIssue('');
       return;
     }
-
-    // Root path /
-    if (pathname === '/') {
-      setFilterIssue('');
-      setFilterCategory('');
-      setHighlightedProblemId(null);
-    }
   }, [location.pathname, issues, categories, problems, setFilterIssue, setFilterCategory]);
+
+  // Route Protection: Yêu cầu đăng nhập để truy cập kho đề và các trang chức năng
+  useEffect(() => {
+    if (loadingAuth) return;
+
+    const isPublicLandingHeader =
+      location.pathname === '/' ||
+      location.pathname === '/gioi-thieu' ||
+      location.pathname === '/about' ||
+      location.pathname === '/landing' ||
+      location.pathname === '/tinh-nang' ||
+      location.pathname === '/lich-su-so-pi' ||
+      location.pathname === '/tap-chi-pi';
+    const isLogin = location.pathname === '/dang-nhap' || location.pathname === '/login';
+    const isLatex = location.pathname === '/so-tay-latex';
+
+    if (!isRealUser && !isPublicLandingHeader && !isLogin && !isLatex) {
+      showToast('Vui lòng đăng nhập tài khoản để truy cập kho đề.', 'info');
+      navigate('/dang-nhap');
+    }
+  }, [isRealUser, loadingAuth, location.pathname, navigate, showToast]);
 
   // 2. Sync Filter Changes -> Friendly URL
   const handleSelectIssue = useCallback(
@@ -133,7 +196,7 @@ export default function App() {
       const targetIssue = issues.find((i) => i.id === newIssueId);
       const targetCat = categories.find((c) => c.id === filterCategory);
 
-      let url = '/';
+      let url = '/kho-de';
       if (targetIssue && targetCat) {
         url = `/so/${slugify(targetIssue.name)}/chuyen-muc/${slugify(targetCat.name)}`;
       } else if (targetIssue) {
@@ -153,7 +216,7 @@ export default function App() {
       const targetIssue = issues.find((i) => i.id === filterIssue);
       const targetCat = categories.find((c) => c.id === newCatId);
 
-      let url = '/';
+      let url = '/kho-de';
       if (targetIssue && targetCat) {
         url = `/so/${slugify(targetIssue.name)}/chuyen-muc/${slugify(targetCat.name)}`;
       } else if (targetCat) {
@@ -170,9 +233,19 @@ export default function App() {
   const issueMap = useMemo(() => new Map(issues.map((i) => [i.id, i.name])), [issues]);
   const categoryMap = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
 
-  // Check if current route is a problem detail page or profile page
+  // Check if current route is a problem detail page, profile page, landing page, or login page
   const isDetailPage = location.pathname.startsWith('/bai-toan/');
   const isProfilePage = location.pathname === '/ho-so' || location.pathname === '/profile';
+  const isLoginPage = location.pathname === '/dang-nhap' || location.pathname === '/login';
+  const isPiHistoryPage = location.pathname === '/lich-su-so-pi';
+  const isTapChiPiPage = location.pathname === '/tap-chi-pi';
+  const isFeaturesPage = location.pathname === '/tinh-nang';
+  const isLandingPage =
+    location.pathname === '/' ||
+    location.pathname === '/gioi-thieu' ||
+    location.pathname === '/about' ||
+    location.pathname === '/landing';
+  const isLandingHeaderPage = isLandingPage || isPiHistoryPage || isTapChiPiPage || isFeaturesPage;
 
   const activeDetailProblem = useMemo(() => {
     const match = location.pathname.match(/^\/bai-toan\/([^/]+)/i);
@@ -184,6 +257,28 @@ export default function App() {
       ) || null
     );
   }, [location.pathname, problems]);
+
+  const pageKey = useMemo(() => {
+    if (isLandingPage) return 'landing';
+    if (isFeaturesPage) return 'features';
+    if (isPiHistoryPage) return 'pi-history';
+    if (isTapChiPiPage) return 'tap-chi-pi';
+    if (isProfilePage) return 'profile';
+    if (isDetailPage) return `detail-${activeDetailProblem?.id || location.pathname}`;
+    if (isLoginPage) return 'login';
+    return 'feed';
+  }, [
+    isLandingPage,
+    isFeaturesPage,
+    isPiHistoryPage,
+    isTapChiPiPage,
+    isProfilePage,
+    isDetailPage,
+    isLoginPage,
+    activeDetailProblem?.id,
+    location.pathname,
+  ]);
+
 
   // Contextual previous & next problems in same issue/category
   const { prevProblem, nextProblem } = useMemo(() => {
@@ -245,11 +340,59 @@ export default function App() {
         return;
       }
     }
-    navigate('/');
+    navigate('/kho-de');
   }, [filterIssue, filterCategory, issues, categories, navigate]);
 
   // 3. Dynamic SEO Meta Calculation
   const seoData = useMemo(() => {
+    if (isLoginPage) {
+      return {
+        title: 'Đăng Nhập Tài Khoản - Tạp Chí Pi',
+        description: 'Cổng đăng nhập và tra cứu chính thức của Tạp chí Pi - Hội Toán học Việt Nam. Đồng bộ bài giải và chuỗi rèn luyện.',
+        canonicalPath: '/dang-nhap',
+      };
+    }
+
+    if (isLandingPage) {
+      return {
+        title: 'Tạp Chí Pi - Diễn Đàn & Kho Dữ Liệu Toán Học Đỉnh Cao',
+        description: 'Khám phá kho tàng đề thi Olympic, chuyên đề Toán học tinh hoa từ Tạp chí Pi - Hội Toán học Việt Nam. Nền tảng tích hợp giải toán KaTeX, hình học TikZ, hệ thống xếp hạng học thuật.',
+        canonicalPath: '/gioi-thieu',
+        structuredData: {
+          '@context': 'https://schema.org',
+          '@type': 'EducationalOrganization',
+          name: 'Tạp Chí Pi',
+          alternateName: 'Pimaga',
+          url: 'https://tapchipi.vn',
+          description: 'Tạp chí Pi - Diễn đàn Toán học & Tuổi trẻ do Hội Toán học Việt Nam sáng lập.',
+        },
+      };
+    }
+
+    if (isPiHistoryPage) {
+      return {
+        title: 'Lịch Sử Hình Thành Của Số Pi - Tạp Chí Pi',
+        description: 'Biên niên sử 4.000 năm của số Pi từ Archimedes, Lưu Huy, Tổ Xung Chi đến Euler và Ramanujan.',
+        canonicalPath: '/lich-su-so-pi',
+      };
+    }
+
+    if (isTapChiPiPage) {
+      return {
+        title: 'Về Tạp Chí Pi - Hội Toán Học Việt Nam',
+        description: 'Lịch sử thành lập năm 2017, hội đồng sáng lập và sứ mệnh ươm mầm trí tuệ của Tạp chí Pi.',
+        canonicalPath: '/tap-chi-pi',
+      };
+    }
+
+    if (isFeaturesPage) {
+      return {
+        title: 'Tính Năng Nổi Bật - Nền Tảng Pimaga',
+        description: 'Khám phá 6 tính năng của nền tảng Pimaga: kho đề phân cấp, soạn thảo KaTeX, TikZ SVG, xuất PDF và sổ tay LaTeX.',
+        canonicalPath: '/tinh-nang',
+      };
+    }
+
     if (isProfilePage) {
       return {
         title: 'Hồ Sơ Học Thuật & Bài Giải Cá Nhân - Tạp Chí Pi',
@@ -357,16 +500,31 @@ export default function App() {
 
   // Modal open handlers
   const handleOpenProblemCreate = () => {
+    if (!isRealUser) {
+      showToast('Vui lòng đăng nhập để thêm bài toán mới.', 'info');
+      loginWithGoogle();
+      return;
+    }
     setEditingProblem(null);
     setIsProblemModalOpen(true);
   };
 
   const handleOpenProblemEdit = (problem) => {
+    if (!isRealUser) {
+      showToast('Vui lòng đăng nhập để chỉnh sửa bài toán.', 'info');
+      loginWithGoogle();
+      return;
+    }
     setEditingProblem(problem);
     setIsProblemModalOpen(true);
   };
 
   const handleOpenSolution = (problem) => {
+    if (!isRealUser) {
+      showToast('Vui lòng đăng nhập để bắt đầu viết lời giải và lưu bài làm.', 'info');
+      loginWithGoogle();
+      return;
+    }
     setActiveSolutionProblem(problem);
     setIsSolutionModalOpen(true);
   };
@@ -422,8 +580,46 @@ export default function App() {
     );
   }
 
+  // Render split-screen login page directly
+  if (isLoginPage) {
+    return (
+      <div className="animate-pageTransition min-h-screen">
+        <SEOHead
+          title={seoData.title}
+          description={seoData.description}
+          canonicalPath={seoData.canonicalPath}
+        />
+        {isPageTransitioning && (
+          <div
+            className="fixed top-0 left-0 right-0 h-1 z-[100] pointer-events-none overflow-hidden animate-pageProgressContainer"
+            aria-hidden="true"
+          >
+            <div className="h-full w-full flex animate-pageProgress">
+              <div className="w-1/2 h-full bg-cerulean"></div>
+              <div className="w-1/2 h-full bg-jasper"></div>
+            </div>
+          </div>
+        )}
+        <LoginPage />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-paper dark:bg-night text-ink dark:text-slate-100 font-newsreader min-h-screen relative transition-colors duration-200">
+      {/* Top Page Navigation Progress Indicator (Dual Tone Cerulean 50% & Jasper 50%, Zero Gradients) */}
+      {isPageTransitioning && (
+        <div
+          className="fixed top-0 left-0 right-0 h-1 z-[100] pointer-events-none overflow-hidden animate-pageProgressContainer"
+          aria-hidden="true"
+        >
+          <div className="h-full w-full flex animate-pageProgress">
+            <div className="w-1/2 h-full bg-cerulean"></div>
+            <div className="w-1/2 h-full bg-jasper"></div>
+          </div>
+        </div>
+      )}
+
       {/* Dynamic SEO Meta Tags */}
       <SEOHead
         title={seoData.title}
@@ -432,52 +628,77 @@ export default function App() {
         structuredData={seoData.structuredData}
       />
 
-      <Header />
+      {isLandingHeaderPage ? (
+        <LandingHeader onOpenLatexModal={() => handleOpenLatexCheatsheet(null)} />
+      ) : (
+        <Header />
+      )}
 
       <div id="app" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 relative">
-        {!isRealUser ? (
-          <LoginGate />
-        ) : isProfilePage ? (
-          <ProfilePage
-            onOpenDetail={handleOpenDetail}
-            onOpenSolution={handleOpenSolution}
-            onBackToList={handleBackToList}
-          />
-        ) : isDetailPage ? (
-          <ProblemDetailPage
-            problem={activeDetailProblem}
-            issueName={activeDetailProblem ? issueMap.get(activeDetailProblem.issueId) || 'Không rõ Số' : ''}
-            catName={activeDetailProblem ? categoryMap.get(activeDetailProblem.categoryId) || 'Không rõ Chuyên mục' : ''}
-            userSolution={activeDetailProblem ? userSolutionsMap[activeDetailProblem.id] : ''}
-            onOpenSolution={handleOpenSolution}
-            onOpenLatexCheatsheet={handleOpenLatexCheatsheet}
-            onEditProblem={handleOpenProblemEdit}
-            onDeleteProblem={requestDeleteProblem}
-            onBackToList={handleBackToList}
-            prevProblem={prevProblem}
-            nextProblem={nextProblem}
-            onSelectProblem={handleSelectOtherProblem}
-          />
-        ) : (
-          <>
-            <FilterBar
-              onSelectIssue={handleSelectIssue}
-              onSelectCategory={handleSelectCategory}
+        <main
+          key={pageKey}
+          id="main-content"
+          className="animate-pageTransition focus:outline-none min-h-[60vh]"
+        >
+          {isLandingPage ? (
+            <LandingPage
+              onExploreFeed={() => {
+                if (isRealUser) {
+                  navigate('/kho-de');
+                } else {
+                  navigate('/dang-nhap');
+                }
+              }}
               onOpenLatexModal={() => handleOpenLatexCheatsheet(null)}
-              onOpenProblemModal={handleOpenProblemCreate}
-              onOpenIssueModal={() => setIsIssueModalOpen(true)}
-              onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
             />
-
-            <ProblemList
-              highlightedProblemId={highlightedProblemId}
+          ) : isFeaturesPage ? (
+            <FeaturesPage onOpenLatexModal={() => handleOpenLatexCheatsheet(null)} />
+          ) : isPiHistoryPage ? (
+            <PiHistoryPage />
+          ) : isTapChiPiPage ? (
+            <TapChiPiPage />
+          ) : isProfilePage ? (
+            <ProfilePage
+              onOpenDetail={handleOpenDetail}
+              onOpenSolution={handleOpenSolution}
+              onBackToList={handleBackToList}
+            />
+          ) : isDetailPage ? (
+            <ProblemDetailPage
+              problem={activeDetailProblem}
+              issueName={activeDetailProblem ? issueMap.get(activeDetailProblem.issueId) || 'Không rõ Số' : ''}
+              catName={activeDetailProblem ? categoryMap.get(activeDetailProblem.categoryId) || 'Không rõ Chuyên mục' : ''}
+              userSolution={activeDetailProblem ? userSolutionsMap[activeDetailProblem.id] : ''}
+              onOpenSolution={handleOpenSolution}
+              onOpenLatexCheatsheet={handleOpenLatexCheatsheet}
               onEditProblem={handleOpenProblemEdit}
               onDeleteProblem={requestDeleteProblem}
-              onOpenSolution={handleOpenSolution}
-              onOpenDetail={handleOpenDetail}
+              onBackToList={handleBackToList}
+              prevProblem={prevProblem}
+              nextProblem={nextProblem}
+              onSelectProblem={handleSelectOtherProblem}
             />
-          </>
-        )}
+          ) : (
+            <>
+              <FilterBar
+                onSelectIssue={handleSelectIssue}
+                onSelectCategory={handleSelectCategory}
+                onOpenLatexModal={() => handleOpenLatexCheatsheet(null)}
+                onOpenProblemModal={handleOpenProblemCreate}
+                onOpenIssueModal={() => setIsIssueModalOpen(true)}
+                onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
+              />
+
+              <ProblemList
+                highlightedProblemId={highlightedProblemId}
+                onEditProblem={handleOpenProblemEdit}
+                onDeleteProblem={requestDeleteProblem}
+                onOpenSolution={handleOpenSolution}
+                onOpenDetail={handleOpenDetail}
+              />
+            </>
+          )}
+        </main>
 
         <Footer />
       </div>

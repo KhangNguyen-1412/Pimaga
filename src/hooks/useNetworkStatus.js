@@ -21,5 +21,5 @@ export function useNetworkStatus() {
     };
   }, []);
 
-  return isOnline;
+  return { isOnline };
 }
